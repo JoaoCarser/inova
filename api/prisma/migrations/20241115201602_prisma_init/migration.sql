@@ -7,16 +7,19 @@ CREATE TYPE "status_projects" AS ENUM ('SUBMITED', 'UNDER_REVIEW', 'REVIEWED');
 -- CreateEnum
 CREATE TYPE "status_questions" AS ENUM ('SUBMITED', 'VIEWED', 'COMPLETED');
 
+-- CreateEnum
+CREATE TYPE "period_type" AS ENUM ('SUBSCRIPTION', 'AVALIATION', 'RESUBSCRIPTION', 'REAVALIATION', 'FINAL', 'INACTIVE');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
-    "base_id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" "role" NOT NULL,
     "cpf" TEXT NOT NULL,
-    "positions" TEXT NOT NULL,
+    "position" TEXT NOT NULL,
+    "base_id" UUID NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -42,11 +45,10 @@ CREATE TABLE "projects" (
 
 -- CreateTable
 CREATE TABLE "users_projects" (
-    "id" UUID NOT NULL,
     "user_id" UUID NOT NULL,
     "project_id" UUID NOT NULL,
 
-    CONSTRAINT "users_projects_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "users_projects_pkey" PRIMARY KEY ("user_id","project_id")
 );
 
 -- CreateTable
@@ -61,14 +63,25 @@ CREATE TABLE "files" (
 -- CreateTable
 CREATE TABLE "questions" (
     "id" UUID NOT NULL,
-    "project_id" UUID NOT NULL,
-    "user_id" UUID NOT NULL,
-    "created_by" UUID NOT NULL,
-    "to" UUID NOT NULL,
-    "status" "status_questions" NOT NULL,
     "text" TEXT NOT NULL,
+    "status" "status_questions" NOT NULL,
+    "project_id" UUID NOT NULL,
+    "created_by" UUID NOT NULL,
+    "sent_to" UUID NOT NULL,
 
     CONSTRAINT "questions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "periods" (
+    "id" UUID NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "start_date" TIMESTAMP(3) NOT NULL,
+    "end_date" TIMESTAMP(3) NOT NULL,
+    "type" "period_type" NOT NULL,
+
+    CONSTRAINT "periods_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -81,13 +94,16 @@ ALTER TABLE "users" ADD CONSTRAINT "users_base_id_fkey" FOREIGN KEY ("base_id") 
 ALTER TABLE "users_projects" ADD CONSTRAINT "users_projects_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "users_projects" ADD CONSTRAINT "users_projects_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "users_projects" ADD CONSTRAINT "users_projects_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "files" ADD CONSTRAINT "files_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "questions" ADD CONSTRAINT "questions_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "questions" ADD CONSTRAINT "questions_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "questions" ADD CONSTRAINT "questions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "questions" ADD CONSTRAINT "questions_sent_to_fkey" FOREIGN KEY ("sent_to") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "questions" ADD CONSTRAINT "questions_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
