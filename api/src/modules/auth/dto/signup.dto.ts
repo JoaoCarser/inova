@@ -6,10 +6,11 @@ import {
   IsUUID,
   MinLength,
 } from 'class-validator';
-import { Role } from '../entities/Role';
-import { IsCPF } from 'class-validator-cpf';
 
-export class CreateUserDto {
+import { IsCPF } from 'class-validator-cpf';
+import { Role } from '../entities/Role';
+
+export class SignUpDto {
   @IsString()
   @IsNotEmpty()
   name: string;
