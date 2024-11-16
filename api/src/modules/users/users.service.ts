@@ -45,8 +45,32 @@ export class UsersService {
   }
 
   async update(userid: string, updateUserDto: UpdateUserDto) {
-    if (!userid) {
-      throw new ConflictException('User not exist');
+    const user = await this.usersRepository.findFirst({
+      where: { id: userid },
+    });
+
+    if (!user) {
+      throw new ConflictException('Usuário não encontrado');
+    }
+
+    const emailExists = await this.usersRepository.findFirst({
+      where: {
+        email: updateUserDto.email,
+      },
+    });
+
+    if (emailExists) {
+      throw new ConflictException('O Email já está sendo usado');
+    }
+
+    const cpfExists = await this.usersRepository.findFirst({
+      where: {
+        cpf: updateUserDto.cpf,
+      },
+    });
+
+    if (cpfExists) {
+      throw new ConflictException('O CPF já está sendo usado');
     }
 
     return await this.usersRepository.update({

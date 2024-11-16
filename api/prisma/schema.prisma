@@ -21,7 +21,7 @@ model User {
   email    String @unique
   password String
   role     Role
-  cpf      String
+  cpf      String @unique
   position String
   baseId   String @map("base_id") @db.Uuid
   base     Base   @relation(fields: [baseId], references: [id])
