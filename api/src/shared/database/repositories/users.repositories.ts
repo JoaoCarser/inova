@@ -19,4 +19,8 @@ export class UsersRepositories {
   async update(updateDto: Prisma.UserUpdateArgs) {
     return await this.prismaService.user.update(updateDto);
   }
+
+  async delete(deleteDto: Prisma.UserDeleteArgs) {
+    return await this.prismaService.user.delete(deleteDto);
+  }
 }
