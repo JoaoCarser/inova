@@ -5,16 +5,18 @@ import { type Prisma } from '@prisma/client';
 @Injectable()
 export class UsersRepositories {
   constructor(private readonly prismaService: PrismaService) {}
-
-  async create(createDto: Prisma.UserCreateArgs) {
-    return await this.prismaService.user.create(createDto);
-  }
-
   async findMany(findManyDto: Prisma.UserFindManyArgs) {
     return await this.prismaService.user.findMany(findManyDto);
   }
 
   async findFirst(findFirstDto: Prisma.UserFindFirstArgs) {
     return await this.prismaService.user.findFirst(findFirstDto);
+  }
+  async create(createDto: Prisma.UserCreateArgs) {
+    return await this.prismaService.user.create(createDto);
+  }
+
+  async update(updateDto: Prisma.UserUpdateArgs) {
+    return await this.prismaService.user.update(updateDto);
   }
 }

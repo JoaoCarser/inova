@@ -44,8 +44,15 @@ export class UsersService {
     });
   }
 
-  update(userid: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${userid} user`;
+  async update(userid: string, updateUserDto: UpdateUserDto) {
+    if (!userid) {
+      throw new ConflictException('User not exist');
+    }
+
+    return await this.usersRepository.update({
+      where: { id: userid },
+      data: updateUserDto,
+    });
   }
 
   remove(id: number) {
