@@ -29,9 +29,9 @@ export class BasesController {
     return await this.basesService.findMany();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.basesService.findOne(+id);
+  @Get(':baseId')
+  findOne(@Param('baseId', ParseUUIDPipe) baseId: string) {
+    return this.basesService.findOne(baseId);
   }
 
   @Put(':baseId')

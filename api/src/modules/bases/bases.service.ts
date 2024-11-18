@@ -30,8 +30,10 @@ export class BasesService {
     return await this.basesRepo.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} base`;
+  async findOne(baseId: string) {
+    return await this.basesRepo.findFirst({
+      where: { id: baseId },
+    });
   }
 
   async update(baseId: string, updateBaseDto: UpdateBaseDto) {
