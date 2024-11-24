@@ -8,6 +8,6 @@ export class SigninDto {
 
   @IsString({ message: 'A senha precisa ser uma String!' })
   @IsNotEmpty({ message: 'A senha é obrigatória!' })
-  @MinLength(8)
+  @MinLength(2)
   password: string;
 }

@@ -34,7 +34,7 @@ export class AuthService {
     });
 
     if (emailExists || cpfExists) {
-      throw new ConflictException('User already exists');
+      throw new ConflictException('Usuário já existe');
     }
 
     const hashedPassword = await hash(signUpDto.password, 12);
@@ -58,13 +58,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid Credentials');
+      throw new UnauthorizedException('Credenciais inválidas!');
     }
 
     const isPasswordValid = await compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid Credentials');
+      throw new UnauthorizedException('Credenciais inválidas!');
     }
 
     // Generate JWT
