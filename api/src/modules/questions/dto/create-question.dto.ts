@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { StatusQuestionType } from '../entities/question.entity';
 
 export class CreateQuestionDto {
@@ -6,7 +6,17 @@ export class CreateQuestionDto {
   @IsString()
   text: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(StatusQuestionType)
   status: StatusQuestionType;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID()
+  projectId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID()
+  sentToId: string;
 }

@@ -9,7 +9,14 @@ import { PeriodsModule } from './modules/periods/periods.module';
 import { QuestionsModule } from './modules/questions/questions.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, AuthModule, BasesModule, PeriodsModule, QuestionsModule],
+  imports: [
+    DatabaseModule,
+    UsersModule,
+    AuthModule,
+    BasesModule,
+    PeriodsModule,
+    QuestionsModule,
+  ],
   controllers: [],
   providers: [
     {

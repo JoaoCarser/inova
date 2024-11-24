@@ -6,16 +6,20 @@ import { Injectable } from '@nestjs/common';
 export class BasesRepositories {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createDto: Prisma.BaseCreateArgs) {
-    return await this.prismaService.base.create(createDto);
-  }
-
   async findMany(findManyDto: Prisma.BaseFindManyArgs) {
     return await this.prismaService.base.findMany(findManyDto);
   }
 
   async findFirst(findFirstDto: Prisma.BaseFindFirstArgs) {
     return await this.prismaService.base.findFirst(findFirstDto);
+  }
+
+  async findUnique(findUniqueDto: Prisma.BaseFindUniqueArgs) {
+    return await this.prismaService.base.findUnique(findUniqueDto);
+  }
+
+  async create(createDto: Prisma.BaseCreateArgs) {
+    return await this.prismaService.base.create(createDto);
   }
 
   async update(updateDto: Prisma.BaseUpdateArgs) {
