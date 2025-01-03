@@ -13,6 +13,10 @@ export class ProjectsRepositories {
     return await this.prismaService.project.findFirst(findFirstDto);
   }
 
+  async findUnique(findUniqueDto: Prisma.ProjectFindUniqueArgs) {
+    return await this.prismaService.project.findUnique(findUniqueDto);
+  }
+
   async create(createDto: Prisma.ProjectCreateArgs) {
     return await this.prismaService.project.create(createDto);
   }

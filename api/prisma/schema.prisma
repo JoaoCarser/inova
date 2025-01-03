@@ -44,6 +44,7 @@ model Base {
 }
 
 enum StatusProject {
+  DRAFT
   SUBMITED
   UNDER_REVIEW
   REVIEWED

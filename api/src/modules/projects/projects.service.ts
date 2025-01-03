@@ -11,14 +11,6 @@ export class ProjectsService {
   async create(createProjectDto: CreateProjectDto) {
     const { name, description, status } = createProjectDto;
 
-    const nameExists = this.projectsRepo.findFirst({
-      where: { name },
-    });
-
-    if (nameExists){
-      throw new ConflictException("Já existe um projeto com esse nome!")
-    }
-
     return await this.projectsRepo.create({
       data: {
         name,
@@ -32,15 +24,33 @@ export class ProjectsService {
     return await this.projectsRepo.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} project`;
+  async findOne(projectId: string) {
+    return await this.projectsRepo.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(projectId: string, updateProjectDto: UpdateProjectDto) {
+    const { name, description, status } = updateProjectDto;
+    return await this.projectsRepo.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        name,
+        description,
+        status,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} project`;
+  async remove(projectId: string) {
+    return await this.projectsRepo.remove({
+      where: {
+        id: projectId,
+      },
+    });
   }
 }
