@@ -7,6 +7,7 @@ import { AuthGuard } from './modules/auth/auth.guard';
 import { BasesModule } from './modules/bases/bases.module';
 import { PeriodsModule } from './modules/periods/periods.module';
 import { QuestionsModule } from './modules/questions/questions.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { QuestionsModule } from './modules/questions/questions.module';
     BasesModule,
     PeriodsModule,
     QuestionsModule,
+    ProjectsModule,
   ],
   controllers: [],
   providers: [

@@ -1,11 +1,11 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
-import { PeriodsRepository } from 'src/shared/database/repositories/periods.repositories';
+import { PeriodsRepositories } from 'src/shared/database/repositories/periods.repositories';
 
 @Injectable()
 export class PeriodsService {
-  constructor(private readonly periodsRepo: PeriodsRepository) {}
+  constructor(private readonly periodsRepo: PeriodsRepositories) {}
   async create(createPeriodDto: CreatePeriodDto) {
     const { title } = createPeriodDto;
 
@@ -30,14 +30,13 @@ export class PeriodsService {
 
   async findPeriodById(periodId: string) {
     return await this.periodsRepo.findFirst({
-      where:{
-        id: periodId
-      }
+      where: {
+        id: periodId,
+      },
     });
   }
 
   async update(periodId: string, updatePeriodDto: UpdatePeriodDto) {
-    
     const { title } = updatePeriodDto;
 
     const titleExists = await this.periodsRepo.findFirst({
@@ -47,7 +46,7 @@ export class PeriodsService {
     if (titleExists) {
       throw new ConflictException('Esse Período já existe');
     }
-    
+
     return await this.periodsRepo.update({
       where: {
         id: periodId,
