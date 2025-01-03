@@ -97,7 +97,7 @@ enum StatusQuestion {
 model Question {
   id          String         @id @default(uuid()) @db.Uuid
   text        String
-  status      StatusQuestion
+  status      StatusQuestion @default(SUBMITED)
   projectId   String         @map("project_id") @db.Uuid
   createdById String         @map("created_by") @db.Uuid
   sentToId    String         @map("sent_to") @db.Uuid

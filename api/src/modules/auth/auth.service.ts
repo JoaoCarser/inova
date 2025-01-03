@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 
@@ -10,16 +11,18 @@ import { SignUpDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from './entities/Role';
+import { BasesRepositories } from 'src/shared/database/repositories/bases.repositories';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepositories,
+    private readonly basesRepo: BasesRepositories,
     private readonly jtwService: JwtService,
   ) {}
 
   async signup(signUpDto: SignUpDto) {
-    const { email, cpf } = signUpDto;
+    const { email, cpf, baseId } = signUpDto;
 
     const emailExists = await this.usersRepository.findUnique({
       where: {
@@ -35,6 +38,14 @@ export class AuthService {
 
     if (emailExists || cpfExists) {
       throw new ConflictException('Usuário já existe');
+    }
+
+    const baseIdExists = await this.basesRepo.findUnique({
+      where: { id: baseId },
+    })
+
+    if(!baseIdExists){
+      throw new NotFoundException('Essa Base não existe');
     }
 
     const hashedPassword = await hash(signUpDto.password, 12);

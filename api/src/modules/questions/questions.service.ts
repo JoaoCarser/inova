@@ -1,19 +1,68 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
+import { QuestionsRepositories } from 'src/shared/database/repositories/questions.repositories';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class QuestionsService {
-  create(createQuestionDto: CreateQuestionDto) {
-    return 'This action adds a new question';
+  constructor(
+    private readonly questionsRepo: QuestionsRepositories,
+    private readonly usersService: UsersService,
+  ) {}
+
+  async create(userId: string, createQuestionDto: CreateQuestionDto) {
+    const { projectId, sentToId, text } = createQuestionDto;
+
+    const userExists = await this.usersService.findOne(sentToId);
+
+    if (!userExists) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    // TODO: Validar se o projeto existe
+
+    return await this.questionsRepo.create({
+      data: { ...createQuestionDto, createdById: userId },
+    });
   }
 
-  findAll() {
-    return `This action returns all questions`;
+  async findAll() {
+    return await this.questionsRepo.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} question`;
+  async findAllByUserId(userId: string) {
+    return await this.questionsRepo.findMany({
+      where: { sentToId: userId },
+    });
+  }
+
+  async findFirstById(userId: string, questionId: string) {
+    const questionExists = await this.questionsRepo.findFirstById({
+      where: {
+        AND: {
+          id: questionId,
+          sentToId: userId,
+        },
+      },
+      include: {
+        sentTo: true,
+      },
+    });
+
+    /*  console.log('question exists', questionExists);
+    console.log('question ID', questionId); */
+
+    if (!questionExists) {
+      throw new NotFoundException('Essa pergunta não existe!');
+    }
+
+    return await this.questionsRepo.findFirstById({
+      where: {
+        sentToId: userId,
+        id: questionId,
+      },
+    });
   }
 
   update(id: number, updateQuestionDto: UpdateQuestionDto) {
