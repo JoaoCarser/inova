@@ -24,9 +24,10 @@ export class QuestionsController {
     return this.questionsService.create(userId, createQuestionDto);
   }
 
+  // Rota para listar as peguntas feitas pelo usuário logado (ou que o usuário criou)
   @Get('/me')
-  findAllById(@ActiveUserId() userId: string) {
-    return this.questionsService.findAllById(userId);
+  findAllByUserId(@ActiveUserId() userId: string) {
+    return this.questionsService.findAllByUserId(userId);
   }
 
   @Get(':questionId')
