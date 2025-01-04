@@ -8,6 +8,7 @@ import {
   Put,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -35,7 +36,7 @@ export class ProjectsController {
 
   @Put(':projectId')
   update(
-    @Param('projectId') projectId: string,
+    @Param('projectId', ParseUUIDPipe) projectId: string,
     @Body() updateProjectDto: UpdateProjectDto,
   ) {
     return this.projectsService.update(projectId, updateProjectDto);

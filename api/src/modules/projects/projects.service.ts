@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsRepositories } from 'src/shared/database/repositories/projects.repositories';
@@ -10,6 +14,16 @@ export class ProjectsService {
 
   async create(createProjectDto: CreateProjectDto) {
     const { name, description, status } = createProjectDto;
+
+    const nameExists = await this.projectsRepo.findFirst({
+      where: {
+        name,
+      },
+    });
+
+    if (nameExists) {
+      throw new ConflictException('Esse projeto já existe!');
+    }
 
     return await this.projectsRepo.create({
       data: {
@@ -34,6 +48,17 @@ export class ProjectsService {
 
   async update(projectId: string, updateProjectDto: UpdateProjectDto) {
     const { name, description, status } = updateProjectDto;
+
+    const projectIdExists = await this.projectsRepo.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+
+    if (!projectIdExists) {
+      throw new NotFoundException('Esse projeto não existe!');
+    }
+
     return await this.projectsRepo.update({
       where: {
         id: projectId,
