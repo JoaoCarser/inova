@@ -9,23 +9,30 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
+import { IsMarketingUser } from 'src/shared/decorators/IsMarketingUser';
+import { IsEvaulationCommitee } from 'src/shared/decorators/IsEValuationCommitee';
+import { IsAdmUser } from 'src/shared/decorators/IsAdmUser';
 
 @Controller('projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post()
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectsService.create(createProjectDto);
+  create(
+    @ActiveUserId() userId: string,
+    @Body() createProjectDto: CreateProjectDto,
+  ) {
+    return this.projectsService.create(userId, createProjectDto);
   }
 
   @Get()
-  findAll() {
+  findAll(@IsAdmUser() isAdmUser: boolean) {
     return this.projectsService.findAll();
   }
 

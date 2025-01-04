@@ -5,6 +5,7 @@ import { BasesRepositories } from './repositories/bases.repositories';
 import { PeriodsRepositories } from './repositories/periods.repositories';
 import { QuestionsRepositories } from './repositories/questions.repositories';
 import { ProjectsRepositories } from './repositories/projects.repositories';
+import { UsersProjectsRepositories } from './repositories/users-projects.repositories';
 
 @Global()
 @Module({
@@ -15,6 +16,7 @@ import { ProjectsRepositories } from './repositories/projects.repositories';
     PeriodsRepositories,
     QuestionsRepositories,
     ProjectsRepositories,
+    UsersProjectsRepositories,
   ],
   exports: [
     UsersRepositories,
@@ -22,6 +24,7 @@ import { ProjectsRepositories } from './repositories/projects.repositories';
     PeriodsRepositories,
     QuestionsRepositories,
     ProjectsRepositories,
+    UsersProjectsRepositories,
   ],
 })
 export class DatabaseModule {}

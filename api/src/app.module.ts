@@ -8,6 +8,7 @@ import { BasesModule } from './modules/bases/bases.module';
 import { PeriodsModule } from './modules/periods/periods.module';
 import { QuestionsModule } from './modules/questions/questions.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { UsersProjectsModule } from './modules/users-projects/users-projects.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
     PeriodsModule,
     QuestionsModule,
     ProjectsModule,
+    UsersProjectsModule,
   ],
   controllers: [],
   providers: [

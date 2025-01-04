@@ -26,7 +26,7 @@ model User {
   baseId   String @map("base_id") @db.Uuid
   base     Base   @relation(fields: [baseId], references: [id])
 
-  usersProjects UsersProject[]
+  usersProjects UsersProjects[]
 
   createdQuestions  Question[] @relation("CreatedQuestions") // Perguntas criadas por este usuário
   receivedQuestions Question[] @relation("ReceivedQuestions") // Perguntas recebidas por este usuário
@@ -59,14 +59,14 @@ model Project {
   status      StatusProject
 
   // user User @relation(fields: [userId], references: [id])
-  usersProjects UsersProject[]
+  usersProjects UsersProjects[]
   files         File[]
   questions     Question[]
 
   @@map("projects")
 }
 
-model UsersProject {
+model UsersProjects {
   userId    String @map("user_id") @db.Uuid
   projectId String @map("project_id") @db.Uuid
 
