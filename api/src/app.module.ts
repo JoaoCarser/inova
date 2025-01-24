@@ -9,6 +9,8 @@ import { PeriodsModule } from './modules/periods/periods.module';
 import { QuestionsModule } from './modules/questions/questions.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { UsersProjectsModule } from './modules/users-projects/users-projects.module';
+import { FilesModule } from './modules/files/files.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { UsersProjectsModule } from './modules/users-projects/users-projects.mod
     QuestionsModule,
     ProjectsModule,
     UsersProjectsModule,
+    FilesModule,
+    ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [],
   providers: [
