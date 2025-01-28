@@ -8,6 +8,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsRepositories } from 'src/shared/database/repositories/projects.repositories';
 import { UsersService } from '../users/users.service';
 import { UsersProjectsService } from '../users-projects/users-projects.service';
+import { StatusProject } from './entities/status.project.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -54,6 +55,23 @@ export class ProjectsService {
 
   async findAll() {
     return await this.projectsRepo.findMany({});
+  }
+
+  async findAllSubmitted() {
+    const projects = await this.projectsRepo.findMany({
+      where: {
+        status: StatusProject.SUBMITED,
+      },
+      include: {
+        usersProjects: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    console.log(projects);
   }
 
   async findOne(projectId: string) {

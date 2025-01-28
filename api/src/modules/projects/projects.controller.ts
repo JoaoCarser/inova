@@ -31,6 +31,11 @@ export class ProjectsController {
     return this.projectsService.create(userId, createProjectDto);
   }
 
+  @Get('submitted')
+  findAllSubmitted(@IsEvaulationCommitee() isEvaulationCommitee: boolean) {
+    return this.projectsService.findAllSubmitted();
+  }
+
   @Get()
   findAll(@IsAdmUser() isAdmUser: boolean) {
     return this.projectsService.findAll();

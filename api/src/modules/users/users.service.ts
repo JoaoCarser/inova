@@ -13,6 +13,7 @@ export class UsersService {
   async findOne(userId: string) {
     return await this.usersRepository.findFirst({
       where: { id: userId },
+      include: { usersProjects: { include: { project: true } } },
     });
   }
 
