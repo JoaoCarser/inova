@@ -26,10 +26,11 @@ model User {
   baseId   String @map("base_id") @db.Uuid
   base     Base   @relation(fields: [baseId], references: [id])
 
-  usersProjects UsersProject[]
+  usersProjects UsersProjects[]
 
   createdQuestions  Question[] @relation("CreatedQuestions") // Perguntas criadas por este usuário
   receivedQuestions Question[] @relation("ReceivedQuestions") // Perguntas recebidas por este usuário
+  files             File[]
 
   @@map("users")
 }
@@ -44,6 +45,7 @@ model Base {
 }
 
 enum StatusProject {
+  DRAFT
   SUBMITED
   UNDER_REVIEW
   REVIEWED
@@ -58,14 +60,14 @@ model Project {
   status      StatusProject
 
   // user User @relation(fields: [userId], references: [id])
-  usersProjects UsersProject[]
+  usersProjects UsersProjects[]
   files         File[]
   questions     Question[]
 
   @@map("projects")
 }
 
-model UsersProject {
+model UsersProjects {
   userId    String @map("user_id") @db.Uuid
   projectId String @map("project_id") @db.Uuid
 
@@ -79,8 +81,10 @@ model UsersProject {
 model File {
   id        String @id @default(uuid()) @db.Uuid
   projectId String @map("project_id") @db.Uuid
+  userId    String @map("user_id") @db.Uuid
   path      String
 
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("files")

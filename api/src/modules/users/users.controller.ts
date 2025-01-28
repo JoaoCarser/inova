@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
 
 @Controller('users')
 export class UsersController {
@@ -20,6 +21,11 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('/me')
+  me(@ActiveUserId() userId: string) {
+    return this.usersService.findOne(userId);
   }
 
   @Get(':userid')

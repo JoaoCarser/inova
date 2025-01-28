@@ -4,14 +4,14 @@ import {
   createParamDecorator,
 } from '@nestjs/common';
 
-export const ActiveUserId = createParamDecorator<undefined>(
+export const IsMarketingUser = createParamDecorator<undefined>(
   (_data, context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest();
 
-    const userId = request.userId;
-    if (!userId) {
-      throw new UnauthorizedException();
+    const role = request.role;
+    if (role !== 'MARKETING') {
+      throw new UnauthorizedException('Usuário não autorizado!');
     }
-    return userId;
+    return true;
   },
 );

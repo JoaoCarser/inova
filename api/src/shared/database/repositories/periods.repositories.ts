@@ -3,7 +3,7 @@ import { type Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
-export class PeriodsRepository {
+export class PeriodsRepositories {
   constructor(private readonly prismaService: PrismaService) {}
 
   async findMany(findManyDto: Prisma.PeriodFindManyArgs) {

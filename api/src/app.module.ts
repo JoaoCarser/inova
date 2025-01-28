@@ -7,6 +7,10 @@ import { AuthGuard } from './modules/auth/auth.guard';
 import { BasesModule } from './modules/bases/bases.module';
 import { PeriodsModule } from './modules/periods/periods.module';
 import { QuestionsModule } from './modules/questions/questions.module';
+import { ProjectsModule } from './modules/projects/projects.module';
+import { UsersProjectsModule } from './modules/users-projects/users-projects.module';
+import { FilesModule } from './modules/files/files.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,6 +20,10 @@ import { QuestionsModule } from './modules/questions/questions.module';
     BasesModule,
     PeriodsModule,
     QuestionsModule,
+    ProjectsModule,
+    UsersProjectsModule,
+    FilesModule,
+    ConfigModule.forRoot({ isGlobal: true }),
   ],
   controllers: [],
   providers: [
