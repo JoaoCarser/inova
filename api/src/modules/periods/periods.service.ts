@@ -27,6 +27,7 @@ export class PeriodsService {
   async findAll() {
     return await this.periodsRepo.findMany({});
   }
+
   async findPeriodById(periodId: string) {
     return await this.periodsRepo.findFirst({
       where: {

@@ -74,7 +74,7 @@ export class ProjectsService {
     console.log(projects);
   }
 
-  async findOne(projectId: string) {
+  async findByProjectId(projectId: string) {
     return await this.projectsRepo.findUnique({
       where: {
         id: projectId,

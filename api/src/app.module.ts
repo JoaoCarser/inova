@@ -11,6 +11,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { UsersProjectsModule } from './modules/users-projects/users-projects.module';
 import { FilesModule } from './modules/files/files.module';
 import { ConfigModule } from '@nestjs/config';
+import { EvaluationsModule } from './modules/evaluations/evaluations.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ConfigModule } from '@nestjs/config';
     UsersProjectsModule,
     FilesModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    EvaluationsModule,
   ],
   controllers: [],
   providers: [

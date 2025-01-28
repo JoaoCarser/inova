@@ -43,7 +43,7 @@ export class ProjectsController {
 
   @Get(':projectId')
   findOne(@Param('projectId') projectId: string) {
-    return this.projectsService.findOne(projectId);
+    return this.projectsService.findByProjectId(projectId);
   }
 
   @Put(':projectId')
