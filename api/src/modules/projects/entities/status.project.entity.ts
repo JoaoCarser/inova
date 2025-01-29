@@ -1,5 +1,5 @@
 export enum StatusProject {
-  SUBMITED = 'SUBMITED',
+  SUBMITTED = 'SUBMITTED',
   UNDER_REVIEW = 'UNDER_REVIEW',
   REVIEWED = 'REVIEWED',
   DRAFT = 'DRAFT',

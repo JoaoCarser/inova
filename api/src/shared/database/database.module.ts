@@ -7,6 +7,8 @@ import { QuestionsRepositories } from './repositories/questions.repositories';
 import { ProjectsRepositories } from './repositories/projects.repositories';
 import { UsersProjectsRepositories } from './repositories/users-projects.repositories';
 import { FilesRepositories } from './repositories/files.repositories';
+import { EvaluationsRepositories } from './repositories/evaluations.repositories';
+import { EvaluationsCriteriaRepositories } from './repositories/evaluations-criteria.repositories';
 
 @Global()
 @Module({
@@ -19,6 +21,8 @@ import { FilesRepositories } from './repositories/files.repositories';
     ProjectsRepositories,
     UsersProjectsRepositories,
     FilesRepositories,
+    EvaluationsRepositories,
+    EvaluationsCriteriaRepositories,
   ],
   exports: [
     UsersRepositories,
@@ -28,6 +32,8 @@ import { FilesRepositories } from './repositories/files.repositories';
     ProjectsRepositories,
     UsersProjectsRepositories,
     FilesRepositories,
+    EvaluationsRepositories,
+    EvaluationsCriteriaRepositories,
   ],
 })
 export class DatabaseModule {}

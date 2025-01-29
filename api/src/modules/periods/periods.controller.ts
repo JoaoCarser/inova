@@ -14,6 +14,7 @@ import { PeriodsService } from './periods.service';
 import { CreatePeriodDto } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
+// import { IsEvaulationCommitee } from 'src/shared/decorators/IsEValuationCommitee';
 
 @Controller('periods')
 export class PeriodsController {

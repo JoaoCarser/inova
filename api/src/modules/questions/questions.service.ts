@@ -3,27 +3,42 @@ import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { QuestionsRepositories } from 'src/shared/database/repositories/questions.repositories';
 import { UsersService } from '../users/users.service';
+import { ProjectsService } from '../projects/projects.service';
 
 @Injectable()
 export class QuestionsService {
   constructor(
     private readonly questionsRepo: QuestionsRepositories,
     private readonly usersService: UsersService,
+    private readonly projectsService: ProjectsService,
   ) {}
 
   async create(userId: string, createQuestionDto: CreateQuestionDto) {
-    const { projectId, sentToId, text } = createQuestionDto;
+    const { recipientId, projectId } = createQuestionDto;
 
-    const userExists = await this.usersService.findOne(sentToId);
+    const userExists = await this.usersService.findOne(recipientId);
 
     if (!userExists) {
       throw new NotFoundException('Usuário não encontrado');
     }
 
+    const projectExists = await this.projectsService.findByProjectId(projectId);
+
+    if (!projectExists) {
+      throw new NotFoundException('Projeto não encontrado');
+    }
+
     // TODO: Validar se o projeto existe
 
     return await this.questionsRepo.create({
-      data: { ...createQuestionDto, createdById: userId },
+      data: { ...createQuestionDto, authorId: userId },
+    });
+  }
+
+  async createResponse(questionId: string, response: string) {
+    return await this.questionsRepo.update({
+      where: { id: questionId },
+      data: { response },
     });
   }
 
@@ -33,7 +48,7 @@ export class QuestionsService {
 
   async findAllByUserId(userId: string) {
     return await this.questionsRepo.findMany({
-      where: { sentToId: userId },
+      where: { recipientId: userId },
     });
   }
 
@@ -42,11 +57,11 @@ export class QuestionsService {
       where: {
         AND: {
           id: questionId,
-          sentToId: userId,
+          recipientId: userId,
         },
       },
       include: {
-        sentTo: true,
+        recipient: true,
       },
     });
 
@@ -59,14 +74,10 @@ export class QuestionsService {
 
     return await this.questionsRepo.findFirstById({
       where: {
-        sentToId: userId,
+        recipientId: userId,
         id: questionId,
       },
     });
-  }
-
-  update(id: number, updateQuestionDto: UpdateQuestionDto) {
-    return `This action updates a #${id} question`;
   }
 
   remove(id: number) {

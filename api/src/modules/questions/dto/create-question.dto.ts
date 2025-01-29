@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { StatusQuestionType } from '../entities/question.entity';
 
 export class CreateQuestionDto {
@@ -18,5 +24,5 @@ export class CreateQuestionDto {
   @IsNotEmpty()
   @IsString()
   @IsUUID()
-  sentToId: string;
+  recipientId: string;
 }

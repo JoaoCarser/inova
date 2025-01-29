@@ -28,9 +28,10 @@ model User {
 
   usersProjects UsersProjects[]
 
-  createdQuestions  Question[] @relation("CreatedQuestions") // Perguntas criadas por este usuário
-  receivedQuestions Question[] @relation("ReceivedQuestions") // Perguntas recebidas por este usuário
+  createdQuestions  Question[]   @relation("CreatedQuestions") // Perguntas criadas por este usuário
+  receivedQuestions Question[]   @relation("ReceivedQuestions") // Perguntas recebidas por este usuário
   files             File[]
+  evaluations       Evaluation[]
 
   @@map("users")
 }
@@ -46,7 +47,7 @@ model Base {
 
 enum StatusProject {
   DRAFT
-  SUBMITED
+  SUBMITTED
   UNDER_REVIEW
   REVIEWED
 
@@ -63,6 +64,7 @@ model Project {
   usersProjects UsersProjects[]
   files         File[]
   questions     Question[]
+  evaluations   Evaluation[]
 
   @@map("projects")
 }
@@ -102,12 +104,15 @@ model Question {
   id          String         @id @default(uuid()) @db.Uuid
   text        String
   status      StatusQuestion @default(SUBMITED)
+  response    String? // A resposta ao questionamento (opcional)
   projectId   String         @map("project_id") @db.Uuid
-  createdById String         @map("created_by") @db.Uuid
-  sentToId    String         @map("sent_to") @db.Uuid
+  authorId    String         @map("author_id") @db.Uuid
+  recipientId String         @map("recipient_id") @db.Uuid
+  createdAt   DateTime       @default(now()) @map("created_at")
+  respondedAt DateTime?      @map("responded_at") // Data de resposta (opcional)
 
-  createdBy User    @relation("CreatedQuestions", fields: [createdById], references: [id], onDelete: Cascade)
-  sentTo    User    @relation("ReceivedQuestions", fields: [sentToId], references: [id], onDelete: Cascade)
+  author    User    @relation("CreatedQuestions", fields: [authorId], references: [id], onDelete: Cascade)
+  recipient User    @relation("ReceivedQuestions", fields: [recipientId], references: [id], onDelete: Cascade)
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("questions")
@@ -133,4 +138,40 @@ model Period {
   type        PeriodType
 
   @@map("periods")
+}
+
+enum EvaluationCriterionName {
+  CREATIVITY // Criatividade
+  ORIGINALITY // Originalidade
+  UTILITY // Quão útil será
+  FEASIBILITY // Viabilidade
+  IMPACT // Impacto potencial
+  INNOVATION // Inovação
+}
+
+model Evaluation {
+  id          String @id @default(uuid()) @db.Uuid
+  projectId   String @map("project_id") @db.Uuid
+  evaluatorId String @map("evaluator_id") @db.Uuid
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  evaluator User    @relation(fields: [evaluatorId], references: [id], onDelete: Cascade)
+
+  comments  String? // Comentários gerais
+  createdAt DateTime @default(now()) @map("created_at")
+
+  criteria EvaluationCriteria[] // Relação com os critérios avaliados
+
+  @@map("evaluations")
+}
+
+model EvaluationCriteria {
+  id           String                  @id @default(uuid()) @db.Uuid
+  evaluationId String                  @map("evaluation_id") @db.Uuid
+  name         EvaluationCriterionName // Nome do critério (ex: criatividade, originalidade)
+  score        Int                     @db.SmallInt // Nota atribuída ao critério
+
+  evaluation Evaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+
+  @@map("evaluation_criteria")
 }

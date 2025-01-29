@@ -29,7 +29,7 @@ export class FilesService {
     userId: string,
     projectId: string,
   ) {
-    const project = await this.projectsService.findOne(projectId);
+    const project = await this.projectsService.findByProjectId(projectId);
 
     if (!project) {
       throw new NotFoundException('Projeto não encontrado!');
