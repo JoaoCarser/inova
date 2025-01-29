@@ -35,16 +35,29 @@ export class EvaluationsService {
     });
   }
 
-  findAll() {
-    return `This action returns all evaluations`;
+  async findAll() {
+    return await this.evaluationsRepository.findMany({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} evaluation`;
+  async findOne(evaluationId: string) {
+    return await this.evaluationsRepository.findUnique({
+      where: {
+        id: evaluationId,
+      },
+    });
   }
 
   async update(evaluationId: string, updateEvaluationDto: UpdateEvaluationDto) {
     //Verifica se a avaliação existe
+
+    const project = await this.projectsService.findByProjectId(
+      updateEvaluationDto.projectId,
+    );
+
+    if (!project) {
+      throw new NotFoundException('Projeto não encontrado!');
+    }
+
     const evaluation = await this.evaluationsRepository.findUnique({
       where: {
         id: evaluationId,
@@ -76,7 +89,11 @@ export class EvaluationsService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} evaluation`;
+  async remove(evaluationId: string) {
+    await this.evaluationsRepository.delete({
+      where: {
+        id: evaluationId,
+      },
+    });
   }
 }

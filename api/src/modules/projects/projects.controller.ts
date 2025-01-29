@@ -16,8 +16,9 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
 import { IsMarketingUser } from 'src/shared/decorators/IsMarketingUser';
-import { IsEvaulationCommitee } from 'src/shared/decorators/IsEValuationCommitee';
+// import { IsEvaulationCommitee } from 'src/shared/decorators/IsEValuationCommitee';
 import { IsAdmUser } from 'src/shared/decorators/IsAdmUser';
+import { IsEvaulationCommitee } from 'src/shared/decorators/IsEvaluationCommitee';
 
 @Controller('projects')
 export class ProjectsController {

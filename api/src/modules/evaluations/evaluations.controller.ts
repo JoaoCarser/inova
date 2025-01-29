@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   Put,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { EvaluationsService } from './evaluations.service';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
 import { UpdateEvaluationDto } from './dto/update-evaluation.dto';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
-import { IsEvaulationCommitee } from 'src/shared/decorators/IsEValuationCommitee';
+import { IsEvaulationCommitee } from 'src/shared/decorators/IsEvaluationCommitee';
 
 @Controller('evaluations')
 export class EvaluationsController {
@@ -32,9 +35,9 @@ export class EvaluationsController {
     return this.evaluationsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.evaluationsService.findOne(+id);
+  @Get(':evaluationId')
+  findOne(@Param('evaluationId', ParseUUIDPipe) evaluationId: string) {
+    return this.evaluationsService.findOne(evaluationId);
   }
 
   @Put(':evaluationId')
@@ -45,8 +48,9 @@ export class EvaluationsController {
     return this.evaluationsService.update(evaluationId, updateEvaluationDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.evaluationsService.remove(+id);
+  @Delete(':evaluationId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('evaluationId', ParseUUIDPipe) evaluationId: string) {
+    return this.evaluationsService.remove(evaluationId);
   }
 }
