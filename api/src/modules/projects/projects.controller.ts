@@ -9,16 +9,15 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
-  UnauthorizedException,
+  Query,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
-import { IsMarketingUser } from 'src/shared/decorators/IsMarketingUser';
-// import { IsEvaulationCommitee } from 'src/shared/decorators/IsEValuationCommitee';
 import { IsAdmUser } from 'src/shared/decorators/IsAdmUser';
 import { IsEvaulationCommitee } from 'src/shared/decorators/IsEvaluationCommitee';
+import { StatusProject } from './entities/status.project.entity';
 
 @Controller('projects')
 export class ProjectsController {
@@ -32,14 +31,12 @@ export class ProjectsController {
     return this.projectsService.create(userId, createProjectDto);
   }
 
-  @Get('submitted')
-  findAllSubmitted(@IsEvaulationCommitee() isEvaulationCommitee: boolean) {
-    return this.projectsService.findAllSubmitted();
-  }
-
   @Get()
-  findAll(@IsAdmUser() isAdmUser: boolean) {
-    return this.projectsService.findAll();
+  findAll(
+    @IsAdmUser() _isAdmUser: boolean,
+    @Query('status') status: StatusProject,
+  ) {
+    return this.projectsService.findAll({ status });
   }
 
   @Get(':projectId')

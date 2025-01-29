@@ -9,6 +9,43 @@ import { ProjectsRepositories } from 'src/shared/database/repositories/projects.
 import { UsersService } from '../users/users.service';
 import { UsersProjectsService } from '../users-projects/users-projects.service';
 import { StatusProject } from './entities/status.project.entity';
+import { EvaluationsCriteriaRepositories } from 'src/shared/database/repositories/evaluations-criteria.repositories';
+import { Prisma } from '@prisma/client';
+
+type ProjectWithRelations = Prisma.ProjectGetPayload<{
+  include: {
+    usersProjects: {
+      select: {
+        user: {
+          select: {
+            id: true;
+            name: true;
+            email: true;
+            role: true;
+            cpf: true;
+            position: true;
+            baseId: true;
+          };
+        };
+      };
+    };
+    files: true;
+    evaluations: {
+      select: {
+        id: true;
+        comments: true;
+        criteria: {
+          select: {
+            id: true;
+            name: true;
+            score: true;
+          };
+        };
+      };
+    };
+    questions: true;
+  };
+}>;
 
 @Injectable()
 export class ProjectsService {
@@ -16,6 +53,7 @@ export class ProjectsService {
     private readonly usersProjectsService: UsersProjectsService,
     private readonly usersService: UsersService,
     private readonly projectsRepo: ProjectsRepositories,
+    private readonly evaluationsCriteriaRepo: EvaluationsCriteriaRepositories,
   ) {}
 
   async create(userId: string, createProjectDto: CreateProjectDto) {
@@ -53,25 +91,92 @@ export class ProjectsService {
     return project;
   }
 
-  async findAll() {
-    return await this.projectsRepo.findMany({});
-  }
+  async findAll({ status }: { status: StatusProject }) {
+    let whereClause = {};
 
-  async findAllSubmitted() {
-    const projects = await this.projectsRepo.findMany({
-      where: {
-        status: StatusProject.SUBMITED,
-      },
+    if (status) {
+      whereClause = {
+        ...whereClause,
+        status: status,
+      };
+    }
+
+    //@ts-ignore
+    const projects: ProjectWithRelations[] = await this.projectsRepo.findMany({
+      where: whereClause,
       include: {
         usersProjects: {
-          include: {
-            user: true,
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                cpf: true,
+                position: true,
+                baseId: true,
+              },
+            },
           },
         },
+        files: true,
+        evaluations: {
+          select: {
+            id: true,
+            comments: true,
+            criteria: {
+              select: {
+                id: true,
+                name: true,
+                score: true,
+              },
+            },
+          },
+        },
+        questions: true,
       },
     });
 
-    console.log(projects);
+    const projectsWithAverages = projects.map((project) => {
+      const criteriaScores: Record<string, number[]> = {};
+
+      project.evaluations.forEach((evaluation) => {
+        evaluation.criteria.forEach((criterion) => {
+          if (!criteriaScores[criterion.name]) {
+            criteriaScores[criterion.name] = [];
+          }
+          criteriaScores[criterion.name].push(criterion.score);
+        });
+      });
+
+      const averageScores = Object.entries(criteriaScores).reduce(
+        (acc, [name, scores]) => {
+          acc[name] =
+            scores.reduce((sum, score) => sum + score, 0) / scores.length;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+
+      return {
+        id: project.id,
+        name: project.name,
+        averageScores,
+      };
+    });
+
+    return projects.map((project) => {
+      const averageScoreFound = projectsWithAverages.find(
+        (avg) => avg.id === project.id,
+      );
+
+      if (!averageScoreFound) {
+        return project;
+      }
+
+      return { ...project, averageScore: averageScoreFound.averageScores };
+    });
   }
 
   async findByProjectId(projectId: string) {

@@ -37,4 +37,13 @@ export class EvaluationsCriteriaRepositories {
       deleteManyDto,
     );
   }
+
+  async aggregate(averageDto: Prisma.EvaluationCriteriaAggregateArgs) {
+    return await this.prismaService.evaluationCriteria.aggregate(averageDto);
+  }
+
+  async groupBy(groupByDto: Prisma.EvaluationCriteriaGroupByArgs) {
+    //@ts-ignore
+    return await this.prismaService.evaluationCriteria.groupBy(groupByDto);
+  }
 }

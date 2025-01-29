@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
+import { CreateQuestionResponseDto } from './dto/create-question-response.dto';
 
 @Controller('questions')
 export class QuestionsController {
@@ -40,12 +42,15 @@ export class QuestionsController {
     return this.questionsService.findAll();
   }
 
-  @Patch(':id')
+  @Patch('response/:questionId')
   update(
-    @Param('id') id: string,
-    @Body() updateQuestionDto: UpdateQuestionDto,
+    @Param('questionId', ParseUUIDPipe) questionId: string,
+    @Body() createQuestionResponseDto: CreateQuestionResponseDto,
   ) {
-    return this.questionsService.update(+id, updateQuestionDto);
+    return this.questionsService.createResponse(
+      questionId,
+      createQuestionResponseDto.response,
+    );
   }
 
   @Delete(':id')

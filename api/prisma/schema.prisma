@@ -47,7 +47,7 @@ model Base {
 
 enum StatusProject {
   DRAFT
-  SUBMITED
+  SUBMITTED
   UNDER_REVIEW
   REVIEWED
 
@@ -104,12 +104,15 @@ model Question {
   id          String         @id @default(uuid()) @db.Uuid
   text        String
   status      StatusQuestion @default(SUBMITED)
+  response    String? // A resposta ao questionamento (opcional)
   projectId   String         @map("project_id") @db.Uuid
-  createdById String         @map("created_by") @db.Uuid
-  sentToId    String         @map("sent_to") @db.Uuid
+  authorId    String         @map("author_id") @db.Uuid
+  recipientId String         @map("recipient_id") @db.Uuid
+  createdAt   DateTime       @default(now()) @map("created_at")
+  respondedAt DateTime?      @map("responded_at") // Data de resposta (opcional)
 
-  createdBy User    @relation("CreatedQuestions", fields: [createdById], references: [id], onDelete: Cascade)
-  sentTo    User    @relation("ReceivedQuestions", fields: [sentToId], references: [id], onDelete: Cascade)
+  author    User    @relation("CreatedQuestions", fields: [authorId], references: [id], onDelete: Cascade)
+  recipient User    @relation("ReceivedQuestions", fields: [recipientId], references: [id], onDelete: Cascade)
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("questions")
