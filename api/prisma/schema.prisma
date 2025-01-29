@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PARTICIPANT
+  EVALUATION_COMMITTEE
+  MARKETING
+
+  @@map("role")
+}
+
+model User {
+  id       String @id @default(uuid()) @db.Uuid
+  name     String
+  email    String @unique
+  password String
+  role     Role
+  cpf      String @unique
+  position String
+  baseId   String @map("base_id") @db.Uuid
+  base     Base   @relation(fields: [baseId], references: [id])
+
+  usersProjects UsersProjects[]
+
+  createdQuestions  Question[]   @relation("CreatedQuestions") // Perguntas criadas por este usuário
+  receivedQuestions Question[]   @relation("ReceivedQuestions") // Perguntas recebidas por este usuário
+  files             File[]
+  evaluations       Evaluation[]
+
+  @@map("users")
+}
+
+model Base {
+  id    String @id @default(uuid()) @db.Uuid
+  name  String
+  state String
+  users User[]
+
+  @@map("bases")
+}
+
+enum StatusProject {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  REVIEWED
+
+  @@map("status_projects")
+}
+
+model Project {
+  id          String        @id @default(uuid()) @db.Uuid
+  name        String
+  description String
+  status      StatusProject
+
+  // user User @relation(fields: [userId], references: [id])
+  usersProjects UsersProjects[]
+  files         File[]
+  questions     Question[]
+  evaluations   Evaluation[]
+
+  @@map("projects")
+}
+
+model UsersProjects {
+  userId    String @map("user_id") @db.Uuid
+  projectId String @map("project_id") @db.Uuid
+
+  user    User    @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([userId, projectId])
+  @@map("users_projects")
+}
+
+model File {
+  id        String @id @default(uuid()) @db.Uuid
+  projectId String @map("project_id") @db.Uuid
+  userId    String @map("user_id") @db.Uuid
+  path      String
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("files")
+}
+
+enum StatusQuestion {
+  SUBMITED
+  VIEWED
+  COMPLETED
+
+  @@map("status_questions")
+}
+
+model Question {
+  id          String         @id @default(uuid()) @db.Uuid
+  text        String
+  status      StatusQuestion @default(SUBMITED)
+  response    String? // A resposta ao questionamento (opcional)
+  projectId   String         @map("project_id") @db.Uuid
+  authorId    String         @map("author_id") @db.Uuid
+  recipientId String         @map("recipient_id") @db.Uuid
+  createdAt   DateTime       @default(now()) @map("created_at")
+  respondedAt DateTime?      @map("responded_at") // Data de resposta (opcional)
+
+  author    User    @relation("CreatedQuestions", fields: [authorId], references: [id], onDelete: Cascade)
+  recipient User    @relation("ReceivedQuestions", fields: [recipientId], references: [id], onDelete: Cascade)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("questions")
+}
+
+enum PeriodType {
+  SUBSCRIPTION
+  AVALIATION
+  RESUBSCRIPTION
+  REAVALIATION
+  FINAL
+  INACTIVE
+
+  @@map("period_type")
+}
+
+model Period {
+  id          String     @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  startDate   DateTime   @map("start_date")
+  endDate     DateTime   @map("end_date")
+  type        PeriodType
+
+  @@map("periods")
+}
+
+enum EvaluationCriterionName {
+  CREATIVITY // Criatividade
+  ORIGINALITY // Originalidade
+  UTILITY // Quão útil será
+  FEASIBILITY // Viabilidade
+  IMPACT // Impacto potencial
+  INNOVATION // Inovação
+}
+
+model Evaluation {
+  id          String @id @default(uuid()) @db.Uuid
+  projectId   String @map("project_id") @db.Uuid
+  evaluatorId String @map("evaluator_id") @db.Uuid
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  evaluator User    @relation(fields: [evaluatorId], references: [id], onDelete: Cascade)
+
+  comments  String? // Comentários gerais
+  createdAt DateTime @default(now()) @map("created_at")
+
+  criteria EvaluationCriteria[] // Relação com os critérios avaliados
+
+  @@map("evaluations")
+}
+
+model EvaluationCriteria {
+  id           String                  @id @default(uuid()) @db.Uuid
+  evaluationId String                  @map("evaluation_id") @db.Uuid
+  name         EvaluationCriterionName // Nome do critério (ex: criatividade, originalidade)
+  score        Int                     @db.SmallInt // Nota atribuída ao critério
+
+  evaluation Evaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+
+  @@map("evaluation_criteria")
+}
