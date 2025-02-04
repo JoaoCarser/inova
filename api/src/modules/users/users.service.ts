@@ -13,7 +13,27 @@ export class UsersService {
   async findOne(userId: string) {
     return await this.usersRepository.findFirst({
       where: { id: userId },
-      include: { usersProjects: { include: { project: true } } },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        cpf: true,
+        position: true,
+        base: true,
+        usersProjects: {
+          select: {
+            project: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                status: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
