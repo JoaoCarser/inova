@@ -19,6 +19,7 @@ model User {
   id       String @id @default(uuid()) @db.Uuid
   name     String
   email    String @unique
+  phone    String @unique
   password String
   role     Role
   cpf      String @unique

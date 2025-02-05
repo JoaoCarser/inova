@@ -12,6 +12,7 @@ import { SigninDto } from './dto/signin.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from './entities/Role';
 import { BasesRepositories } from 'src/shared/database/repositories/bases.repositories';
+import { formatCpf } from 'src/shared/utils/formatCpf';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,14 @@ export class AuthService {
   async signup(signUpDto: SignUpDto) {
     const { email, cpf, baseId } = signUpDto;
 
+    const formattedCpf = formatCpf(cpf);
+
+    const phoneExists = await this.usersRepository.findFirst({
+      where: {
+        phone: signUpDto.phone,
+      },
+    });
+
     const emailExists = await this.usersRepository.findUnique({
       where: {
         email,
@@ -32,19 +41,27 @@ export class AuthService {
 
     const cpfExists = await this.usersRepository.findUnique({
       where: {
-        cpf,
+        cpf: formattedCpf,
       },
     });
 
-    if (emailExists || cpfExists) {
-      throw new ConflictException('Usuário já existe');
+    if (phoneExists) {
+      throw new ConflictException('O Telefone já está sendo usado');
+    }
+
+    if (emailExists) {
+      throw new ConflictException('O E-mail já está em uso!');
+    }
+
+    if (cpfExists) {
+      throw new ConflictException('O CPF já está cadastrado!');
     }
 
     const baseIdExists = await this.basesRepo.findUnique({
       where: { id: baseId },
-    })
+    });
 
-    if(!baseIdExists){
+    if (!baseIdExists) {
       throw new NotFoundException('Essa Base não existe');
     }
 

@@ -1,6 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepositories } from 'src/shared/database/repositories/users.repositories';
+import { formatCpf } from 'src/shared/utils/formatCpf';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +22,7 @@ export class UsersService {
         cpf: true,
         position: true,
         base: true,
+        phone: true,
         usersProjects: {
           select: {
             project: {
@@ -46,6 +48,16 @@ export class UsersService {
       throw new ConflictException('Usuário não encontrado');
     }
 
+    const phoneExists = await this.usersRepository.findFirst({
+      where: {
+        phone: updateUserDto.phone,
+      },
+    });
+
+    if (phoneExists) {
+      throw new ConflictException('O Telefone já está sendo usado');
+    }
+
     const emailExists = await this.usersRepository.findFirst({
       where: {
         email: updateUserDto.email,
@@ -58,7 +70,7 @@ export class UsersService {
 
     const cpfExists = await this.usersRepository.findFirst({
       where: {
-        cpf: updateUserDto.cpf,
+        cpf: formatCpf(updateUserDto.cpf),
       },
     });
 
