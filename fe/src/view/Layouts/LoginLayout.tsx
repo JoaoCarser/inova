@@ -2,7 +2,7 @@
 import { Outlet } from "react-router-dom";
 import illustration from "../../assets/images/illustration.png";
 //import { Logo } from "../components/Logo";
-export const AuthLayout = () => {
+export const LoginLayout = () => {
   return (
     <div className="flex w-full h-full ">
       {/* Right Side */}
