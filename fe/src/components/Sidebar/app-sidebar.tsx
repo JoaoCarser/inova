@@ -1,19 +1,7 @@
 import * as React from "react";
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
+import { SquareTerminal } from "lucide-react";
 
 import { NavMain } from "@/components/Sidebar/nav-main";
-import { NavProjects } from "@/components/Sidebar/nav-projects";
 import { NavUser } from "@/components/Sidebar/nav-user";
 import { TeamSwitcher } from "@/components/Sidebar/team-switcher";
 import {
@@ -23,57 +11,42 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/app/hooks/useAuth";
 
 // This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-
-  navMain: [
-    {
-      title: "Concurso",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Etapas",
-          url: "#",
-        },
-        {
-          title: "Usuários",
-          url: "#",
-        },
-        {
-          title: "Projetos",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth();
+  const data = {
+    user: {
+      name: user?.name ?? "",
+      email: user?.email ?? "",
+      avatar: "/avatars/shadcn.jpg",
+    },
+
+    navMain: [
+      {
+        title: "Concurso",
+        url: "#",
+        icon: SquareTerminal,
+        isActive: true,
+        items: [
+          {
+            title: "Etapas",
+            url: "#",
+          },
+          {
+            title: "Usuários",
+            url: "#",
+          },
+          {
+            title: "Projetos",
+            url: "#",
+          },
+        ],
+      },
+    ],
+  };
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -81,7 +54,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
