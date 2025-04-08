@@ -69,6 +69,7 @@ model Project {
   id          String            @id @default(uuid()) @db.Uuid
   name        String
   description String
+  videoLink   String?           @map("video_link")
   department  ProjectDepartment
   status      StatusProject
 

@@ -13,9 +13,18 @@ import { Label } from "@/components/ui/label";
 import { useCreateProjectDialog } from "./useCreateProjectDialog";
 import { Textarea } from "@/components/ui/textarea";
 import FileUploader from "@/components/FileUploader";
+import { Controller } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { translatedDepartments } from "@/app/utils/translatedDepartments";
 
 export function CreateProjectDialog() {
-  const { errors, handleSubmit, register } = useCreateProjectDialog();
+  const { errors, handleSubmit, register, control } = useCreateProjectDialog();
   return (
     <Dialog>
       <DialogTrigger>
@@ -39,13 +48,23 @@ export function CreateProjectDialog() {
                 </div>
                 <div className="flex flex-col gap-2 w-full md:col-span-6 ">
                   <Label htmlFor="department">Área de desenvolvimento do projeto</Label>
-                  <Input
-                    id="department"
-                    type="text"
-                    placeholder="Selecione uma das opções"
-                    required
-                    {...register("department")}
-                    error={errors.department?.message}
+
+                  <Controller
+                    name="department"
+                    control={control}
+                    render={({ field: { onChange, value } }) => (
+                      <Select onValueChange={onChange} defaultValue={value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione uma das opções" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {translatedDepartments.map(({ label, value }) => (
+                            <SelectItem value={value}>{label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                   />
                 </div>
 
@@ -60,19 +79,18 @@ export function CreateProjectDialog() {
                   />
                 </div>
                 <div className="flex flex-col gap-2 w-full md:col-span-6 ">
-                  <Label htmlFor="link">Arquivo em vídeo</Label>
+                  <Label htmlFor="videoLink">Arquivo em vídeo</Label>
                   <Input
-                    id="link"
+                    id="videoLink"
                     type="text"
-                    required
                     placeholder="Insira o link aqui"
-                    {...register("link")}
-                    error={errors.link?.message}
+                    {...register("videoLink")}
+                    error={errors.videoLink?.message}
                   />
                 </div>
 
                 <div className="flex flex-col gap-2 w-full  md:col-span-6  ">
-                  <Label htmlFor="link">Arquivos em PDF ou Word</Label>
+                  <Label htmlFor="file">Arquivos em PDF ou Word</Label>
                   <FileUploader />
                 </div>
 
