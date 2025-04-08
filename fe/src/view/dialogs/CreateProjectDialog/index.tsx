@@ -22,13 +22,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { translatedDepartments } from "@/app/utils/translatedDepartments";
+import { useState } from "react";
 
 export function CreateProjectDialog() {
-  const { errors, handleSubmit, register, control } = useCreateProjectDialog();
+  const [open, setOpen] = useState(false);
+  const { errors, handleSubmit, register, control } = useCreateProjectDialog(() => {
+    setOpen(false); // Fecha o modal após submit
+  });
   return (
-    <Dialog>
-      <DialogTrigger>
-        <Button>Create Project</Button>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button onClick={() => setOpen(true)}>Create Project</Button>
       </DialogTrigger>
       <DialogContent className="lg:max-w-screen-lg  max-h-screen">
         <DialogHeader>
