@@ -28,13 +28,13 @@ export function CreateProjectDialog() {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-2 gap-y-6 mt-6 ">
                 <div className="flex flex-col gap-2 w-full md:col-span-6 ">
-                  <Label htmlFor="title">Título do projeto</Label>
+                  <Label htmlFor="name">Título do projeto</Label>
                   <Input
-                    id="title"
+                    id="name"
                     type="text"
                     required
-                    {...register("title")}
-                    error={errors.title?.message}
+                    {...register("name")}
+                    error={errors.name?.message}
                   />
                 </div>
                 <div className="flex flex-col gap-2 w-full md:col-span-6 ">

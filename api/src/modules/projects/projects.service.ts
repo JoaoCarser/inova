@@ -57,7 +57,7 @@ export class ProjectsService {
   ) {}
 
   async create(userId: string, createProjectDto: CreateProjectDto) {
-    const { name, description, status } = createProjectDto;
+    const { name, description, status, department } = createProjectDto;
 
     const userExists = await this.usersService.findOne(userId);
 
@@ -80,6 +80,7 @@ export class ProjectsService {
         name,
         description,
         status,
+        department,
       },
     });
 
@@ -188,7 +189,7 @@ export class ProjectsService {
   }
 
   async update(projectId: string, updateProjectDto: UpdateProjectDto) {
-    const { name, description, status } = updateProjectDto;
+    const { name, description, status, department } = updateProjectDto;
 
     const projectIdExists = await this.projectsRepo.findUnique({
       where: {
@@ -208,6 +209,7 @@ export class ProjectsService {
         name,
         description,
         status,
+        department,
       },
     });
   }

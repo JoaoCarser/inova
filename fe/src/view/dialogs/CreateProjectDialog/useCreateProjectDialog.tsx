@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
-  title: z.string().min(1, "Título do projeto é obrigatório."),
+  name: z.string().min(1, "Nome do projeto é obrigatório."),
   department: z.string().min(1, "Setor é obrigatório."),
   description: z.string().min(1, "Descrição do projeto é obrigatório."),
   link: z.string().optional(),
