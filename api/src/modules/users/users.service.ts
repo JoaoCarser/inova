@@ -1,7 +1,12 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepositories } from 'src/shared/database/repositories/users.repositories';
 import { formatCpf } from 'src/shared/utils/formatCpf';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -11,8 +16,8 @@ export class UsersService {
     return await this.usersRepository.findMany({});
   }
 
-  async findOne(userId: string) {
-    return await this.usersRepository.findFirst({
+  async findByUserId(userId: string) {
+    return await this.usersRepository.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -26,11 +31,37 @@ export class UsersService {
         usersProjects: {
           select: {
             project: {
-              select: {
-                id: true,
-                name: true,
-                description: true,
-                status: true,
+              include: {
+                usersProjects: {
+                  select: {
+                    user: {
+                      select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        role: true,
+                        cpf: true,
+                        position: true,
+                        baseId: true,
+                      },
+                    },
+                  },
+                },
+                files: true,
+                evaluations: {
+                  select: {
+                    id: true,
+                    comments: true,
+                    criteria: {
+                      select: {
+                        id: true,
+                        name: true,
+                        score: true,
+                      },
+                    },
+                  },
+                },
+                questions: true,
               },
             },
           },
@@ -39,13 +70,75 @@ export class UsersService {
     });
   }
 
+  async findByCpf(cpf: string) {
+    const formattedCpf = formatCpf(cpf);
+
+    const user = await this.usersRepository.findUnique({
+      where: { cpf: formattedCpf },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        cpf: true,
+        position: true,
+        base: true,
+        phone: true,
+        usersProjects: {
+          select: {
+            project: {
+              include: {
+                usersProjects: {
+                  select: {
+                    user: {
+                      select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        role: true,
+                        cpf: true,
+                        position: true,
+                        baseId: true,
+                      },
+                    },
+                  },
+                },
+                files: true,
+                evaluations: {
+                  select: {
+                    id: true,
+                    comments: true,
+                    criteria: {
+                      select: {
+                        id: true,
+                        name: true,
+                        score: true,
+                      },
+                    },
+                  },
+                },
+                questions: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return user;
+  }
+
   async update(userid: string, updateUserDto: UpdateUserDto) {
     const user = await this.usersRepository.findFirst({
       where: { id: userid },
     });
 
     if (!user) {
-      throw new ConflictException('Usuário não encontrado');
+      throw new NotFoundException('Usuário não encontrado');
     }
 
     const phoneExists = await this.usersRepository.findFirst({

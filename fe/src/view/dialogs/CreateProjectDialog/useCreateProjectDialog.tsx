@@ -9,26 +9,45 @@ import { StatusProject } from "@/app/entities/StatusProject";
 import { ProjectDepartment } from "@/app/entities/ProjectDepartament";
 import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/app/hooks/useAuth";
+
+const participantSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, "Nome é obrigatório"),
+  email: z.string().email("Email inválido"),
+});
 
 const schema = z.object({
   name: z.string().min(1, "Nome do projeto é obrigatório."),
   department: z.nativeEnum(ProjectDepartment),
   description: z.string().min(1, "Descrição do projeto é obrigatório."),
   videoLink: z.string().optional(),
+  participants: z.array(participantSchema).min(1, "Adicione pelo menos um participante"),
 });
 
 type FormData = z.infer<typeof schema>;
 
 export const useCreateProjectDialog = (onSuccess?: () => void) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const {
     handleSubmit: hookFormHandleSubmit,
     register,
     control,
     formState: { errors },
     reset,
+    watch,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      participants: [
+        {
+          id: user?.id,
+          name: user?.name,
+          email: user?.email,
+        },
+      ],
+    },
   });
 
   const { isPending: isLoading, mutateAsync } = useMutation({
@@ -37,8 +56,6 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
       return projectsService.create(data);
     },
   });
-
-  console.log(errors);
 
   const handleSubmit = hookFormHandleSubmit(async (data) => {
     try {
@@ -82,5 +99,5 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
     }
   });
 
-  return { handleSubmit, register, errors, control };
+  return { handleSubmit, register, errors, control, isLoading };
 };

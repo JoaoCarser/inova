@@ -23,18 +23,21 @@ import {
 } from "@/components/ui/select";
 import { translatedDepartments } from "@/app/utils/translatedDepartments";
 import { useState } from "react";
+import { ParticipantSelector } from "./components/ParticipantSelector";
 
 export function CreateProjectDialog() {
   const [open, setOpen] = useState(false);
-  const { errors, handleSubmit, register, control } = useCreateProjectDialog(() => {
-    setOpen(false); // Fecha o modal após submit
-  });
+  const { errors, handleSubmit, register, control, isLoading } = useCreateProjectDialog(
+    () => {
+      setOpen(false); // Fecha o modal após submit
+    }
+  );
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button onClick={() => setOpen(true)}>Create Project</Button>
       </DialogTrigger>
-      <DialogContent className="lg:max-w-screen-lg  max-h-screen">
+      <DialogContent className="lg:max-w-screen-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Cadastro de Projeto</DialogTitle>
           <DialogDescription>
@@ -82,6 +85,21 @@ export function CreateProjectDialog() {
                     //error={errors.description?.message}
                   />
                 </div>
+
+                <div className="flex flex-col gap-2 w-full md:col-span-12">
+                  <Label htmlFor="participants">Participantes do projeto</Label>
+                  <Controller
+                    name="participants"
+                    control={control}
+                    defaultValue={[]}
+                    render={({ field: { onChange, value } }) => (
+                      <ParticipantSelector value={value} onChange={onChange} />
+                    )}
+                  />
+                  {errors.participants && (
+                    <p className="text-sm text-red-500">{errors.participants.message}</p>
+                  )}
+                </div>
                 <div className="flex flex-col gap-2 w-full md:col-span-6 ">
                   <Label htmlFor="videoLink">Arquivo em vídeo</Label>
                   <Input
@@ -99,7 +117,7 @@ export function CreateProjectDialog() {
                 </div>
 
                 <div className="flex flex-col gap-4 w-full md:col-start-10 md:col-span-3 ">
-                  <Button type="submit" isLoading={false} disabled={false}>
+                  <Button type="submit" isLoading={isLoading} disabled={isLoading}>
                     Enviar projeto
                   </Button>
                 </div>

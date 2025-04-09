@@ -54,7 +54,10 @@ export class ProjectsController {
 
   @Delete(':projectId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('projectId') projectId: string) {
-    return this.projectsService.remove(projectId);
+  remove(
+    @Param('projectId') projectId: string,
+    @ActiveUserId() userId: string,
+  ) {
+    return this.projectsService.remove(projectId, userId);
   }
 }

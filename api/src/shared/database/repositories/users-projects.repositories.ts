@@ -20,6 +20,9 @@ export class UsersProjectsRepositories {
   async create(createDto: Prisma.UsersProjectsCreateArgs) {
     return await this.prismaService.usersProjects.create(createDto);
   }
+  async createMany(createManyDto: Prisma.UsersProjectsCreateManyArgs) {
+    return await this.prismaService.usersProjects.createMany(createManyDto);
+  }
 
   async update(updateDto: Prisma.UsersProjectsUpdateArgs) {
     return await this.prismaService.usersProjects.update(updateDto);

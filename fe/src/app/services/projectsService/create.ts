@@ -8,6 +8,7 @@ export interface CreateProjectParams {
   status: StatusProject;
   department: ProjectDepartment;
   videoLink?: string;
+  participants: { id: string; name: string; email: string }[];
 }
 
 export interface CreateProjectResponse {

@@ -33,25 +33,25 @@ export class AuthService {
       },
     });
 
+    if (phoneExists) {
+      throw new ConflictException('O Telefone já está sendo usado');
+    }
+
     const emailExists = await this.usersRepository.findUnique({
       where: {
         email,
       },
     });
 
+    if (emailExists) {
+      throw new ConflictException('O E-mail já está em uso!');
+    }
+
     const cpfExists = await this.usersRepository.findUnique({
       where: {
         cpf: formattedCpf,
       },
     });
-
-    if (phoneExists) {
-      throw new ConflictException('O Telefone já está sendo usado');
-    }
-
-    if (emailExists) {
-      throw new ConflictException('O E-mail já está em uso!');
-    }
 
     if (cpfExists) {
       throw new ConflictException('O CPF já está cadastrado!');

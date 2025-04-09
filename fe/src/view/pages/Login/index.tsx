@@ -1,6 +1,3 @@
-import { GalleryVerticalEnd } from "lucide-react";
-
-import { LoginForm } from "@/components/login-form";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useLogin } from "./useLogin";
 
 export default function Login() {
-  const { handleSubmit, register, errors, isLoading } = useLogin();
+  const { handleSubmit, register, errors } = useLogin();
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex w-full h-full">

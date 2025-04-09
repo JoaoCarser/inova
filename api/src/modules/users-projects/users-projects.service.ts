@@ -1,12 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUsersProjectDto } from './dto/create-users-project.dto';
-import { UpdateUsersProjectDto } from './dto/update-users-project.dto';
 import { UsersProjectsRepositories } from 'src/shared/database/repositories/users-projects.repositories';
+import { UsersRepositories } from 'src/shared/database/repositories/users.repositories';
+import { ProjectsRepositories } from 'src/shared/database/repositories/projects.repositories';
 
 @Injectable()
 export class UsersProjectsService {
   constructor(
     private readonly usersProjectsRepository: UsersProjectsRepositories,
+    private readonly userRepository: UsersRepositories,
+    private readonly projectRepository: ProjectsRepositories,
   ) {}
 
   async create(createUsersProjectDto: CreateUsersProjectDto) {
@@ -18,19 +21,45 @@ export class UsersProjectsService {
     });
   }
 
-  findAll() {
-    return `This action returns all usersProjects`;
+  async createMany(createManyUsersProjectDto: CreateUsersProjectDto[]) {
+    const userIds = [
+      ...new Set(createManyUsersProjectDto.map((item) => item.userId)),
+    ];
+    const projectIds = [
+      ...new Set(createManyUsersProjectDto.map((item) => item.projectId)),
+    ];
+
+    const users = await this.userRepository.findMany({
+      where: { id: { in: userIds } },
+    });
+
+    const projects = await this.projectRepository.findMany({
+      where: { id: { in: projectIds } },
+    });
+
+    const existingUserIds = new Set(users.map((user) => user.id));
+    const existingProjectIds = new Set(projects.map((project) => project.id));
+
+    for (const { userId, projectId } of createManyUsersProjectDto) {
+      if (!existingUserIds.has(userId)) {
+        throw new NotFoundException(`Usuário com ID ${userId} não encontrado`);
+      }
+
+      if (!existingProjectIds.has(projectId)) {
+        throw new NotFoundException(
+          `Projeto com ID ${projectId} não encontrado`,
+        );
+      }
+    }
+
+    return this.usersProjectsRepository.createMany({
+      data: createManyUsersProjectDto,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usersProject`;
-  }
-
-  update(id: number, updateUsersProjectDto: UpdateUsersProjectDto) {
-    return `This action updates a #${id} usersProject`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} usersProject`;
+  async findByUserId(userId: string, projectId: string) {
+    return await this.usersProjectsRepository.findFirst({
+      where: { userId, projectId },
+    });
   }
 }

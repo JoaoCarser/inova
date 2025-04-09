@@ -23,14 +23,19 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('/cpf/:cpf')
+  findOne(@Param('cpf') cpf: string) {
+    return this.usersService.findByCpf(cpf);
+  }
+
   @Get('/me')
   me(@ActiveUserId() userId: string) {
-    return this.usersService.findOne(userId);
+    return this.usersService.findByUserId(userId);
   }
 
   @Get(':userid')
   findFirst(@Param('userid') userid: string) {
-    return this.usersService.findOne(userid);
+    return this.usersService.findByUserId(userid);
   }
 
   @Put(':userid')

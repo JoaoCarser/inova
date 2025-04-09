@@ -57,12 +57,13 @@ export class ProjectsService {
   ) {}
 
   async create(userId: string, createProjectDto: CreateProjectDto) {
-    const { name, description, status, department, videoLink } =
+    const { name, description, status, department, videoLink, participants } =
       createProjectDto;
 
-    const userExists = await this.usersService.findOne(userId);
+    const userExists = await this.usersService.findByUserId(userId);
 
     if (!userExists) {
+      ('');
       throw new ConflictException('Usuário não encontrado');
     }
 
@@ -86,15 +87,23 @@ export class ProjectsService {
       },
     });
 
-    await this.usersProjectsService.create({
-      projectId: project.id,
-      userId: userId,
-    });
+    await this.usersProjectsService.createMany(
+      participants.map((participant) => ({
+        projectId: project.id,
+        userId: participant.id,
+      })),
+    );
 
     return project;
   }
 
-  async findAll({ status }: { status: StatusProject }) {
+  async findAll({
+    status,
+    userId,
+  }: {
+    status?: StatusProject;
+    userId?: string;
+  }) {
     let whereClause = {};
 
     if (status) {
@@ -103,6 +112,15 @@ export class ProjectsService {
         status: status,
       };
     }
+
+    if (userId) {
+      whereClause = {
+        ...whereClause,
+        usersProjects: { some: { userId: userId } },
+      };
+    }
+
+    console.log(whereClause);
 
     //@ts-ignore
     const projects: ProjectWithRelations[] = await this.projectsRepo.findMany({
@@ -218,7 +236,16 @@ export class ProjectsService {
     });
   }
 
-  async remove(projectId: string) {
+  async remove(projectId: string, userId: string) {
+    const userProject = await this.usersProjectsService.findByUserId(
+      userId,
+      projectId,
+    );
+
+    if (!userProject) {
+      throw new NotFoundException('Projeto não encontrado ao usuário');
+    }
+
     return await this.projectsRepo.remove({
       where: {
         id: projectId,

@@ -59,9 +59,6 @@ export default function FileUploader() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [filesToUpload, setFilesToUpload] = useState<FileUploadProgress[]>([]);
 
-  console.log("uploadedFiles", uploadedFiles);
-  console.log("filesToUpload", filesToUpload);
-
   const getFileIconAndColor = (file: File) => {
     if (file.type.includes(FileTypes.Image)) {
       return {

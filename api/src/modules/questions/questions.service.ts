@@ -16,7 +16,7 @@ export class QuestionsService {
   async create(userId: string, createQuestionDto: CreateQuestionDto) {
     const { recipientId, projectId } = createQuestionDto;
 
-    const userExists = await this.usersService.findOne(recipientId);
+    const userExists = await this.usersService.findByUserId(recipientId);
 
     if (!userExists) {
       throw new NotFoundException('Usuário não encontrado');

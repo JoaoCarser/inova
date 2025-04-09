@@ -72,6 +72,8 @@ model Project {
   videoLink   String?           @map("video_link")
   department  ProjectDepartment
   status      StatusProject
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
 
   // user User @relation(fields: [userId], references: [id])
   usersProjects UsersProjects[]
