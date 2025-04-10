@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutationKeys } from "@/app/config/mutationKeys";
 import { projectsService } from "@/app/services/projectsService";
 import { CreateProjectParams } from "@/app/services/projectsService/create";
@@ -10,6 +10,9 @@ import { ProjectDepartment } from "@/app/entities/ProjectDepartament";
 import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/app/hooks/useAuth";
+import { useState } from "react";
+import { filesService } from "@/app/services/filesService";
+import { queryKeys } from "@/app/config/queryKeys";
 
 const participantSchema = z.object({
   id: z.string(),
@@ -30,6 +33,9 @@ type FormData = z.infer<typeof schema>;
 export const useCreateProjectDialog = (onSuccess?: () => void) => {
   const { toast } = useToast();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [filesToUpload, setFilesToUpload] = useState<{ File: File }[]>([]);
+
   const {
     handleSubmit: hookFormHandleSubmit,
     register,
@@ -55,7 +61,16 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
     mutationFn: async (data: CreateProjectParams) => {
       return projectsService.create(data);
     },
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: [queryKeys.ME] });
+    },
   });
+
+  const { isPending: isLoadingUploadFiles, mutateAsync: mutateUploadFiles } = useMutation(
+    {
+      mutationFn: filesService.uploadProjectFile,
+    }
+  );
 
   const handleSubmit = hookFormHandleSubmit(async (data) => {
     try {
@@ -63,6 +78,12 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
         ...data,
         status: StatusProject.DRAFT,
       }); //Retorno da mutation Function
+
+      for (const file of filesToUpload) {
+        await mutateUploadFiles({ file: file.File, projectId: project.id });
+      }
+
+      console.log("project response", project);
 
       toast({
         variant: "default",
@@ -99,5 +120,14 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
     }
   });
 
-  return { handleSubmit, register, errors, control, isLoading };
+  return {
+    handleSubmit,
+    register,
+    errors,
+    control,
+    isLoading: isLoading || isLoadingUploadFiles,
+
+    filesToUpload,
+    setFilesToUpload,
+  };
 };

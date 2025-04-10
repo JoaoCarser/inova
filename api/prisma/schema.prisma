@@ -100,6 +100,7 @@ model File {
   projectId String @map("project_id") @db.Uuid
   userId    String @map("user_id") @db.Uuid
   path      String
+  key       String
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)

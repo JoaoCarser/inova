@@ -23,7 +23,7 @@ export function App() {
           <Router />
           <Toaster />
         </AuthProvider>
-        <ReactQueryDevtools />
+        <ReactQueryDevtools position="bottom" />
       </QueryClientProvider>
     </ErrorBoundary>
   );

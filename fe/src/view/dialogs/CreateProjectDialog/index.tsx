@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateProjectDialog } from "./useCreateProjectDialog";
 import { Textarea } from "@/components/ui/textarea";
-import FileUploader from "@/components/FileUploader";
+import FileUploader from "@/view/dialogs/CreateProjectDialog/components/FileUploader";
 import { Controller } from "react-hook-form";
 import {
   Select,
@@ -27,11 +27,17 @@ import { ParticipantSelector } from "./components/ParticipantSelector";
 
 export function CreateProjectDialog() {
   const [open, setOpen] = useState(false);
-  const { errors, handleSubmit, register, control, isLoading } = useCreateProjectDialog(
-    () => {
-      setOpen(false); // Fecha o modal após submit
-    }
-  );
+  const {
+    errors,
+    handleSubmit,
+    register,
+    control,
+    isLoading,
+    filesToUpload,
+    setFilesToUpload,
+  } = useCreateProjectDialog(() => {
+    setOpen(false); // Fecha o modal após submit
+  });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -113,7 +119,10 @@ export function CreateProjectDialog() {
 
                 <div className="flex flex-col gap-2 w-full  md:col-span-6  ">
                   <Label htmlFor="file">Arquivos em PDF ou Word</Label>
-                  <FileUploader />
+                  <FileUploader
+                    filesToUpload={filesToUpload}
+                    setFilesToUpload={setFilesToUpload}
+                  />
                 </div>
 
                 <div className="flex flex-col gap-4 w-full md:col-start-10 md:col-span-3 ">

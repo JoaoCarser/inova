@@ -41,14 +41,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signout = useCallback(() => {
     localStorage.removeItem(localStorageKeys.ACCESS_TOKEN);
     queryClient.invalidateQueries({
-      queryKey: [queryKeys.USERS, queryKeys.ME],
+      queryKey: [queryKeys.ME],
     });
     setSignedIn(false);
   }, []);
 
   //Query para pegar o usuário atual
   const { isError, data, isFetching, isSuccess } = useQuery({
-    queryKey: [queryKeys.USERS, queryKeys.ME],
+    queryKey: [queryKeys.ME],
     queryFn: () => usersService.me(),
     enabled: signedIn,
     staleTime: Infinity,

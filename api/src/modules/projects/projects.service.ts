@@ -1,5 +1,7 @@
 import {
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,6 +13,7 @@ import { UsersProjectsService } from '../users-projects/users-projects.service';
 import { StatusProject } from './entities/status.project.entity';
 import { EvaluationsCriteriaRepositories } from 'src/shared/database/repositories/evaluations-criteria.repositories';
 import { Prisma } from '@prisma/client';
+import { FilesService } from '../files/files.service';
 
 type ProjectWithRelations = Prisma.ProjectGetPayload<{
   include: {
@@ -54,7 +57,42 @@ export class ProjectsService {
     private readonly usersService: UsersService,
     private readonly projectsRepo: ProjectsRepositories,
     private readonly evaluationsCriteriaRepo: EvaluationsCriteriaRepositories,
+    @Inject(forwardRef(() => FilesService))
+    private readonly filesService: FilesService,
   ) {}
+
+  private readonly includeClause = {
+    usersProjects: {
+      select: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            cpf: true,
+            position: true,
+            baseId: true,
+          },
+        },
+      },
+    },
+    files: true,
+    evaluations: {
+      select: {
+        id: true,
+        comments: true,
+        criteria: {
+          select: {
+            id: true,
+            name: true,
+            score: true,
+          },
+        },
+      },
+    },
+    questions: true,
+  };
 
   async create(userId: string, createProjectDto: CreateProjectDto) {
     const { name, description, status, department, videoLink, participants } =
@@ -205,6 +243,7 @@ export class ProjectsService {
       where: {
         id: projectId,
       },
+      include: this.includeClause,
     });
   }
 
@@ -246,9 +285,17 @@ export class ProjectsService {
       throw new NotFoundException('Projeto não encontrado ao usuário');
     }
 
+    //@ts-ignore
+    const projectFound: ProjectWithRelations =
+      await this.findByProjectId(projectId);
+
+    for (const file of projectFound.files) {
+      await this.filesService.deleteFileByKey(file.key);
+    }
+
     return await this.projectsRepo.remove({
       where: {
-        id: projectId,
+        id: projectFound.id,
       },
     });
   }
