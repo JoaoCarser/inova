@@ -14,6 +14,7 @@ import { StatusProject } from './entities/status.project.entity';
 import { EvaluationsCriteriaRepositories } from 'src/shared/database/repositories/evaluations-criteria.repositories';
 import { Prisma } from '@prisma/client';
 import { FilesService } from '../files/files.service';
+import { ProjectDepartment } from './entities/project.department.entity';
 
 type ProjectWithRelations = Prisma.ProjectGetPayload<{
   include: {
@@ -137,28 +138,21 @@ export class ProjectsService {
 
   async findAll({
     status,
+    department,
     userId,
+    title,
   }: {
-    status?: StatusProject;
+    status?: StatusProject[];
+    department?: ProjectDepartment[];
     userId?: string;
+    title?: string;
   }) {
-    let whereClause = {};
-
-    if (status) {
-      whereClause = {
-        ...whereClause,
-        status: status,
-      };
-    }
-
-    if (userId) {
-      whereClause = {
-        ...whereClause,
-        usersProjects: { some: { userId: userId } },
-      };
-    }
-
-    console.log(whereClause);
+    const whereClause: Prisma.ProjectWhereInput = {
+      ...(status?.length && { status: { in: status } }),
+      ...(department?.length && { department: { in: department } }),
+      ...(title && { name: { contains: title, mode: 'insensitive' } }),
+      ...(userId && { usersProjects: { some: { userId } } }),
+    };
 
     //@ts-ignore
     const projects: ProjectWithRelations[] = await this.projectsRepo.findMany({
@@ -197,6 +191,7 @@ export class ProjectsService {
       },
     });
 
+    // cálculo de médias (como já está)
     const projectsWithAverages = projects.map((project) => {
       const criteriaScores: Record<string, number[]> = {};
 
@@ -229,11 +224,7 @@ export class ProjectsService {
       const averageScoreFound = projectsWithAverages.find(
         (avg) => avg.id === project.id,
       );
-
-      if (!averageScoreFound) {
-        return project;
-      }
-
+      if (!averageScoreFound) return project;
       return { ...project, averageScore: averageScoreFound.averageScores };
     });
   }
