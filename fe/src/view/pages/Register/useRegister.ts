@@ -11,9 +11,13 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { Role } from "@/app/entities/Role";
 import { SignupParams } from "@/app/services/authService/signup";
 import { AxiosError } from "axios";
+import { useBases } from "@/app/hooks/bases/useBases";
 const schema = z.object({
   name: z.string().min(1, "Nome é obrigatório."),
-  email: z.string().min(1, "E-mail é obrigatório.").email("Informe um E-mail válido."),
+  email: z
+    .string()
+    .min(1, "E-mail é obrigatório.")
+    .email("Informe um E-mail válido."),
   password: z
     .string()
     .nonempty("Senha é obrigatório")
@@ -38,7 +42,7 @@ export const useRegister = () => {
     resolver: zodResolver(schema),
   });
 
-  console.log(errors);
+  const { bases, isFetchingBases } = useBases();
 
   const { isPending: isLoading, mutateAsync } = useMutation({
     mutationKey: [mutationKeys.SIGNUP],
@@ -51,7 +55,10 @@ export const useRegister = () => {
     console.log(data);
 
     try {
-      const { accessToken } = await mutateAsync({ ...data, role: Role.PARTICIPANT }); //Retorno da mutation Function
+      const { accessToken } = await mutateAsync({
+        ...data,
+        role: Role.PARTICIPANT,
+      }); //Retorno da mutation Function
       signin(accessToken);
     } catch (error) {
       console.log(error);
@@ -79,5 +86,13 @@ export const useRegister = () => {
     }
   });
 
-  return { handleSubmit, register, errors, isLoading, control };
+  return {
+    handleSubmit,
+    register,
+    errors,
+    isLoading,
+    control,
+    bases,
+    isFetchingBases,
+  };
 };

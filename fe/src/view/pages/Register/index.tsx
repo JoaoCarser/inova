@@ -12,17 +12,29 @@ import {
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useRegister } from "./useRegister";
 import { Controller } from "react-hook-form";
+import { Spinner } from "@/components/Spinner";
 
 export default function Register() {
-  const { errors, handleSubmit, register, isLoading, control } = useRegister();
+  const {
+    errors,
+    handleSubmit,
+    register,
+    isLoading,
+    control,
+    bases,
+    isFetchingBases,
+  } = useRegister();
   return (
     <div className="flex w-full h-full">
       <div className="h-1/2 bg-primary absolute w-full flex flex-col items-center justify-start p-10">
         <div className="flex flex-col gap-2 justify-center items-center">
           {" "}
-          <h1 className="text-3xl font-semibold text-white md:pt-10">Cadastro</h1>
+          <h1 className="text-3xl font-semibold text-white md:pt-10">
+            Cadastro
+          </h1>
           <p className="text-white tracking-tighter">
-            Preencha corretamente o formulário e participe do Inova Conterp 2024!
+            Preencha corretamente o formulário e participe do Inova Conterp
+            2024!
           </p>
         </div>
       </div>
@@ -32,7 +44,11 @@ export default function Register() {
       <div className="w-full relative my-auto mt-48 pt-6 md:pt-12 pb-12 px-4 max-w-4xl mx-auto bg-white rounded-md shadow-md">
         <div className=" items-center flex flex-col gap-4 pb-6 ">
           <div className="bg-yellow-400 rounded-full p-3">
-            <img src={personalDataIcon} alt="personal data" className="h-10 w-10" />
+            <img
+              src={personalDataIcon}
+              alt="personal data"
+              className="h-10 w-10"
+            />
           </div>
           <span className="ml-2 text-sm font-medium">Dados pessoais</span>
         </div>
@@ -65,7 +81,11 @@ export default function Register() {
                 name="phone"
                 control={control}
                 render={({ field: { onChange, value } }) => (
-                  <PhoneInput defaultCountry="BR" onChange={onChange} value={value} />
+                  <PhoneInput
+                    defaultCountry="BR"
+                    onChange={onChange}
+                    value={value}
+                  />
                 )}
               />
               {errors.phone?.message && (
@@ -99,18 +119,24 @@ export default function Register() {
             </div>
             <div className="flex flex-col gap-2 w-full md:col-span-3">
               <Label htmlFor="baseId">Local de Trabalho</Label>
+
               <Controller
                 name="baseId"
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <Select onValueChange={onChange} value={value}>
-                    <SelectTrigger className="w-full h-9" error={errors.baseId?.message}>
+                    <SelectTrigger
+                      className="w-full h-9"
+                      error={errors.baseId?.message}
+                      isLoading={isFetchingBases}
+                      disabled={isFetchingBases}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="a40c5c99-ce29-4079-98ac-3c494ba35f6b">
-                        Base 1
-                      </SelectItem>
+                      {bases.map(({ id, name }) => (
+                        <SelectItem value={id}>{name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 )}
@@ -130,7 +156,12 @@ export default function Register() {
             </div>
             <div className="flex flex-col gap-2 w-full md:col-span-6">
               <Label htmlFor="position">Função na Conterp</Label>
-              <Input id="position" type="text" required {...register("position")} />
+              <Input
+                id="position"
+                type="text"
+                required
+                {...register("position")}
+              />
             </div>
 
             <div className="flex flex-col gap-4 w-full md:col-start-10 md:col-span-3 ">
