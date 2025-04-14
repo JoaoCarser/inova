@@ -13,6 +13,55 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/app/hooks/useAuth";
 
+function getNavMainByRole(role: string) {
+  switch (role) {
+    case "PARTICIPANT":
+      return [
+        {
+          title: "Concurso",
+          url: "#",
+          icon: SquareTerminal,
+          isActive: true,
+          items: [
+            { title: "Etapas", url: "/" },
+            { title: "Projetos", url: "/projects" },
+          ],
+        },
+      ];
+
+    case "EVALUATION_COMMITTEE":
+      return [
+        {
+          title: "Concurso",
+          url: "#",
+          icon: SquareTerminal,
+          isActive: true,
+          items: [
+            { title: "Etapas", url: "/" },
+            { title: "Projetos", url: "/projects" },
+          ],
+        },
+      ];
+
+    case "MARKETING":
+      return [
+        {
+          title: "Concurso",
+          url: "#",
+          icon: SquareTerminal,
+          isActive: true,
+          items: [
+            { title: "Etapas", url: "/" },
+            { title: "Projetos", url: "/projects" },
+          ],
+        },
+      ];
+
+    default:
+      return [];
+  }
+}
+
 // This is sample data.
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -33,7 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "Etapas",
-            url: "#",
+            url: "/",
           },
           {
             title: "Usuários",
@@ -41,7 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "Projetos",
-            url: "#",
+            url: "/projects",
           },
         ],
       },

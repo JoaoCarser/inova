@@ -24,8 +24,24 @@ export class PeriodsService {
     });
   }
 
+  async createMany(createManyPeriodDto: CreatePeriodDto[]) {
+    return await this.periodsRepo.createMany({
+      data: createManyPeriodDto,
+    });
+  }
+
   async findAll() {
     return await this.periodsRepo.findMany({});
+  }
+
+  async getCurrentPeriod() {
+    const currentDate = new Date();
+    return await this.periodsRepo.findFirst({
+      where: {
+        startDate: { lte: currentDate },
+        endDate: { gte: currentDate },
+      },
+    });
   }
 
   async findPeriodById(periodId: string) {
