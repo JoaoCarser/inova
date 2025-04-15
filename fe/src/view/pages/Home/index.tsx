@@ -22,7 +22,7 @@ export default function Home() {
         ))}
 
       {!isFetchingPeriods && !isFetchingCurrenPeriod && (
-        <div className="p-6">
+        <div>
           <h1 className="text-2xl font-bold">Bem vindo ao Portal Inova, {user?.name}</h1>
           <p className="text-lg text-green-600 mt-2">
             Aqui você acompanha todas as etapas do concurso Inova Conterp

@@ -1,26 +1,16 @@
 import { useProjectsByUserId } from "@/app/hooks/projects/useProjectsByUserId";
 import { useAuth } from "@/app/hooks/useAuth";
+import { useProjectFilters } from "@/app/hooks/useProjectFilters";
 import { ProjectCard } from "@/components/ProjectCard";
 import { Spinner } from "@/components/Spinner";
 import { Button } from "@/components/ui/button";
 import { CreateProjectDialog } from "@/view/dialogs/CreateProjectDialog";
 import { ProjectFilters } from "@/view/dialogs/CreateProjectDialog/components/ProjectFilters";
-import { useEffect, useState } from "react";
-
-interface FilterState {
-  title: string;
-  status: string[];
-  department: string[];
-}
+import { useEffect } from "react";
 
 export default function Projects() {
   const { user } = useAuth();
-
-  const [filters, setFilters] = useState<FilterState>({
-    title: "",
-    status: [],
-    department: [],
-  });
+  const { filters, setFilters } = useProjectFilters();
 
   const { projects, isFetchingProjects, refechProjects } = useProjectsByUserId(
     user?.id!,
@@ -34,7 +24,7 @@ export default function Projects() {
   // Filter projects based on current filters
 
   return (
-    <div className="p-6">
+    <div className="">
       <div className="flex justify-between items-center mb-6">
         <div>
           {" "}

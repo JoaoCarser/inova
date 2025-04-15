@@ -7,11 +7,23 @@ import { AuthGuard } from "./AuthGuard";
 import { LoginLayout } from "@/view/Layouts/LoginLayout";
 import Register from "@/view/pages/Register";
 import AppLayout from "@/view/Layouts/AppLayout";
-import Home from "@/view/pages/Home";
 
+import { useAuth } from "@/app/hooks/useAuth";
+
+const Home = lazy(() => import("@/view/pages/Home"));
 const Projects = lazy(() => import("@/view/pages/Projects"));
+const EvaluationCommitteeDashboard = lazy(
+  () => import("@/view/pages/EvaluationCommitteeDashboard")
+);
 
 export const Router = () => {
+  const { user } = useAuth();
+  const getHomeRoute = () => {
+    if (user?.role === "EVALUATION_COMMITTEE") {
+      return <EvaluationCommitteeDashboard />;
+    }
+    return <Home />;
+  };
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingScreen />}>
@@ -25,7 +37,7 @@ export const Router = () => {
 
           <Route element={<AuthGuard isPrivate={true} />}>
             <Route element={<AppLayout />}>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={getHomeRoute()} />
               <Route path="/projects" element={<Projects />} />
             </Route>
           </Route>

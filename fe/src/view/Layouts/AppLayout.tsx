@@ -8,7 +8,7 @@ export default function AppLayout() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarTrigger className="-ml-1 sm:sr-only" />
-      <SidebarInset>
+      <SidebarInset className="md:p-6 py-6 pr-6">
         <Outlet />
       </SidebarInset>
     </SidebarProvider>
