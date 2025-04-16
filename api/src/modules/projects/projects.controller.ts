@@ -80,8 +80,11 @@ export class ProjectsController {
   }
 
   @Get(':projectId')
-  findOne(@Param('projectId') projectId: string) {
-    return this.projectsService.findByProjectId(projectId);
+  findOne(
+    @ActiveUserId() userId: string,
+    @Param('projectId') projectId: string,
+  ) {
+    return this.projectsService.findByProjectId(userId, projectId);
   }
 
   @Put(':projectId')

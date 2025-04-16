@@ -51,23 +51,28 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   // Status message mapping
   const statusMessages = {
-    [StatusProject.REVIEWED]: "O projeto já foi avaliado por todo comitê avaliativo.",
+    [StatusProject.REVIEWED]:
+      "O projeto já foi avaliado por todo comitê avaliativo.",
     [StatusProject.SUBMITTED]: "O projeto já foi submetido para avaliação.",
-    [StatusProject.UNDER_REVIEW]: "O projeto está sendo avaliado pelo comitê avaliativo.",
-    [StatusProject.DRAFT]: "Clique aqui para submeter o projeto para avaliação.",
+    [StatusProject.UNDER_REVIEW]:
+      "O projeto está sendo avaliado pelo comitê avaliativo.",
+    [StatusProject.DRAFT]:
+      "Clique aqui para submeter o projeto para avaliação.",
   };
 
-  const { mutateAsync: mutateDeleteProject, isPending: isLoadingDeleteProject } =
-    useMutation({
-      mutationFn: projectsService.remove,
-      onSuccess: async () => {
-        await queryClient.refetchQueries({ queryKey: [queryKeys.ME] });
-      },
-    });
+  const {
+    mutateAsync: mutateDeleteProject,
+    isPending: isLoadingDeleteProject,
+  } = useMutation({
+    mutationFn: projectsService.remove,
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: [queryKeys.PROJECTS] });
+    },
+  });
 
   const handleDeleteProject = async () => {
     await mutateDeleteProject(project.id);
-    queryClient.invalidateQueries({ queryKey: [queryKeys.ME] });
+    queryClient.invalidateQueries({ queryKey: [queryKeys.PROJECTS] });
 
     setIsDeleteDialogOpen(false);
     setIsDialogOpen(false);
@@ -101,19 +106,27 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="flex justify-between items-center text-sm text-gray-700 mt-auto">
             <div className="flex items-center gap-2">
               <span className="inline-block px-2 py-1 bg-gray-100 rounded">
-                {translatedDepartments.find((d) => d.value === project.department)?.label}
+                {
+                  translatedDepartments.find(
+                    (d) => d.value === project.department
+                  )?.label
+                }
               </span>
             </div>
             <div className="flex items-center gap-2">
               <CalendarDays size={18} className="text-gray-700 shrink-0" />
-              <span>Há {differenceInDays(new Date(), project.createdAt)} dias</span>
+              <span>
+                Há {differenceInDays(new Date(), project.createdAt)} dias
+              </span>
             </div>
           </div>
 
           {project.status && (
             <div className="flex items-center gap-2 text-xs tracking-tight text-white bg-green-500 p-3 rounded">
               <CheckCircle size={18} className="shrink-0" />
-              <span className="line-clamp-2">{statusMessages[project.status]}</span>
+              <span className="line-clamp-2">
+                {statusMessages[project.status]}
+              </span>
             </div>
           )}
         </CardContent>
@@ -124,7 +137,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <DialogHeader className="border-b pb-4">
             <div className="flex justify-between items-start">
               <div>
-                <DialogTitle className="text-2xl font-bold">{project.name}</DialogTitle>
+                <DialogTitle className="text-2xl font-bold">
+                  {project.name}
+                </DialogTitle>
                 <DialogDescription className="mt-1">
                   Detalhes completos do projeto
                 </DialogDescription>
@@ -134,7 +149,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
           <div className="space-y-6 py-4">
             <div>
-              <h3 className="text-md font-medium text-gray-500 mb-2">Descrição</h3>
+              <h3 className="text-md font-medium text-gray-500 mb-2">
+                Descrição
+              </h3>
               <p className="text-gray-800">{project.description}</p>
             </div>
 
@@ -147,7 +164,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </div>
 
             <div>
-              <h3 className="text-md font-medium text-gray-500 mb-2">Departamento</h3>
+              <h3 className="text-md font-medium text-gray-500 mb-2">
+                Departamento
+              </h3>
               <div className="flex items-center gap-2">
                 <Briefcase className="h-5 w-5 text-gray-400" />
                 <p className="text-gray-800 uppercase">
@@ -179,7 +198,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </div>
 
             <div>
-              <h3 className="text-md font-medium text-gray-500 mb-2">Data de criação</h3>
+              <h3 className="text-md font-medium text-gray-500 mb-2">
+                Data de criação
+              </h3>
               <div className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-gray-400" />
                 <p className="text-gray-800">
@@ -199,13 +220,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
         </DialogContent>
       </Dialog>
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação não pode ser desfeita. Isso excluirá permanentemente o projeto "
-              {project.name}" e todos os dados associados a ele.
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente o
+              projeto "{project.name}" e todos os dados associados a ele.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -213,6 +237,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <AlertDialogAction
               onClick={handleDeleteProject}
               className="bg-red-500 hover:bg-red-600"
+              isLoading={isLoadingDeleteProject}
             >
               Excluir projeto
             </AlertDialogAction>

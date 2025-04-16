@@ -22,7 +22,10 @@ export class QuestionsService {
       throw new NotFoundException('Usuário não encontrado');
     }
 
-    const projectExists = await this.projectsService.findByProjectId(projectId);
+    const projectExists = await this.projectsService.findByProjectId(
+      userId,
+      projectId,
+    );
 
     if (!projectExists) {
       throw new NotFoundException('Projeto não encontrado');

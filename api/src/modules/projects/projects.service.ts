@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
@@ -15,6 +16,7 @@ import { EvaluationsCriteriaRepositories } from 'src/shared/database/repositorie
 import { Prisma } from '@prisma/client';
 import { FilesService } from '../files/files.service';
 import { ProjectDepartment } from './entities/project.department.entity';
+import { Role } from '../users/entities/Role';
 
 type ProjectWithRelations = Prisma.ProjectGetPayload<{
   include: {
@@ -229,7 +231,24 @@ export class ProjectsService {
     });
   }
 
-  async findByProjectId(projectId: string) {
+  async findByProjectId(userId: string, projectId: string) {
+    const user = await this.usersService.findByUserId(userId);
+
+    const userProject = await this.usersProjectsService.findByUserId(
+      userId,
+      projectId,
+    );
+
+    if (
+      !userProject &&
+      user.role !== Role.EVALUATION_COMMITTEE &&
+      user.role !== Role.MARKETING
+    ) {
+      throw new ForbiddenException(
+        'Você não tem permissão para visualizar esse projeto!',
+      );
+    }
+
     return await this.projectsRepo.findUnique({
       where: {
         id: projectId,
@@ -277,8 +296,10 @@ export class ProjectsService {
     }
 
     //@ts-ignore
-    const projectFound: ProjectWithRelations =
-      await this.findByProjectId(projectId);
+    const projectFound: ProjectWithRelations = await this.findByProjectId(
+      userId,
+      projectId,
+    );
 
     for (const file of projectFound.files) {
       await this.filesService.deleteFileByKey(file.key);

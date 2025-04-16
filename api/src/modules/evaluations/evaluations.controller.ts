@@ -42,10 +42,15 @@ export class EvaluationsController {
 
   @Put(':evaluationId')
   update(
+    @ActiveUserId() userId: string,
     @Param('evaluationId') evaluationId: string,
     @Body() updateEvaluationDto: UpdateEvaluationDto,
   ) {
-    return this.evaluationsService.update(evaluationId, updateEvaluationDto);
+    return this.evaluationsService.update(
+      userId,
+      evaluationId,
+      updateEvaluationDto,
+    );
   }
 
   @Delete(':evaluationId')

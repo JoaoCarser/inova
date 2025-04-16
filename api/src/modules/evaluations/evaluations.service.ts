@@ -16,6 +16,7 @@ export class EvaluationsService {
   async create(userId: string, createEvaluationDto: CreateEvaluationDto) {
     //Verifica se o projeto existe
     const project = await this.projectsService.findByProjectId(
+      userId,
       createEvaluationDto.projectId,
     );
 
@@ -47,10 +48,15 @@ export class EvaluationsService {
     });
   }
 
-  async update(evaluationId: string, updateEvaluationDto: UpdateEvaluationDto) {
+  async update(
+    userId: string,
+    evaluationId: string,
+    updateEvaluationDto: UpdateEvaluationDto,
+  ) {
     //Verifica se a avaliação existe
 
     const project = await this.projectsService.findByProjectId(
+      userId,
       updateEvaluationDto.projectId,
     );
 

@@ -9,7 +9,10 @@ import { SigninParams } from "@/app/services/authService/signin";
 import { authService } from "@/app/services/authService";
 import { useAuth } from "@/app/hooks/useAuth";
 const schema = z.object({
-  email: z.string().min(1, "E-mail é obrigatório.").email("Informe um E-mail válido."),
+  email: z
+    .string()
+    .min(1, "E-mail é obrigatório.")
+    .email("Informe um E-mail válido."),
   password: z
     .string()
     .nonempty("Senha é obrigatório")

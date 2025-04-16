@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useLogin } from "./useLogin";
 
 export default function Login() {
-  const { handleSubmit, register, errors } = useLogin();
+  const { handleSubmit, register, errors, isLoading } = useLogin();
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex w-full h-full">
@@ -56,7 +56,9 @@ export default function Login() {
           </div>
 
           <div className="flex flex-col gap-4 w-full ">
-            <Button type="submit">Acessar</Button>
+            <Button type="submit" isLoading={isLoading} disabled={isLoading}>
+              Acessar
+            </Button>
           </div>
 
           <div className="flex items-center justify-start gap-2">

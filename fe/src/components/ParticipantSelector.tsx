@@ -16,7 +16,10 @@ interface ParticipantSelectorProps {
   onChange: (participants: Participant[]) => void;
 }
 
-export function ParticipantSelector({ value = [], onChange }: ParticipantSelectorProps) {
+export function ParticipantSelector({
+  value = [],
+  onChange,
+}: ParticipantSelectorProps) {
   const [cpf, setCpf] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -64,7 +67,7 @@ export function ParticipantSelector({ value = [], onChange }: ParticipantSelecto
   };
 
   return (
-    <div className={cn("space-y-4")}>
+    <div className={cn("space-y-4 w-full")}>
       {value.length > 0 && (
         <div className="border rounded-md p-3 space-y-2">
           <div className="space-y-2 max-h-[150px] overflow-y-auto">

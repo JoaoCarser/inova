@@ -35,7 +35,10 @@ export class FilesService {
     userId: string,
     projectId: string,
   ) {
-    const project = await this.projectsService.findByProjectId(projectId);
+    const project = await this.projectsService.findByProjectId(
+      userId,
+      projectId,
+    );
 
     if (!project) {
       throw new NotFoundException('Projeto não encontrado!');
@@ -62,7 +65,10 @@ export class FilesService {
   }
 
   async deleteProjectFile(fileId: string, userId: string, projectId: string) {
-    const project = await this.projectsService.findByProjectId(projectId);
+    const project = await this.projectsService.findByProjectId(
+      userId,
+      projectId,
+    );
 
     if (!project) {
       throw new NotFoundException('Projeto não encontrado!');

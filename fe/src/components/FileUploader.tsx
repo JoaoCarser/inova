@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { ScrollArea } from "../../../../components/ui/scroll-area";
-import { Input } from "../../../../components/ui/input";
-import { Progress } from "../../../../components/ui/progress";
+import { ScrollArea } from "./ui/scroll-area";
+import { Input } from "./ui/input";
+import { Progress } from "./ui/progress";
 
 interface FileUploaderProps {
   filesToUpload: { File: File }[];
@@ -136,7 +136,7 @@ export default function FileUploader({
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
-    <div>
+    <div className="w-full">
       <div>
         <label
           {...getRootProps()}

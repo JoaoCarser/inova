@@ -10,7 +10,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCreateProjectDialog } from "./useCreateProjectDialog";
+import { useEditProjectDialog } from "./useEditProjectDialog";
 import { Textarea } from "@/components/ui/textarea";
 import FileUploader from "@/components/FileUploader";
 import { Controller } from "react-hook-form";
@@ -25,8 +25,7 @@ import { translatedDepartments } from "@/app/utils/translatedDepartments";
 import { useState } from "react";
 import { ParticipantSelector } from "../../../components/ParticipantSelector";
 
-export function CreateProjectDialog() {
-  const [open, setOpen] = useState(false);
+export function EditProjectDialog() {
   const {
     errors,
     handleSubmit,
@@ -35,17 +34,19 @@ export function CreateProjectDialog() {
     isLoading,
     filesToUpload,
     setFilesToUpload,
-  } = useCreateProjectDialog(() => {
+    open,
+    setOpen,
+  } = useEditProjectDialog(() => {
     setOpen(false); // Fecha o modal após submit
   });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => setOpen(true)}>Create Project</Button>
+        <Button onClick={() => setOpen(true)}>Editar Projeto</Button>
       </DialogTrigger>
       <DialogContent className="lg:max-w-screen-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Cadastro de Projeto</DialogTitle>
+          <DialogTitle>Edição de Projeto</DialogTitle>
           <DialogDescription>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-12 gap-2 gap-y-6 mt-6 ">

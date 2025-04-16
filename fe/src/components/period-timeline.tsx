@@ -1,7 +1,4 @@
-"use client";
-
 import { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   CalendarClock,
@@ -21,7 +18,10 @@ interface PeriodTimelineProps {
   currentPeriod: Period | null;
 }
 
-export function PeriodTimeline({ periods, currentPeriod }: PeriodTimelineProps) {
+export function PeriodTimeline({
+  periods,
+  currentPeriod,
+}: PeriodTimelineProps) {
   const [expandedPeriod, setExpandedPeriod] = useState<string | null>(
     currentPeriod?.id || null
   );
@@ -92,7 +92,7 @@ export function PeriodTimeline({ periods, currentPeriod }: PeriodTimelineProps) 
     <div className="relative">
       <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gray-200" />
 
-      {periods.map((period, index) => {
+      {periods.map((period) => {
         const isActive = isPeriodActive(period);
         const isPast = isPeriodPast(period);
         const isFuture = isPeriodFuture(period);
@@ -103,24 +103,32 @@ export function PeriodTimeline({ periods, currentPeriod }: PeriodTimelineProps) 
             <div className="flex items-start">
               <div
                 className={`z-10 flex items-center justify-center w-12 h-12 rounded-full ${
-                  isActive ? "bg-yellow-400" : isPast ? "bg-gray-200" : "bg-gray-100"
+                  isActive
+                    ? "bg-yellow-400"
+                    : isPast
+                    ? "bg-gray-200"
+                    : "bg-gray-100"
                 } mr-4`}
               >
                 {isFuture ? (
                   <Lock className="w-5 h-5 text-gray-500" />
                 ) : (
-                  <div className={`${isActive ? "text-white" : "text-gray-500"}`}>
+                  <div
+                    className={`${isActive ? "text-white" : "text-gray-500"}`}
+                  >
                     {getIconForPeriodType(period.type)}
                   </div>
                 )}
               </div>
 
               <div
-                className={`flex-1 p-4 border rounded-lg ${
-                  isActive ? "border-yellow-400 bg-yellow-50" : "border-gray-200"
+                className={`flex-1 p-2 md:p-4 border rounded-lg ${
+                  isActive
+                    ? "border-yellow-400 bg-yellow-50"
+                    : "border-gray-200"
                 }`}
               >
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center flex-col md:flex-row gap-2">
                   <div>
                     <h3
                       className={`text-lg font-medium ${
@@ -130,13 +138,15 @@ export function PeriodTimeline({ periods, currentPeriod }: PeriodTimelineProps) 
                       {getPeriodTitle(period.type)}
                     </h3>
                     {isActive && (
-                      <p className="text-sm text-gray-600">{period.description}</p>
+                      <p className="text-sm text-gray-600">
+                        {period.description}
+                      </p>
                     )}
                   </div>
 
                   {isActive && (
                     <Button
-                      className="bg-yellow-400 hover:bg-yellow-500 text-white"
+                      className="bg-yellow-400 hover:bg-yellow-500 text-white w-full sm:w-36"
                       onClick={() => navigate("/projects")}
                     >
                       Meus projetos
@@ -153,7 +163,8 @@ export function PeriodTimeline({ periods, currentPeriod }: PeriodTimelineProps) 
                 <div className="mt-3 text-sm text-gray-600">
                   <p className="mt-2">
                     <span className="font-medium">Período:</span>{" "}
-                    {formatDate(period.startDate)} até {formatDate(period.endDate)}
+                    {formatDate(period.startDate)} até{" "}
+                    {formatDate(period.endDate)}
                   </p>
                 </div>
 

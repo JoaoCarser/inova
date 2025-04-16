@@ -1,6 +1,7 @@
 import { useCurrentPeriod } from "@/app/hooks/periods/useCurrentPeriod";
 import { usePeriods } from "@/app/hooks/periods/usePeriods";
 import { useAuth } from "@/app/hooks/useAuth";
+import { Header } from "@/components/Header";
 import { PeriodTimeline } from "@/components/period-timeline";
 import { Spinner } from "@/components/Spinner";
 
@@ -23,13 +24,15 @@ export default function Home() {
 
       {!isFetchingPeriods && !isFetchingCurrenPeriod && (
         <div>
-          <h1 className="text-2xl font-bold">Bem vindo ao Portal Inova, {user?.name}</h1>
-          <p className="text-lg text-green-600 mt-2">
-            Aqui você acompanha todas as etapas do concurso Inova Conterp
-          </p>
+          <Header
+            title={`Bem vindo ao Portal Inova, ${user?.name}`}
+            description=" Aqui você acompanha todas as etapas do concurso Inova Conterp"
+          />
 
           <div className="mt-12 border border-primary-200 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-green-600 mb-4">Concurso 2024</h2>
+            <h2 className="text-2xl font-bold text-green-600 mb-4">
+              Concurso 2024
+            </h2>
             <div className="flex justify-between items-center mb-2">
               <p className="text-gray-700">Progresso do seu projeto</p>
               <span className="text-gray-700">
@@ -46,7 +49,8 @@ export default function Home() {
                 style={{
                   width: `${
                     currentPeriod
-                      ? ((periods.findIndex((p) => p.id === currentPeriod.id) + 1) /
+                      ? ((periods.findIndex((p) => p.id === currentPeriod.id) +
+                          1) /
                           periods.length) *
                         100
                       : (1 / periods.length) * 100

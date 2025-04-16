@@ -1,20 +1,13 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { translatedDepartments } from "@/app/utils/translatedDepartments";
 import { Search, Filter, X } from "lucide-react";
 import { StatusProject } from "@/app/entities/StatusProject";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 // Translate status values for display
 const statusOptions = [
@@ -47,40 +40,38 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
     onFilterChange(filters);
   }, [filters, onFilterChange]);
 
-  // Add a status filter
-  const addStatusFilter = (status: string) => {
-    if (!filters.status.includes(status)) {
-      setFilters((prev) => ({
-        ...prev,
-        status: [...prev.status, status],
-      }));
-    }
+  // Toggle status filter
+  const toggleStatusFilter = (status: string) => {
+    setFilters((prev) => {
+      if (prev.status.includes(status)) {
+        return {
+          ...prev,
+          status: prev.status.filter((s) => s !== status),
+        };
+      } else {
+        return {
+          ...prev,
+          status: [...prev.status, status],
+        };
+      }
+    });
   };
 
-  // Add a department filter
-  const addDepartmentFilter = (department: string) => {
-    if (!filters.department.includes(department)) {
-      setFilters((prev) => ({
-        ...prev,
-        department: [...prev.department, department],
-      }));
-    }
-  };
-
-  // Remove a status filter
-  const removeStatusFilter = (status: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      status: prev.status.filter((s) => s !== status),
-    }));
-  };
-
-  // Remove a department filter
-  const removeDepartmentFilter = (department: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      department: prev.department.filter((d) => d !== department),
-    }));
+  // Toggle department filter
+  const toggleDepartmentFilter = (department: string) => {
+    setFilters((prev) => {
+      if (prev.department.includes(department)) {
+        return {
+          ...prev,
+          department: prev.department.filter((d) => d !== department),
+        };
+      } else {
+        return {
+          ...prev,
+          department: [...prev.department, department],
+        };
+      }
+    });
   };
 
   // Clear all filters
@@ -94,20 +85,27 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
 
   // Get label for status
   const getStatusLabel = (value: string) => {
-    return statusOptions.find((option) => option.value === value)?.label || value;
+    return (
+      statusOptions.find((option) => option.value === value)?.label || value
+    );
   };
 
   // Get label for department
   const getDepartmentLabel = (value: string) => {
-    return translatedDepartments.find((option) => option.value === value)?.label || value;
+    return (
+      translatedDepartments.find((option) => option.value === value)?.label ||
+      value
+    );
   };
 
   // Check if any filters are active
   const hasActiveFilters =
-    filters.title !== "" || filters.status.length > 0 || filters.department.length > 0;
+    filters.title !== "" ||
+    filters.status.length > 0 ||
+    filters.department.length > 0;
 
   return (
-    <div className="mb-6 space-y-4 bg-white rounded-lg border p-4">
+    <div className="space-y-4 bg-white rounded-lg border p-4">
       <div className="flex flex-col md:flex-row gap-4">
         {/* Search by title */}
         <div className="flex-1 relative">
@@ -115,7 +113,9 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
           <Input
             placeholder="Buscar projetos por título..."
             value={filters.title}
-            onChange={(e) => setFilters((prev) => ({ ...prev, title: e.target.value }))}
+            onChange={(e) =>
+              setFilters((prev) => ({ ...prev, title: e.target.value }))
+            }
             className="pl-10"
           />
         </div>
@@ -129,7 +129,10 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
           <Filter className="h-4 w-4" />
           Filtros
           {hasActiveFilters && (
-            <Badge variant="secondary" className="ml-1 bg-primary/20 text-primary">
+            <Badge
+              variant="secondary"
+              className="ml-1 bg-primary/20 text-primary"
+            >
               {filters.status.length +
                 filters.department.length +
                 (filters.title ? 1 : 0)}
@@ -152,39 +155,54 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
 
       {/* Expanded filter options */}
       {isExpanded && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
           {/* Status filter */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Status</label>
-            <Select onValueChange={addStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione um status" />
-              </SelectTrigger>
-              <SelectContent>
-                {statusOptions.map((status) => (
-                  <SelectItem key={status.value} value={status.value}>
+            <h3 className="text-sm font-medium mb-3">Status</h3>
+            <div className="space-y-2">
+              {statusOptions.map((status) => (
+                <div key={status.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`status-${status.value}`}
+                    checked={filters.status.includes(status.value)}
+                    onCheckedChange={() => toggleStatusFilter(status.value)}
+                  />
+                  <Label
+                    htmlFor={`status-${status.value}`}
+                    className="text-sm font-normal cursor-pointer"
+                  >
                     {status.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Department filter */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Departamento</label>
-            <Select onValueChange={addDepartmentFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione um departamento" />
-              </SelectTrigger>
-              <SelectContent>
-                {translatedDepartments.map((department) => (
-                  <SelectItem key={department.value} value={department.value}>
+            <h3 className="text-sm font-medium mb-3">Departamento</h3>
+            <div className="space-y-2">
+              {translatedDepartments.map((department) => (
+                <div
+                  key={department.value}
+                  className="flex items-center space-x-2"
+                >
+                  <Checkbox
+                    id={`department-${department.value}`}
+                    checked={filters.department.includes(department.value)}
+                    onCheckedChange={() =>
+                      toggleDepartmentFilter(department.value)
+                    }
+                  />
+                  <Label
+                    htmlFor={`department-${department.value}`}
+                    className="text-sm font-normal cursor-pointer"
+                  >
                     {department.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -203,11 +221,15 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
           )}
 
           {filters.status.map((status) => (
-            <Badge key={status} variant="secondary" className="flex items-center gap-1">
+            <Badge
+              key={status}
+              variant="secondary"
+              className="flex items-center gap-1"
+            >
               Status: {getStatusLabel(status)}
               <X
                 className="h-3 w-3 ml-1 cursor-pointer"
-                onClick={() => removeStatusFilter(status)}
+                onClick={() => toggleStatusFilter(status)}
               />
             </Badge>
           ))}
@@ -221,7 +243,7 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
               Departamento: {getDepartmentLabel(department)}
               <X
                 className="h-3 w-3 ml-1 cursor-pointer"
-                onClick={() => removeDepartmentFilter(department)}
+                onClick={() => toggleDepartmentFilter(department)}
               />
             </Badge>
           ))}

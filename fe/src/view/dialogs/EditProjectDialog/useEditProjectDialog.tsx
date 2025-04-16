@@ -13,6 +13,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { useState } from "react";
 import { filesService } from "@/app/services/filesService";
 import { queryKeys } from "@/app/config/queryKeys";
+import { useProject } from "@/app/hooks/projects/useProject";
 
 const participantSchema = z.object({
   id: z.string(),
@@ -32,10 +33,12 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export const useCreateProjectDialog = (onSuccess?: () => void) => {
+export const useEditProjectDialog = (onSuccess?: () => void) => {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  //const {} = useProject(projectId);
   const [filesToUpload, setFilesToUpload] = useState<{ File: File }[]>([]);
 
   const {
@@ -126,8 +129,9 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
     errors,
     control,
     isLoading: isLoading || isLoadingUploadFiles,
-
     filesToUpload,
     setFilesToUpload,
+    open,
+    setOpen,
   };
 };
