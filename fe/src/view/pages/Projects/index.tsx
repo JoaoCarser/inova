@@ -1,10 +1,4 @@
-import { useEffect, useMemo } from "react";
 import { Role } from "@/app/entities/Role";
-import { useAuth } from "@/app/hooks/useAuth";
-import { useProjects } from "@/app/hooks/projects/useProjects";
-import { useProjectsByUserId } from "@/app/hooks/projects/useProjectsByUserId";
-import { useProjectFilters } from "@/app/hooks/useProjectFilters";
-
 import { Header } from "@/components/Header";
 import { ProjectCard } from "@/components/ProjectCard";
 import { Spinner } from "@/components/Spinner";
@@ -12,8 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ProjectsStatboxContainer } from "@/components/ProjectsStatboxContainer";
 import { CreateProjectDialog } from "@/view/dialogs/CreateProjectDialog";
 import { ProjectFilters } from "@/components/ProjectFilters";
-import { EditProjectDialog } from "@/view/dialogs/EditProjectDialog";
-import { useProjectsContext } from "./ProjectsContext/useProjectsContext";
 import { ProjectsContext, ProjectsProvider } from "./ProjectsContext";
 //handleClearFilters, isLoading, projects, filters, setFilters, user
 
@@ -21,14 +13,7 @@ export default function Projects() {
   return (
     <ProjectsProvider>
       <ProjectsContext.Consumer>
-        {({
-          handleClearFilters,
-          isLoading,
-          projects,
-          filters,
-          setFilters,
-          user,
-        }) => (
+        {({ handleClearFilters, isLoading, projects, filters, setFilters, user }) => (
           <div>
             <Header title="Projetos" />
 
@@ -36,11 +21,9 @@ export default function Projects() {
               <ProjectsStatboxContainer projects={projects} />
             )}
 
-            {user?.role !== Role.EVALUATION_COMMITTEE && (
-              <CreateProjectDialog />
-            )}
+            {user?.role !== Role.EVALUATION_COMMITTEE && <CreateProjectDialog />}
 
-            <EditProjectDialog />
+            {/* <EditProjectDialog /> */}
 
             <ProjectFilters onFilterChange={setFilters} />
 
@@ -55,11 +38,7 @@ export default function Projects() {
                 <p className="text-gray-500">
                   Nenhum projeto encontrado com os filtros selecionados.
                 </p>
-                <Button
-                  variant="link"
-                  onClick={handleClearFilters}
-                  className="mt-2"
-                >
+                <Button variant="link" onClick={handleClearFilters} className="mt-2">
                   Limpar filtros
                 </Button>
               </div>

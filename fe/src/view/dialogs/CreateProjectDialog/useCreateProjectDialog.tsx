@@ -25,9 +25,7 @@ const schema = z.object({
   department: z.nativeEnum(ProjectDepartment),
   description: z.string().min(1, "Descrição do projeto é obrigatório."),
   videoLink: z.string().optional(),
-  participants: z
-    .array(participantSchema)
-    .min(1, "Adicione pelo menos um participante"),
+  participants: z.array(participantSchema).min(1, "Adicione pelo menos um participante"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -67,10 +65,11 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
     },
   });
 
-  const { isPending: isLoadingUploadFiles, mutateAsync: mutateUploadFiles } =
-    useMutation({
+  const { isPending: isLoadingUploadFiles, mutateAsync: mutateUploadFiles } = useMutation(
+    {
       mutationFn: filesService.uploadProjectFile,
-    });
+    }
+  );
 
   const handleSubmit = hookFormHandleSubmit(async (data) => {
     try {
@@ -93,6 +92,7 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
       });
 
       reset(); // Limpa o formulário
+      setFilesToUpload([]);
       onSuccess?.(); // Fecha o modal (callback passada)
     } catch (error) {
       console.log(error);

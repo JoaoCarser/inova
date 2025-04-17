@@ -10,10 +10,11 @@ import { ProjectDepartment } from "@/app/entities/ProjectDepartament";
 import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/app/hooks/useAuth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { filesService } from "@/app/services/filesService";
 import { queryKeys } from "@/app/config/queryKeys";
 import { useProject } from "@/app/hooks/projects/useProject";
+import { Project, ProjectFile } from "@/app/entities/Project";
 
 const participantSchema = z.object({
   id: z.string(),
@@ -26,20 +27,19 @@ const schema = z.object({
   department: z.nativeEnum(ProjectDepartment),
   description: z.string().min(1, "Descrição do projeto é obrigatório."),
   videoLink: z.string().optional(),
-  participants: z
-    .array(participantSchema)
-    .min(1, "Adicione pelo menos um participante"),
+  participants: z.array(participantSchema).min(1, "Adicione pelo menos um participante"),
 });
 
 type FormData = z.infer<typeof schema>;
 
-export const useEditProjectDialog = (onSuccess?: () => void) => {
+export const useEditProjectDialog = (project: Project, onSuccess?: () => void) => {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   //const {} = useProject(projectId);
   const [filesToUpload, setFilesToUpload] = useState<{ File: File }[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<ProjectFile[]>(project.files);
 
   const {
     handleSubmit: hookFormHandleSubmit,
@@ -50,15 +50,23 @@ export const useEditProjectDialog = (onSuccess?: () => void) => {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      participants: [
-        {
-          id: user?.id,
-          name: user?.name,
-          email: user?.email,
-        },
-      ],
+      name: project?.name,
+      department: project?.department,
+      description: project?.description,
+      videoLink: project?.videoLink,
+      participants: project?.usersProjects.map((up) => ({
+        id: up.user.id,
+        name: up.user.name,
+        email: up.user.email,
+      })),
     },
   });
+
+  useEffect(() => {
+    if (project) {
+      // reset({});
+    }
+  }, [project, reset]);
 
   const { isPending: isLoading, mutateAsync } = useMutation({
     mutationKey: [mutationKeys.CREATE_PROJECT],
@@ -70,10 +78,11 @@ export const useEditProjectDialog = (onSuccess?: () => void) => {
     },
   });
 
-  const { isPending: isLoadingUploadFiles, mutateAsync: mutateUploadFiles } =
-    useMutation({
+  const { isPending: isLoadingUploadFiles, mutateAsync: mutateUploadFiles } = useMutation(
+    {
       mutationFn: filesService.uploadProjectFile,
-    });
+    }
+  );
 
   const handleSubmit = hookFormHandleSubmit(async (data) => {
     try {
@@ -133,5 +142,7 @@ export const useEditProjectDialog = (onSuccess?: () => void) => {
     setFilesToUpload,
     open,
     setOpen,
+    uploadedFiles,
+    setUploadedFiles,
   };
 };

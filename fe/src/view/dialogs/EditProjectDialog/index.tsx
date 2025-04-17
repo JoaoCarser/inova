@@ -24,8 +24,15 @@ import {
 import { translatedDepartments } from "@/app/utils/translatedDepartments";
 import { useState } from "react";
 import { ParticipantSelector } from "../../../components/ParticipantSelector";
+import { cn } from "@/lib/utils";
+import { Project } from "@/app/entities/Project";
 
-export function EditProjectDialog() {
+interface EditProjectDialogProps {
+  className?: string;
+  project: Project;
+}
+
+export function EditProjectDialog({ className, project }: EditProjectDialogProps) {
   const {
     errors,
     handleSubmit,
@@ -36,12 +43,14 @@ export function EditProjectDialog() {
     setFilesToUpload,
     open,
     setOpen,
-  } = useEditProjectDialog(() => {
+    uploadedFiles,
+    setUploadedFiles,
+  } = useEditProjectDialog(project, () => {
     setOpen(false); // Fecha o modal após submit
   });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild className={cn(className)}>
         <Button onClick={() => setOpen(true)}>Editar Projeto</Button>
       </DialogTrigger>
       <DialogContent className="lg:max-w-screen-lg max-h-[90vh] overflow-y-auto">
@@ -62,9 +71,7 @@ export function EditProjectDialog() {
                   />
                 </div>
                 <div className="flex flex-col gap-2 w-full md:col-span-6 items-start ">
-                  <Label htmlFor="department">
-                    Área de desenvolvimento do projeto
-                  </Label>
+                  <Label htmlFor="department">Área de desenvolvimento do projeto</Label>
 
                   <Controller
                     name="department"
@@ -107,9 +114,7 @@ export function EditProjectDialog() {
                     )}
                   />
                   {errors.participants && (
-                    <p className="text-sm text-red-500">
-                      {errors.participants.message}
-                    </p>
+                    <p className="text-sm text-red-500">{errors.participants.message}</p>
                   )}
                 </div>
                 <div className="flex flex-col gap-2 w-full md:col-span-6 items-start">
@@ -128,15 +133,14 @@ export function EditProjectDialog() {
                   <FileUploader
                     filesToUpload={filesToUpload}
                     setFilesToUpload={setFilesToUpload}
+                    setUploadedFiles={setUploadedFiles}
+                    projectId={project?.id}
+                    uploadedFiles={uploadedFiles}
                   />
                 </div>
 
                 <div className="flex flex-col gap-4 w-full md:col-start-10 md:col-span-3 ">
-                  <Button
-                    type="submit"
-                    isLoading={isLoading}
-                    disabled={isLoading}
-                  >
+                  <Button type="submit" isLoading={isLoading} disabled={isLoading}>
                     Enviar projeto
                   </Button>
                 </div>

@@ -60,6 +60,7 @@ export class FilesService {
         userId,
         projectId,
         key: awsKey,
+        originalName: file.originalname,
       },
     });
   }

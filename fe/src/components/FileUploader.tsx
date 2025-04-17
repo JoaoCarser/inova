@@ -15,6 +15,9 @@ import { useDropzone } from "react-dropzone";
 import { ScrollArea } from "./ui/scroll-area";
 import { Input } from "./ui/input";
 import { Progress } from "./ui/progress";
+import { ProjectFile } from "@/app/entities/Project";
+import { useMutation } from "@tanstack/react-query";
+import { filesService } from "@/app/services/filesService";
 
 interface FileUploaderProps {
   filesToUpload: { File: File }[];
@@ -25,6 +28,9 @@ interface FileUploaderProps {
       }[]
     >
   >;
+  uploadedFiles?: ProjectFile[];
+  setUploadedFiles?: React.Dispatch<React.SetStateAction<ProjectFile[]>>;
+  projectId?: string;
 }
 
 enum FileTypes {
@@ -63,8 +69,12 @@ const OtherColor = {
 export default function FileUploader({
   filesToUpload,
   setFilesToUpload,
+  setUploadedFiles,
+  uploadedFiles,
+  projectId,
 }: FileUploaderProps) {
   console.log("filesToUpload in component", filesToUpload);
+  console.log("uploadedFiles in component", uploadedFiles);
 
   const getFileIconAndColor = (file: File) => {
     if (file.type.includes(FileTypes.Image)) {
@@ -101,15 +111,19 @@ export default function FileUploader({
     };
   };
 
-  // feel free to mode all these functions to separate utils
-  // here is just for simplicity
+  const { isPending: isLoadingDeleteFile, mutateAsync: mutateDelete } = useMutation({
+    mutationFn: filesService.remove,
+    onSuccess: (_data, variables) => {
+      if (setUploadedFiles) {
+        setUploadedFiles((prev) => prev.filter((file) => file.id !== variables.fileId));
+      }
+    },
+  });
 
-  const uploadImageToCloudinary = async (
-    formData: FormData,
-
-    cancelSource: CancelTokenSource
-  ) => {
-    return;
+  const deleteUploadedFile = async (fileId: string) => {
+    alert(`File ${projectId} deleted!`);
+    if (!projectId) return;
+    await mutateDelete({ fileId, projectId: projectId });
   };
 
   const removeFile = (file: File) => {
@@ -153,6 +167,54 @@ export default function FileUploader({
           className="hidden"
         />
       </div>
+
+      {uploadedFiles && uploadedFiles.length > 0 && (
+        <div>
+          <ScrollArea className="h-40">
+            <p className="font-medium my-2 mt-6 text-muted-foreground text-sm">
+              Arquivos vinculados ao projeto
+            </p>
+            <div className="space-y-2 pr-3">
+              {uploadedFiles.map((file) => {
+                return (
+                  <div
+                    key={file.id}
+                    className="flex justify-between gap-2 rounded-lg overflow-hidden border border-slate-100 group hover:pr-0 pr-2"
+                  >
+                    <a
+                      className="flex items-center flex-1 p-2 cursor-pointer"
+                      href={file.path.replace("#", "%23")}
+                      target="_blank"
+                    >
+                      <div className="text-white">
+                        {<FolderArchive size={40} className={OtherColor.fillColor} />}
+                      </div>
+
+                      <div className="w-full ml-2 space-y-1">
+                        <div className="text-sm flex justify-between">
+                          <p className="text-muted-foreground ">
+                            {file.path.slice(0, 25)}
+                          </p>
+                        </div>
+                      </div>
+                    </a>
+                    <button
+                      onClick={() => {
+                        deleteUploadedFile(file.id);
+                      }}
+                      disabled={isLoadingDeleteFile}
+                      type="button"
+                      className="bg-red-500 text-white transition-all items-center justify-center cursor-pointer px-2 hidden group-hover:flex"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
+        </div>
+      )}
 
       {filesToUpload.length > 0 && (
         <div>

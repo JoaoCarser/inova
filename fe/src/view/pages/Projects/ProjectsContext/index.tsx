@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useState } from "react";
 import { useEffect, useMemo } from "react";
 import { Role } from "@/app/entities/Role";
 import { useAuth } from "@/app/hooks/useAuth";
@@ -19,13 +19,10 @@ interface ProjectsContextValue {
 
 export const ProjectsContext = createContext({} as ProjectsContextValue);
 
-export const ProjectsProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const ProjectsProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const { filters, setFilters } = useProjectFilters();
+  const [projectBeeingEdited, setProjectBeeingEdited] = useState<Project | null>(null);
 
   const {
     projects: allProjects,
@@ -47,10 +44,7 @@ export const ProjectsProvider = ({
   const isLoading = isFetchingProjects || isFetchingUserProjects;
 
   const projects = useMemo(() => {
-    if (
-      user?.role === Role.EVALUATION_COMMITTEE ||
-      user?.role === Role.MARKETING
-    ) {
+    if (user?.role === Role.EVALUATION_COMMITTEE || user?.role === Role.MARKETING) {
       return allProjects;
     }
     return userProjects;
@@ -59,6 +53,8 @@ export const ProjectsProvider = ({
   const handleClearFilters = () => {
     setFilters({ title: "", status: [], department: [] });
   };
+
+  console.log("projects", projects);
 
   return (
     <ProjectsContext.Provider

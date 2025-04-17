@@ -2,6 +2,14 @@ import { ProjectDepartment } from "./ProjectDepartament";
 import { Role } from "./Role";
 import { StatusProject } from "./StatusProject";
 
+export interface ProjectFile {
+  id: string;
+  key: string;
+  path: string;
+  projectId: string;
+  userId: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -24,7 +32,7 @@ export interface Project {
       };
     }
   ];
-  files: [];
+  files: ProjectFile[];
   evaluations: [];
   questions: [];
   averageScore: {};
