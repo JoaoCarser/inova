@@ -22,7 +22,6 @@ export const ProjectsContext = createContext({} as ProjectsContextValue);
 export const ProjectsProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const { filters, setFilters } = useProjectFilters();
-  const [projectBeeingEdited, setProjectBeeingEdited] = useState<Project | null>(null);
 
   const {
     projects: allProjects,

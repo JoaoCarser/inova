@@ -158,12 +158,15 @@ model Period {
 }
 
 enum EvaluationCriterionName {
-  CREATIVITY // Criatividade
-  ORIGINALITY // Originalidade
-  UTILITY // Quão útil será
-  FEASIBILITY // Viabilidade
-  IMPACT // Impacto potencial
-  INNOVATION // Inovação
+  CREATIVITY
+  ORIGINALITY
+  UTILITY
+  FEASIBILITY
+  IMPACT
+  STRATEGIC_ALIGNMENT
+  CLARITY
+  TECHNICAL_FEASIBILITY
+  INNOVATION
 }
 
 model Evaluation {

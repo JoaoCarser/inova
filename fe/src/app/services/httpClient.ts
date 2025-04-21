@@ -5,7 +5,7 @@ import { localStorageKeys } from "../config/localStorageKeys";
 const localhostUrl = "http://192.168.0.11:3000/";
 
 export const httpClient = axios.create({
-  baseURL: localhostUrl,
+  baseURL: "http://localhost:3000/",
 });
 
 httpClient.interceptors.request.use(async (config) => {

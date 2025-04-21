@@ -48,7 +48,9 @@ export class ProjectsController {
         ? [department]
         : [];
     return this.projectsService.findAll({
-      status: normalizedStatus,
+      status: Object.values(StatusProject).filter(
+        (status) => status !== StatusProject.DRAFT,
+      ),
       department: normalizedDepartment,
     });
   }
@@ -91,8 +93,9 @@ export class ProjectsController {
   update(
     @Param('projectId', ParseUUIDPipe) projectId: string,
     @Body() updateProjectDto: UpdateProjectDto,
+    @ActiveUserId() userId: string,
   ) {
-    return this.projectsService.update(projectId, updateProjectDto);
+    return this.projectsService.update(userId, projectId, updateProjectDto);
   }
 
   @Delete(':projectId')

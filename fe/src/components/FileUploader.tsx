@@ -73,9 +73,6 @@ export default function FileUploader({
   uploadedFiles,
   projectId,
 }: FileUploaderProps) {
-  console.log("filesToUpload in component", filesToUpload);
-  console.log("uploadedFiles in component", uploadedFiles);
-
   const getFileIconAndColor = (file: File) => {
     if (file.type.includes(FileTypes.Image)) {
       return {
@@ -121,7 +118,6 @@ export default function FileUploader({
   });
 
   const deleteUploadedFile = async (fileId: string) => {
-    alert(`File ${projectId} deleted!`);
     if (!projectId) return;
     await mutateDelete({ fileId, projectId: projectId });
   };

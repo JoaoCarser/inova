@@ -3,6 +3,7 @@ import { getAll } from "./getAll";
 import { getAllByUserId } from "./getAllByUserId";
 import { getById } from "./getById";
 import { remove } from "./remove";
+import { update } from "./update";
 
 export const projectsService = {
   create,
@@ -10,4 +11,5 @@ export const projectsService = {
   getAllByUserId,
   getAll,
   getById,
+  update,
 };

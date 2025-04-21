@@ -1,7 +1,7 @@
 import { httpClient } from "../httpClient";
 import { Period, PeriodType } from "@/app/entities/Period";
 
-export interface CreateProjectParams {
+export interface CreatePeriodsParams {
   title: string;
   description: string;
   startDate: string;
@@ -9,7 +9,7 @@ export interface CreateProjectParams {
   type: PeriodType;
 }
 
-export const create = async (params: CreateProjectParams) => {
+export const create = async (params: CreatePeriodsParams) => {
   const { data } = await httpClient.post<Period>("/periods", params);
   return data;
 };

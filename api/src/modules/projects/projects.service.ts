@@ -180,6 +180,7 @@ export class ProjectsService {
           select: {
             id: true,
             comments: true,
+            createdAt: true,
             criteria: {
               select: {
                 id: true,
@@ -257,7 +258,11 @@ export class ProjectsService {
     });
   }
 
-  async update(projectId: string, updateProjectDto: UpdateProjectDto) {
+  async update(
+    userId: string,
+    projectId: string,
+    updateProjectDto: UpdateProjectDto,
+  ) {
     const { name, description, status, department, videoLink } =
       updateProjectDto;
 
@@ -269,6 +274,15 @@ export class ProjectsService {
 
     if (!projectIdExists) {
       throw new NotFoundException('Esse projeto não existe!');
+    }
+
+    const userProject = await this.usersProjectsService.findByUserId(
+      userId,
+      projectId,
+    );
+
+    if (!userProject) {
+      throw new NotFoundException('Você não tem acesso a esse projeto!');
     }
 
     return await this.projectsRepo.update({

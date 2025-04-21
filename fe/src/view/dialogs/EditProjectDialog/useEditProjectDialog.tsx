@@ -15,6 +15,7 @@ import { filesService } from "@/app/services/filesService";
 import { queryKeys } from "@/app/config/queryKeys";
 import { useProject } from "@/app/hooks/projects/useProject";
 import { Project, ProjectFile } from "@/app/entities/Project";
+import { UpdateProjectParams } from "@/app/services/projectsService/update";
 
 const participantSchema = z.object({
   id: z.string(),
@@ -39,6 +40,8 @@ export const useEditProjectDialog = (project: Project, onSuccess?: () => void) =
   const [open, setOpen] = useState(false);
   //const {} = useProject(projectId);
   const [filesToUpload, setFilesToUpload] = useState<{ File: File }[]>([]);
+  const [submitStatus, setSubmitStatus] = useState<StatusProject>(StatusProject.DRAFT);
+
   const [uploadedFiles, setUploadedFiles] = useState<ProjectFile[]>(project.files);
 
   const {
@@ -70,8 +73,8 @@ export const useEditProjectDialog = (project: Project, onSuccess?: () => void) =
 
   const { isPending: isLoading, mutateAsync } = useMutation({
     mutationKey: [mutationKeys.CREATE_PROJECT],
-    mutationFn: async (data: CreateProjectParams) => {
-      return projectsService.create(data);
+    mutationFn: async (data: UpdateProjectParams) => {
+      return projectsService.update(data);
     },
     onSuccess: async () => {
       await queryClient.refetchQueries({ queryKey: [queryKeys.PROJECTS] });
@@ -86,20 +89,21 @@ export const useEditProjectDialog = (project: Project, onSuccess?: () => void) =
 
   const handleSubmit = hookFormHandleSubmit(async (data) => {
     try {
-      const project = await mutateAsync({
+      await mutateAsync({
         ...data,
-        status: StatusProject.DRAFT,
+        status: submitStatus,
+        id: project.id,
       }); //Retorno da mutation Function
 
       for (const file of filesToUpload) {
         await mutateUploadFiles({ file: file.File, projectId: project.id });
       }
 
-      console.log("project response", project);
+      await queryClient.invalidateQueries({ queryKey: [queryKeys.PROJECTS] });
 
       toast({
         variant: "default",
-        title: "Projeto cadastrado com sucesso!",
+        title: "Projeto editado com sucesso!",
         description: "Você pode ver o projeto no painel de projetos.",
         duration: 5000,
       });
@@ -144,5 +148,7 @@ export const useEditProjectDialog = (project: Project, onSuccess?: () => void) =
     setOpen,
     uploadedFiles,
     setUploadedFiles,
+    setSubmitStatus,
+    submitStatus,
   };
 };

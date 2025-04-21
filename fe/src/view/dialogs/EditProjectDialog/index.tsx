@@ -26,6 +26,7 @@ import { useState } from "react";
 import { ParticipantSelector } from "../../../components/ParticipantSelector";
 import { cn } from "@/lib/utils";
 import { Project } from "@/app/entities/Project";
+import { StatusProject } from "@/app/entities/StatusProject";
 
 interface EditProjectDialogProps {
   className?: string;
@@ -44,6 +45,8 @@ export function EditProjectDialog({ className, project }: EditProjectDialogProps
     open,
     setOpen,
     uploadedFiles,
+    setSubmitStatus,
+    submitStatus,
     setUploadedFiles,
   } = useEditProjectDialog(project, () => {
     setOpen(false); // Fecha o modal após submit
@@ -139,10 +142,28 @@ export function EditProjectDialog({ className, project }: EditProjectDialogProps
                   />
                 </div>
 
-                <div className="flex flex-col gap-4 w-full md:col-start-10 md:col-span-3 ">
-                  <Button type="submit" isLoading={isLoading} disabled={isLoading}>
-                    Enviar projeto
-                  </Button>
+                <div className="flex flex-col gap-2 w-full md:flex-row md:col-span-6 items-start md:col-start-8">
+                  <div className="flex flex-col gap-4 w-full  ">
+                    <Button
+                      type="submit"
+                      isLoading={isLoading}
+                      disabled={isLoading}
+                      onClick={() => setSubmitStatus(StatusProject.SUBMITTED)} // Define como SUBMITTED antes do submit
+                    >
+                      Enviar para avaliação
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-col gap-4 w-full  ">
+                    <Button
+                      type="submit"
+                      isLoading={isLoading}
+                      disabled={isLoading}
+                      onClick={() => setSubmitStatus(StatusProject.DRAFT)} // Define como DRAFT antes do submit
+                    >
+                      Salvar Rascunho
+                    </Button>
+                  </div>
                 </div>
               </div>
             </form>
