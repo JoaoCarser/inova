@@ -37,6 +37,7 @@ import { Role } from "@/app/entities/Role";
 import { Button } from "./ui/button";
 import { EvaluationDialog } from "@/view/dialogs/EvaluationDialog";
 import { calculateAverageScore } from "@/app/utils/evaluationUtils";
+import { useAuth } from "@/app/hooks/useAuth";
 
 interface ProjectCardProps {
   project: Project;
@@ -44,6 +45,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, userRole }: ProjectCardProps) {
+  const { user } = useAuth();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -52,28 +54,11 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
   // Extract user names for display
   const userNames = project.usersProjects.map((up) => up.user.name).join(", ");
 
-  const statusMessages = {
-    [StatusProject.REVIEWED]: {
-      message: "O projeto já foi avaliado por todo comitê avaliativo.",
-      icon: <CheckCheck className="h-5 w-5" />,
-      colors: "text-gray-800 bg-green-300",
-    },
-    [StatusProject.SUBMITTED]: {
-      message: "O projeto já foi submetido para avaliação.",
-      icon: <Check className="h-5 w-5" />,
-      colors: "text-gray-800 bg-green-300",
-    },
-    [StatusProject.UNDER_REVIEW]: {
-      message: "O projeto está sendo avaliado pelo comitê avaliativo.",
-      icon: <Clock1 className="h-5 w-5" />,
-      colors: "text-gray-800 bg-gray-300",
-    },
-    [StatusProject.DRAFT]: {
-      message: "O projeto está salvo como rascunho e pode ser editado.",
-      icon: <Pencil className="h-5 w-5" />,
-      colors: "text-gray-800 bg-gray-300",
-    },
-  };
+  console.log(user);
+
+  const userAlreadyEvaluated = project.evaluations.find(
+    (evaluation) => evaluation.evaluatorId === user?.id!
+  );
 
   const { mutateAsync: mutateDeleteProject, isPending: isLoadingDeleteProject } =
     useMutation({
@@ -173,8 +158,14 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
 
           {userRole === Role.EVALUATION_COMMITTEE && (
             <div className="w-full">
-              <Button className="w-full" onClick={() => setIsEvaluationModalOpen(true)}>
-                Avaliar Projeto
+              <Button
+                className="w-full"
+                onClick={() => setIsEvaluationModalOpen(true)}
+                disabled={!!userAlreadyEvaluated}
+              >
+                {userAlreadyEvaluated
+                  ? "Você já avaliou este projeto"
+                  : "Avaliar Projeto"}
               </Button>
             </div>
           )}
@@ -197,6 +188,7 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
         userNames={userNames}
         setIsDeleteDialogOpen={setIsDeleteDialogOpen}
         userRole={userRole}
+        userId={user?.id!}
       />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

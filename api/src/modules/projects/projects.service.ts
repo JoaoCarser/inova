@@ -40,6 +40,7 @@ type ProjectWithRelations = Prisma.ProjectGetPayload<{
       select: {
         id: true;
         comments: true;
+        evaluatorId: true;
         criteria: {
           select: {
             id: true;
@@ -85,6 +86,8 @@ export class ProjectsService {
       select: {
         id: true,
         comments: true,
+        createdAt: true,
+        evaluatorId: true,
         criteria: {
           select: {
             id: true,
@@ -181,6 +184,7 @@ export class ProjectsService {
             id: true,
             comments: true,
             createdAt: true,
+            evaluatorId: true,
             criteria: {
               select: {
                 id: true,
@@ -250,12 +254,15 @@ export class ProjectsService {
       );
     }
 
-    return await this.projectsRepo.findUnique({
+    //@ts-ignore
+    const projects: ProjectWithRelations = await this.projectsRepo.findUnique({
       where: {
         id: projectId,
       },
       include: this.includeClause,
     });
+
+    return projects;
   }
 
   async update(
@@ -296,6 +303,18 @@ export class ProjectsService {
         department,
         videoLink,
       },
+    });
+  }
+
+  async updateStatus(
+    projectId: string,
+    updateStatusDto: { status: StatusProject },
+  ) {
+    await this.projectsRepo.update({
+      where: {
+        id: projectId,
+      },
+      data: updateStatusDto,
     });
   }
 

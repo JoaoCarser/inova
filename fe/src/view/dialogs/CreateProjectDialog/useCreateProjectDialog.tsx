@@ -13,6 +13,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { useState } from "react";
 import { filesService } from "@/app/services/filesService";
 import { queryKeys } from "@/app/config/queryKeys";
+import { handleAxiosError } from "@/app/utils/handleAxiosError";
 
 const participantSchema = z.object({
   id: z.string(),
@@ -95,28 +96,7 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
       setFilesToUpload([]);
       onSuccess?.(); // Fecha o modal (callback passada)
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError) {
-        if (
-          error.response &&
-          error.response.status >= 400 &&
-          error.response.status <= 499
-        ) {
-          toast({
-            variant: "destructive",
-            title: "Ocorreu um erro!",
-            description: error.response.data.message,
-            duration: 5000,
-          });
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Ocorreu um erro!",
-            description: "Por favor, tente novamente.",
-          });
-        }
-      }
+      handleAxiosError(error);
     }
   });
 

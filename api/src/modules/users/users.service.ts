@@ -12,8 +12,8 @@ import { Prisma } from '@prisma/client';
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepositories) {}
 
-  async findAll() {
-    return await this.usersRepository.findMany({});
+  async findAll(options?: Prisma.UserFindManyArgs) {
+    return await this.usersRepository.findMany(options);
   }
 
   async findByUserId(userId: string) {
@@ -66,6 +66,7 @@ export class UsersService {
             },
           },
         },
+        //evaluations: true, talvez adicionar novamente no futuro se for necessário
       },
     });
   }

@@ -182,6 +182,7 @@ model Evaluation {
 
   criteria EvaluationCriteria[] // Relação com os critérios avaliados
 
+  @@unique([projectId, evaluatorId]) // <--- Adiciona isso aqui
   @@map("evaluations")
 }
 

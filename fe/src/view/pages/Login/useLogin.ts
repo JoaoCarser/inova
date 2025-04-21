@@ -8,11 +8,9 @@ import { mutationKeys } from "@/app/config/mutationKeys";
 import { SigninParams } from "@/app/services/authService/signin";
 import { authService } from "@/app/services/authService";
 import { useAuth } from "@/app/hooks/useAuth";
+import { handleAxiosError } from "@/app/utils/handleAxiosError";
 const schema = z.object({
-  email: z
-    .string()
-    .min(1, "E-mail é obrigatório.")
-    .email("Informe um E-mail válido."),
+  email: z.string().min(1, "E-mail é obrigatório.").email("Informe um E-mail válido."),
   password: z
     .string()
     .nonempty("Senha é obrigatório")
@@ -49,12 +47,7 @@ export const useLogin = () => {
       const { accessToken } = await mutateAsync(data); //Retorno da mutation Function
       signin(accessToken);
     } catch (error) {
-      console.log(error);
-      toast({
-        variant: "destructive",
-        title: "Credênciais inválidas.",
-        description: "Por favor, tente novamente.",
-      });
+      handleAxiosError(error);
     }
   });
 

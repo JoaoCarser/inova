@@ -16,6 +16,7 @@ import { queryKeys } from "@/app/config/queryKeys";
 import { useProject } from "@/app/hooks/projects/useProject";
 import { Project, ProjectFile } from "@/app/entities/Project";
 import { UpdateProjectParams } from "@/app/services/projectsService/update";
+import { handleAxiosError } from "@/app/utils/handleAxiosError";
 
 const participantSchema = z.object({
   id: z.string(),
@@ -111,28 +112,7 @@ export const useEditProjectDialog = (project: Project, onSuccess?: () => void) =
       reset(); // Limpa o formulário
       onSuccess?.(); // Fecha o modal (callback passada)
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError) {
-        if (
-          error.response &&
-          error.response.status >= 400 &&
-          error.response.status <= 499
-        ) {
-          toast({
-            variant: "destructive",
-            title: "Ocorreu um erro!",
-            description: error.response.data.message,
-            duration: 5000,
-          });
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Ocorreu um erro!",
-            description: "Por favor, tente novamente.",
-          });
-        }
-      }
+      handleAxiosError(error);
     }
   });
 

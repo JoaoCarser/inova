@@ -2,6 +2,7 @@ export interface Evaluation {
   id: string;
   createdAt: string;
   comments: string;
+  evaluatorId: string;
   criteria: Criteria[];
 }
 

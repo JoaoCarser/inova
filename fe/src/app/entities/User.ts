@@ -14,4 +14,11 @@ export interface User {
   usersProjects: {
     project: Project;
   }[];
+  /* evaluations: {
+    comments: string;
+    createdAt: string;
+    evaluatorId: string;
+    id: string;
+    projectId: string;
+  }[]; */
 }

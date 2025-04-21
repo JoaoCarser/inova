@@ -22,6 +22,7 @@ import { evaluationService } from "@/app/services/evaluationService";
 import { queryKeys } from "@/app/config/queryKeys";
 import { useToast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
+import { handleAxiosError } from "@/app/utils/handleAxiosError";
 
 // Evaluation criteria types
 
@@ -67,13 +68,7 @@ interface EvaluationDialogProps {
   className?: string;
 }
 
-export function EvaluationDialog({
-  project,
-  isOpen,
-  onClose,
-  setOpen,
-  className,
-}: EvaluationDialogProps) {
+export function EvaluationDialog({ project, isOpen, onClose }: EvaluationDialogProps) {
   const [comments, setComments] = useState("");
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -130,28 +125,7 @@ export function EvaluationDialog({
         criteriaDefinitions.map((criterion) => ({ name: criterion.name, score: 0 }))
       );
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError) {
-        if (
-          error.response &&
-          error.response.status >= 400 &&
-          error.response.status <= 499
-        ) {
-          toast({
-            variant: "destructive",
-            title: "Ocorreu um erro!",
-            description: error.response.data.message,
-            duration: 5000,
-          });
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Ocorreu um erro!",
-            description: "Por favor, tente novamente.",
-          });
-        }
-      }
+      handleAxiosError(error);
     }
   };
 

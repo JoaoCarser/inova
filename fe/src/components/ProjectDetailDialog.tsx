@@ -39,6 +39,7 @@ interface ProjectDialogDetailsProps {
   userNames: string;
   setIsDeleteDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   userRole: Role;
+  userId: string;
 }
 
 export const statusConfig = {
@@ -71,12 +72,16 @@ export const ProjectDetailDialog = ({
   userNames,
   userRole,
   setIsDeleteDialogOpen,
+  userId,
 }: ProjectDialogDetailsProps) => {
   // Calculate average scores
   const { averageScore, evaluationCount, criteriaAverages } = calculateAverageScore(
     project.evaluations
   );
   const [_activeTab, setActiveTab] = useState("details");
+  const userAlreadyEvaluated = project.evaluations.find(
+    (evaluation) => evaluation.evaluatorId === userId!
+  );
 
   // Determine if we should show evaluations tab
   const showEvaluations = project.evaluations.length > 0;
@@ -241,7 +246,7 @@ export const ProjectDetailDialog = ({
                 </h3>
                 {project.evaluations.map((evaluation) => (
                   <div key={evaluation.id} className="border rounded-lg p-4 space-y-3">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-center ">
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((star) => {
                           const avgScore =
@@ -258,6 +263,13 @@ export const ProjectDetailDialog = ({
                             />
                           );
                         })}
+                      </div>
+                      <div>
+                        {userId === evaluation.evaluatorId && (
+                          <Button variant="default" size="sm">
+                            Editar Avaliação
+                          </Button>
+                        )}
                       </div>
                     </div>
 
