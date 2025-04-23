@@ -12,6 +12,7 @@ import { Role } from "@/app/entities/Role";
 import { SignupParams } from "@/app/services/authService/signup";
 import { AxiosError } from "axios";
 import { useBases } from "@/app/hooks/bases/useBases";
+import { handleAxiosError } from "@/app/utils/handleAxiosError";
 const schema = z.object({
   name: z.string().min(1, "Nome é obrigatório."),
   email: z
@@ -61,28 +62,7 @@ export const useRegister = () => {
       }); //Retorno da mutation Function
       signin(accessToken);
     } catch (error) {
-      console.log(error);
-
-      if (error instanceof AxiosError) {
-        if (
-          error.response &&
-          error.response.status >= 400 &&
-          error.response.status <= 499
-        ) {
-          toast({
-            variant: "destructive",
-            title: "Ocorreu um erro!",
-            description: error.response.data.message,
-            duration: 5000,
-          });
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Ocorreu um erro!",
-            description: "Por favor, tente novamente.",
-          });
-        }
-      }
+      handleAxiosError(error);
     }
   });
 

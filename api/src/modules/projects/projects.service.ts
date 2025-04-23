@@ -97,7 +97,17 @@ export class ProjectsService {
         },
       },
     },
-    questions: true,
+    questions: {
+      include: {
+        author: {
+          select: {
+            name: true,
+            email: true,
+            id: true,
+          },
+        },
+      },
+    },
   };
 
   async create(userId: string, createProjectDto: CreateProjectDto) {
@@ -161,40 +171,7 @@ export class ProjectsService {
     //@ts-ignore
     const projects: ProjectWithRelations[] = await this.projectsRepo.findMany({
       where: whereClause,
-      include: {
-        usersProjects: {
-          select: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                cpf: true,
-                position: true,
-                baseId: true,
-              },
-            },
-          },
-        },
-        files: true,
-        evaluations: {
-          select: {
-            id: true,
-            comments: true,
-            createdAt: true,
-            evaluatorId: true,
-            criteria: {
-              select: {
-                id: true,
-                name: true,
-                score: true,
-              },
-            },
-          },
-        },
-        questions: true,
-      },
+      include: this.includeClause,
     });
 
     // cálculo de médias (como já está)

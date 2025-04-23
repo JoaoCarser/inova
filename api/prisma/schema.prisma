@@ -28,9 +28,7 @@ model User {
   base     Base   @relation(fields: [baseId], references: [id])
 
   usersProjects UsersProjects[]
-
   createdQuestions  Question[]   @relation("CreatedQuestions") // Perguntas criadas por este usuário
-  receivedQuestions Question[]   @relation("ReceivedQuestions") // Perguntas recebidas por este usuário
   files             File[]
   evaluations       Evaluation[]
 
@@ -113,6 +111,8 @@ enum StatusQuestion {
   SUBMITED
   VIEWED
   COMPLETED
+  ANSWERED
+  PENDING 
 
   @@map("status_questions")
 }
@@ -124,12 +124,10 @@ model Question {
   response    String? // A resposta ao questionamento (opcional)
   projectId   String         @map("project_id") @db.Uuid
   authorId    String         @map("author_id") @db.Uuid
-  recipientId String         @map("recipient_id") @db.Uuid
+ 
   createdAt   DateTime       @default(now()) @map("created_at")
   respondedAt DateTime?      @map("responded_at") // Data de resposta (opcional)
-
   author    User    @relation("CreatedQuestions", fields: [authorId], references: [id], onDelete: Cascade)
-  recipient User    @relation("ReceivedQuestions", fields: [recipientId], references: [id], onDelete: Cascade)
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("questions")

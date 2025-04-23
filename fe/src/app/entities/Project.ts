@@ -1,5 +1,6 @@
 import { Evaluation } from "./Evaluation";
 import { ProjectDepartment } from "./ProjectDepartament";
+import { Question } from "./Question";
 import { Role } from "./Role";
 import { StatusProject } from "./StatusProject";
 
@@ -36,6 +37,6 @@ export interface Project {
   ];
   files: ProjectFile[];
   evaluations: Evaluation[];
-  questions: [];
+  questions: Question[];
   averageScore: {};
 }

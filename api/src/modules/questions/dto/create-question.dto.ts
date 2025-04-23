@@ -20,9 +20,4 @@ export class CreateQuestionDto {
   @IsString()
   @IsUUID()
   projectId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @IsUUID()
-  recipientId: string;
 }

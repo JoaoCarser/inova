@@ -15,6 +15,7 @@ import {
   Download,
   FileText,
   HourglassIcon,
+  MessageCircle,
   Star,
   Users,
 } from "lucide-react";
@@ -31,6 +32,10 @@ import { calculateAverageScore } from "@/app/utils/evaluationUtils";
 import { criterionLabels } from "@/app/utils/criterionLabels";
 import { Progress } from "./ui/progress";
 import { useMemo, useState } from "react";
+import { EvaluatorQuestionForm } from "./EvaluatorQuestionForm";
+import { EvaluatorQuestionsList } from "./EvaluatorQuestionsList";
+import { ParticipantQuestions } from "./ParticipantQuestions";
+import { StatusQuestion } from "@/app/entities/Question";
 
 interface ProjectDialogDetailsProps {
   project: Project;
@@ -75,21 +80,31 @@ export const ProjectDetailDialog = ({
   userId,
 }: ProjectDialogDetailsProps) => {
   // Calculate average scores
-  const { averageScore, evaluationCount, criteriaAverages } = calculateAverageScore(
-    project.evaluations
-  );
+  const { averageScore, evaluationCount, criteriaAverages } =
+    calculateAverageScore(project.evaluations);
   const [_activeTab, setActiveTab] = useState("details");
- 
+
+  const handleSubmitResponse = (questionId: string, response: string) => {
+    console.log("handleSubmitResponse", questionId, response);
+  };
+
   const evaluations = useMemo(() => {
     if (userRole === Role.EVALUATION_COMMITTEE) {
-      return project.evaluations.filter((evaluation) => evaluation.evaluatorId === userId);
+      return project.evaluations.filter(
+        (evaluation) => evaluation.evaluatorId === userId
+      );
     }
 
     return project.evaluations;
-  },[])
+  }, []);
 
   // Determine if we should show evaluations tab
   const showEvaluations = project.evaluations.length > 0;
+
+  // Count unanswered questions for the current user
+  const unansweredQuestionsCount = project.questions.filter(
+    (q) => q.status !== StatusQuestion.ANSWERED
+  ).length;
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -97,7 +112,9 @@ export const ProjectDetailDialog = ({
         <DialogHeader className="border-b pb-4">
           <div className="flex justify-between items-start">
             <div>
-              <DialogTitle className="text-2xl font-bold">{project.name}</DialogTitle>
+              <DialogTitle className="text-2xl font-bold">
+                {project.name}
+              </DialogTitle>
               <DialogDescription className="mt-1">
                 Detalhes completos do projeto
               </DialogDescription>
@@ -105,23 +122,41 @@ export const ProjectDetailDialog = ({
           </div>
         </DialogHeader>
 
-        <Tabs defaultValue="details" className="mt-4" onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-2">
+        <Tabs
+          defaultValue="details"
+          className="mt-4"
+          onValueChange={setActiveTab}
+        >
+          <TabsList className="grid grid-cols-3">
             <TabsTrigger value="details">Detalhes</TabsTrigger>
             <TabsTrigger value="evaluations" disabled={!showEvaluations}>
               Avaliações {evaluationCount > 0 && `(${evaluationCount})`}
+            </TabsTrigger>
+
+            <TabsTrigger value="questions">
+              Perguntas{" "}
+              {unansweredQuestionsCount > 0 &&
+                userRole === Role.PARTICIPANT && (
+                  <Badge className="ml-1 bg-red-100 text-red-700">
+                    {unansweredQuestionsCount}
+                  </Badge>
+                )}
             </TabsTrigger>
           </TabsList>
 
           <div className="space-y-6 py-4">
             <TabsContent value="details" className="space-y-6 py-4">
               <div>
-                <h3 className="text-md font-medium text-gray-500 mb-2">Descrição</h3>
+                <h3 className="text-md font-medium text-gray-500 mb-2">
+                  Descrição
+                </h3>
                 <p className="text-gray-800">{project.description}</p>
               </div>
 
               <div>
-                <h3 className="text-md font-medium text-gray-500 mb-2">Equipe</h3>
+                <h3 className="text-md font-medium text-gray-500 mb-2">
+                  Equipe
+                </h3>
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-gray-400" />
                   <p className="text-gray-800">{userNames}</p>
@@ -129,7 +164,9 @@ export const ProjectDetailDialog = ({
               </div>
 
               <div>
-                <h3 className="text-md font-medium text-gray-500 mb-2">Departamento</h3>
+                <h3 className="text-md font-medium text-gray-500 mb-2">
+                  Departamento
+                </h3>
                 <div className="flex items-center gap-2">
                   <Briefcase className="h-5 w-5 text-gray-400" />
                   <p className="text-gray-800 uppercase">
@@ -142,9 +179,13 @@ export const ProjectDetailDialog = ({
                 </div>
               </div>
               <div>
-                <h3 className="text-md font-medium text-gray-500 mb-2">Arquivos</h3>
+                <h3 className="text-md font-medium text-gray-500 mb-2">
+                  Arquivos
+                </h3>
                 {project.files.length === 0 ? (
-                  <p className="text-gray-500 italic">Nenhum arquivo disponível</p>
+                  <p className="text-gray-500 italic">
+                    Nenhum arquivo disponível
+                  </p>
                 ) : (
                   <div className="border rounded-md divide-y">
                     {project.files.map((file) => (
@@ -155,7 +196,9 @@ export const ProjectDetailDialog = ({
                         <div className="flex items-center gap-3">
                           <FileIcon filePath={file.path} />
                           <div>
-                            <p className="text-sm font-medium">{file.originalName}</p>
+                            <p className="text-sm font-medium">
+                              {file.originalName}
+                            </p>
                             <p className="text-xs text-gray-500">
                               {/*   {formatFileSize(file.size)} */}
                             </p>
@@ -175,9 +218,13 @@ export const ProjectDetailDialog = ({
                 )}
               </div>
               <div>
-                <h3 className="text-md font-medium text-gray-500 mb-2">Status:</h3>
+                <h3 className="text-md font-medium text-gray-500 mb-2">
+                  Status:
+                </h3>
                 <Badge
-                  className={`${statusConfig[project.status].color} font-normal`}
+                  className={`${
+                    statusConfig[project.status].color
+                  } font-normal`}
                   variant="outline"
                 >
                   <span className="flex items-center gap-1">
@@ -219,7 +266,9 @@ export const ProjectDetailDialog = ({
                         />
                       ))}
                     </div>
-                    <span className="text-lg font-medium">{averageScore.toFixed(1)}</span>
+                    <span className="text-lg font-medium">
+                      {averageScore.toFixed(1)}
+                    </span>
                     <span className="text-sm text-gray-500">
                       ({evaluationCount}{" "}
                       {evaluationCount === 1 ? "avaliação" : "avaliações"})
@@ -227,19 +276,24 @@ export const ProjectDetailDialog = ({
                   </div>
 
                   <div className="space-y-3">
-                    {Object.entries(criteriaAverages).map(([criterion, score]) => (
-                      <div key={criterion} className="space-y-1">
-                        <div className="flex justify-between text-sm">
-                          <span>
-                            {criterionLabels[criterion as EvaluationCriterionName] ||
-                              criterion}
-                          </span>
-                          <span className="font-medium">{score.toFixed(1)}</span>
+                    {Object.entries(criteriaAverages).map(
+                      ([criterion, score]) => (
+                        <div key={criterion} className="space-y-1">
+                          <div className="flex justify-between text-sm">
+                            <span>
+                              {criterionLabels[
+                                criterion as EvaluationCriterionName
+                              ] || criterion}
+                            </span>
+                            <span className="font-medium">
+                              {score.toFixed(1)}
+                            </span>
+                          </div>
+                          <Progress value={score * 20} className="h-2" />{" "}
+                          {/* Convert 0-5 to 0-100 */}
                         </div>
-                        <Progress value={score * 20} className="h-2" />{" "}
-                        {/* Convert 0-5 to 0-100 */}
-                      </div>
-                    ))}
+                      )
+                    )}
                   </div>
                 </div>
               )}
@@ -250,13 +304,18 @@ export const ProjectDetailDialog = ({
                   Avaliações Individuais
                 </h3>
                 {evaluations.map((evaluation) => (
-                  <div key={evaluation.id} className="border rounded-lg p-4 space-y-3">
+                  <div
+                    key={evaluation.id}
+                    className="border rounded-lg p-4 space-y-3"
+                  >
                     <div className="flex justify-between items-center ">
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((star) => {
                           const avgScore =
-                            evaluation.criteria.reduce((sum, c) => sum + c.score, 0) /
-                            evaluation.criteria.length;
+                            evaluation.criteria.reduce(
+                              (sum, c) => sum + c.score,
+                              0
+                            ) / evaluation.criteria.length;
                           return (
                             <Star
                               key={star}
@@ -286,19 +345,64 @@ export const ProjectDetailDialog = ({
 
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       {evaluation.criteria.map((criterion) => (
-                        <div key={criterion.name} className="flex justify-between">
+                        <div
+                          key={criterion.name}
+                          className="flex justify-between"
+                        >
                           <span className="text-gray-600">
-                            {criterionLabels[criterion.name as EvaluationCriterionName] ||
-                              criterion.name}
+                            {criterionLabels[
+                              criterion.name as EvaluationCriterionName
+                            ] || criterion.name}
                             :
                           </span>
-                          <span className="font-medium">{criterion.score}/5</span>
+                          <span className="font-medium">
+                            {criterion.score}/5
+                          </span>
                         </div>
                       ))}
                     </div>
                   </div>
                 ))}
               </div>
+            </TabsContent>
+
+            <TabsContent value="questions" className="space-y-6 py-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-md font-medium text-gray-700">
+                  Perguntas e Respostas
+                </h3>
+                <Badge variant="outline" className="flex items-center gap-1">
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  {project.questions.length}{" "}
+                  {project.questions.length === 1 ? "pergunta" : "perguntas"}
+                </Badge>
+              </div>
+
+              {/* Show different UI based on user role */}
+              {userRole === Role.EVALUATION_COMMITTEE ? (
+                <div className="space-y-6">
+                  {/* Question form for evaluators */}
+                  <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                    <h3 className="text-md font-medium text-gray-700 mb-3">
+                      Fazer uma pergunta
+                    </h3>
+                    <EvaluatorQuestionForm project={project} />
+                  </div>
+
+                  {/* Questions list for evaluators */}
+                  <EvaluatorQuestionsList
+                    questions={project.questions}
+                    currentUserId={userId}
+                  />
+                </div>
+              ) : (
+                /* Questions list for participants */
+                <ParticipantQuestions
+                  questions={project.questions}
+                  currentUserId={userId}
+                  onSubmitResponse={handleSubmitResponse}
+                />
+              )}
             </TabsContent>
 
             {userRole === Role.PARTICIPANT && (
