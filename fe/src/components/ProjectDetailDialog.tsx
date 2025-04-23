@@ -30,7 +30,7 @@ import { EvaluationCriterionName } from "@/app/entities/EvaluationCriterionName"
 import { calculateAverageScore } from "@/app/utils/evaluationUtils";
 import { criterionLabels } from "@/app/utils/criterionLabels";
 import { Progress } from "./ui/progress";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface ProjectDialogDetailsProps {
   project: Project;
@@ -79,9 +79,14 @@ export const ProjectDetailDialog = ({
     project.evaluations
   );
   const [_activeTab, setActiveTab] = useState("details");
-  const userAlreadyEvaluated = project.evaluations.find(
-    (evaluation) => evaluation.evaluatorId === userId!
-  );
+ 
+  const evaluations = useMemo(() => {
+    if (userRole === Role.EVALUATION_COMMITTEE) {
+      return project.evaluations.filter((evaluation) => evaluation.evaluatorId === userId);
+    }
+
+    return project.evaluations;
+  },[])
 
   // Determine if we should show evaluations tab
   const showEvaluations = project.evaluations.length > 0;
@@ -244,7 +249,7 @@ export const ProjectDetailDialog = ({
                 <h3 className="text-md font-medium text-gray-700">
                   Avaliações Individuais
                 </h3>
-                {project.evaluations.map((evaluation) => (
+                {evaluations.map((evaluation) => (
                   <div key={evaluation.id} className="border rounded-lg p-4 space-y-3">
                     <div className="flex justify-between items-center ">
                       <div className="flex">

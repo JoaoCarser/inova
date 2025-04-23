@@ -13,7 +13,7 @@ export default function Projects() {
   return (
     <ProjectsProvider>
       <ProjectsContext.Consumer>
-        {({ handleClearFilters, isLoading, projects, filters, setFilters, user }) => (
+        {({ handleClearFilters, isLoading, projects, setFilters, user }) => (
           <div>
             <Header title="Projetos" />
 
@@ -21,7 +21,9 @@ export default function Projects() {
               <ProjectsStatboxContainer projects={projects} />
             )}
 
-            {user?.role !== Role.EVALUATION_COMMITTEE && <CreateProjectDialog />}
+            {user?.role !== Role.EVALUATION_COMMITTEE && (
+              <CreateProjectDialog />
+            )}
 
             {/* <EditProjectDialog /> */}
 
@@ -38,7 +40,11 @@ export default function Projects() {
                 <p className="text-gray-500">
                   Nenhum projeto encontrado com os filtros selecionados.
                 </p>
-                <Button variant="link" onClick={handleClearFilters} className="mt-2">
+                <Button
+                  variant="link"
+                  onClick={handleClearFilters}
+                  className="mt-2"
+                >
                   Limpar filtros
                 </Button>
               </div>

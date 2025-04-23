@@ -107,7 +107,6 @@ export class ProjectsService {
     const userExists = await this.usersService.findByUserId(userId);
 
     if (!userExists) {
-      ('');
       throw new ConflictException('Usuário não encontrado');
     }
 
@@ -281,6 +280,10 @@ export class ProjectsService {
 
     if (!projectIdExists) {
       throw new NotFoundException('Esse projeto não existe!');
+    }
+
+    if (projectIdExists.status !== StatusProject.DRAFT) {
+      throw new ConflictException('Esse projeto não pode ser editado!');
     }
 
     const userProject = await this.usersProjectsService.findByUserId(

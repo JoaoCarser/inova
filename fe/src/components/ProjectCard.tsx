@@ -1,13 +1,9 @@
 import { useState } from "react";
 import {
   Briefcase,
-  Pencil,
   Clock,
   EllipsisVertical,
   Users,
-  Clock1,
-  CheckCheck,
-  Check,
   AlertCircle,
   Star,
 } from "lucide-react";
@@ -60,13 +56,15 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
     (evaluation) => evaluation.evaluatorId === user?.id!
   );
 
-  const { mutateAsync: mutateDeleteProject, isPending: isLoadingDeleteProject } =
-    useMutation({
-      mutationFn: projectsService.remove,
-      onSuccess: async () => {
-        await queryClient.refetchQueries({ queryKey: [queryKeys.PROJECTS] });
-      },
-    });
+  const {
+    mutateAsync: mutateDeleteProject,
+    isPending: isLoadingDeleteProject,
+  } = useMutation({
+    mutationFn: projectsService.remove,
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: [queryKeys.PROJECTS] });
+    },
+  });
 
   const handleDeleteProject = async () => {
     await mutateDeleteProject(project.id);
@@ -77,7 +75,9 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
   };
 
   // Calculate average score
-  const { averageScore, evaluationCount } = calculateAverageScore(project.evaluations);
+  const { averageScore, evaluationCount } = calculateAverageScore(
+    project.evaluations
+  );
 
   // Determine if we should show the score (only for reviewed or under review projects)
   const showScore =
@@ -111,7 +111,9 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
         </CardHeader>
 
         <CardContent className="space-y-4 flex-1 flex flex-col">
-          <p className="text-gray-500 text-sm line-clamp-3">{project.description}</p>
+          <p className="text-gray-500 text-sm line-clamp-3">
+            {project.description}
+          </p>
 
           <div className="mt-auto space-y-3">
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -122,13 +124,19 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Briefcase size={16} className="text-gray-400 shrink-0" />
               <span>
-                {translatedDepartments.find((d) => d.value === project.department)?.label}
+                {
+                  translatedDepartments.find(
+                    (d) => d.value === project.department
+                  )?.label
+                }
               </span>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Clock size={16} className="text-gray-400 shrink-0" />
-              <span>Há {differenceInDays(new Date(), project.createdAt)} dias</span>
+              <span>
+                Há {differenceInDays(new Date(), project.createdAt)} dias
+              </span>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -191,13 +199,16 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
         userId={user?.id!}
       />
 
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação não pode ser desfeita. Isso excluirá permanentemente o projeto "
-              {project.name}" e todos os dados associados a ele.
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente o
+              projeto "{project.name}" e todos os dados associados a ele.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
