@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -27,12 +27,37 @@ import { mutationKeys } from "@/app/config/mutationKeys";
 import { questionsService } from "@/app/services/questionsService";
 import { useToast } from "@/hooks/use-toast";
 import { queryKeys } from "@/app/config/queryKeys";
+import { z } from "zod";
+import { useFieldArray, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface ParticipantQuestionsProps {
   questions: Question[];
   currentUserId: string;
   onSubmitResponse: (questionId: string, response: string) => void;
 }
+
+const schema = z
+  .array(
+    z.object({
+      authorId: z.string().optional(),
+      createdAt: z.string().optional(),
+      id: z.string().min(1, "Adicione pelo menos um item ao plano de ação"),
+      projectId: z.string().optional(),
+      respondedAt: z.string().optional(),
+      response: z.string().optional(),
+      text: z.string().optional(),
+      author: z.object({
+        name: z.string().optional(),
+        email: z.string().optional(),
+        id: z.string().optional(),
+      }),
+      status: z.nativeEnum(StatusQuestion).optional(),
+    })
+  )
+  .min(1, "Adicione pelo menos um item ao plano de ação");
+
+type QuestionsSchemaValues = z.infer<typeof schema>;
 
 export function ParticipantQuestions({
   questions,
@@ -47,6 +72,22 @@ export function ParticipantQuestions({
       [questionId]: value,
     }));
   };
+
+  const {
+    control,
+    handleSubmit: hookFormhandleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<QuestionsSchemaValues>({
+    defaultValues: questions,
+    resolver: zodResolver(schema),
+  });
+
+  useEffect(() => {
+    if (questions.length > 0) {
+      reset(questions);
+    }
+  }, [questions, reset]);
 
   const { isPending: isLoading, mutateAsync } = useMutation({
     mutationKey: [mutationKeys.QUESTION],
@@ -106,6 +147,11 @@ export function ParticipantQuestions({
       color: "bg-blue-100 text-blue-700",
     },
   };
+
+  const { fields } = useFieldArray({
+    control,
+    name,
+  });
 
   // Separate questions by status
   const pendingQuestions = questions.filter(
