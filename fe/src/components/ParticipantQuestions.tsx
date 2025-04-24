@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -34,58 +34,48 @@ import { zodResolver } from "@hookform/resolvers/zod";
 interface ParticipantQuestionsProps {
   questions: Question[];
   currentUserId: string;
-  onSubmitResponse: (questionId: string, response: string) => void;
 }
 
-const schema = z
-  .array(
-    z.object({
-      authorId: z.string().optional(),
-      createdAt: z.string().optional(),
-      id: z.string().min(1, "Adicione pelo menos um item ao plano de ação"),
-      projectId: z.string().optional(),
-      respondedAt: z.string().optional(),
-      response: z.string().optional(),
-      text: z.string().optional(),
-      author: z.object({
-        name: z.string().optional(),
-        email: z.string().optional(),
-        id: z.string().optional(),
-      }),
-      status: z.nativeEnum(StatusQuestion).optional(),
-    })
-  )
-  .min(1, "Adicione pelo menos um item ao plano de ação");
+const schema = z.object({
+  questions: z
+    .array(
+      z.object({
+        authorId: z.string(),
+        createdAt: z.string(),
+        id: z.string().min(1, "Adicione pelo menos um item ao plano de ação"),
+        projectId: z.string(),
+        respondedAt: z.string().optional(),
+        response: z.string().optional(),
+        text: z.string(),
+        author: z.object({
+          name: z.string(),
+          email: z.string(),
+          id: z.string(),
+        }),
+        status: z.nativeEnum(StatusQuestion),
+        questionId: z.string(),
+      })
+    )
+    .min(1, "Adicione pelo menos um item ao plano de ação"),
+});
 
 type QuestionsSchemaValues = z.infer<typeof schema>;
+type QuestionItem = QuestionsSchemaValues["questions"][number];
 
-export function ParticipantQuestions({
-  questions,
-  onSubmitResponse,
-}: ParticipantQuestionsProps) {
-  const [responses, setResponses] = useState<Record<string, string>>({});
+export function ParticipantQuestions({ questions }: ParticipantQuestionsProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const handleResponseChange = (questionId: string, value: string) => {
-    setResponses((prev) => ({
-      ...prev,
-      [questionId]: value,
-    }));
-  };
 
-  const {
-    control,
-    handleSubmit: hookFormhandleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<QuestionsSchemaValues>({
-    defaultValues: questions,
+  const { control, reset, register, watch } = useForm<QuestionsSchemaValues>({
+    defaultValues: {
+      questions: questions.map((q) => ({ ...q, questionId: q.id })),
+    },
     resolver: zodResolver(schema),
   });
 
   useEffect(() => {
     if (questions.length > 0) {
-      reset(questions);
+      reset({ questions: questions.map((q) => ({ ...q, questionId: q.id })) });
     }
   }, [questions, reset]);
 
@@ -97,33 +87,41 @@ export function ParticipantQuestions({
     },
   });
 
-  const handleSubmitResponse = async (questionId: string) => {
-    const response = responses[questionId];
-    if (!response?.trim()) return;
+  const handleIndividualSubmit = async (index: number, questionId: string) => {
+    const values = watch("questions");
+    const questionToSubmit = values[index];
 
-    onSubmitResponse(questionId, response.trim());
+    if (!questionToSubmit.response?.trim()) {
+      toast({
+        title: "Resposta não pode estar vazia.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       await mutateAsync({
-        response,
-        questionId,
+        questionId: questionId,
+        response: questionToSubmit.response,
       });
 
       toast({
-        variant: "default",
         title: "Resposta enviada com sucesso!",
-        description:
-          "Você pode acompanhar as perguntas no painel de detalhes do projeto.",
-        duration: 5000,
       });
+
+      queryClient.invalidateQueries({ queryKey: [queryKeys.PROJECTS] });
+
+      /*   // Atualiza o status localmente para mudar a aba
+      const updatedQuestions = [...values];
+      updatedQuestions[index] = {
+        ...questionToSubmit,
+        status: StatusQuestion.ANSWERED,
+        respondedAt: new Date().toISOString(),
+      }; */
+      /*   reset({ questions: updatedQuestions }); */
     } catch (error) {
       handleAxiosError(error);
     }
-
-    // Reset response
-    setResponses((prev) => ({
-      ...prev,
-      [questionId]: "",
-    }));
   };
 
   // Status configuration
@@ -150,14 +148,18 @@ export function ParticipantQuestions({
 
   const { fields } = useFieldArray({
     control,
-    name,
+    name: "questions",
   });
 
+  const getFieldValue = (index: number, field: keyof QuestionItem) => {
+    return watch(`questions.${index}.${field}`);
+  };
+
   // Separate questions by status
-  const pendingQuestions = questions.filter(
+  const pendingQuestions = fields.filter(
     (q) => q.status !== StatusQuestion.ANSWERED
   );
-  const answeredQuestions = questions.filter(
+  const answeredQuestions = fields.filter(
     (q) => q.status === StatusQuestion.ANSWERED
   );
 
@@ -195,7 +197,7 @@ export function ParticipantQuestions({
               </p>
             </div>
           ) : (
-            pendingQuestions.map((question) => (
+            pendingQuestions.map((question, index) => (
               <Card key={question.id} className="border-amber-200">
                 <CardHeader className="pb-2 pt-4 px-4 bg-amber-50 rounded-t-lg">
                   <div className="flex justify-between items-start">
@@ -235,17 +237,17 @@ export function ParticipantQuestions({
                 <CardFooter className="pt-2 pb-4 px-4 border-t bg-gray-50 rounded-b-lg">
                   <div className="w-full space-y-2">
                     <Textarea
+                      {...register(`questions.${index}.response`)}
                       placeholder="Digite sua resposta..."
-                      value={responses[question.id] || ""}
-                      onChange={(e) =>
-                        handleResponseChange(question.id, e.target.value)
-                      }
                       className="min-h-[100px] bg-white"
                     />
                     <Button
-                      onClick={() => handleSubmitResponse(question.id)}
-                      disabled={!responses[question.id]?.trim()}
+                      disabled={!getFieldValue(index, "response") || isLoading}
                       className="w-full"
+                      isLoading={isLoading}
+                      onClick={() =>
+                        handleIndividualSubmit(index, question.questionId)
+                      }
                     >
                       <SendHorizontal className="mr-2 h-4 w-4" />
                       Enviar resposta

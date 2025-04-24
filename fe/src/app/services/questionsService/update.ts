@@ -8,7 +8,7 @@ export const update = async ({
   response,
   questionId,
 }: UpdateQuestionParams) => {
-  const { data } = await httpClient.post(`/questions/response/${questionId}`, {
+  const { data } = await httpClient.patch(`/questions/response/${questionId}`, {
     response,
   });
   return data;

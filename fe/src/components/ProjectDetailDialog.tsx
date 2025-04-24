@@ -84,10 +84,6 @@ export const ProjectDetailDialog = ({
     calculateAverageScore(project.evaluations);
   const [_activeTab, setActiveTab] = useState("details");
 
-  const handleSubmitResponse = (questionId: string, response: string) => {
-    console.log("handleSubmitResponse", questionId, response);
-  };
-
   const evaluations = useMemo(() => {
     if (userRole === Role.EVALUATION_COMMITTEE) {
       return project.evaluations.filter(
@@ -400,7 +396,6 @@ export const ProjectDetailDialog = ({
                 <ParticipantQuestions
                   questions={project.questions}
                   currentUserId={userId}
-                  onSubmitResponse={handleSubmitResponse}
                 />
               )}
             </TabsContent>

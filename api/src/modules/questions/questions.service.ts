@@ -30,7 +30,7 @@ export class QuestionsService {
   async createResponse(questionId: string, response: string) {
     return await this.questionsRepo.update({
       where: { id: questionId },
-      data: { response },
+      data: { response, status: 'ANSWERED' },
     });
   }
 
