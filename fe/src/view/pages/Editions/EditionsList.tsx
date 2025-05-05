@@ -11,14 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-import {
-  Edit,
-  Trash2,
-  Calendar,
-  Check,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { Edit, Trash2, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
