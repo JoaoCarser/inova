@@ -27,23 +27,42 @@ const participantSchema = z.object({
 const schema = z.object({
   name: z.string().min(1, "Nome do projeto é obrigatório."),
   department: z.nativeEnum(ProjectDepartment),
+  status: z.nativeEnum(StatusProject).optional(),
   description: z.string().min(1, "Descrição do projeto é obrigatório."),
   videoLink: z.string().optional(),
-  participants: z.array(participantSchema).min(1, "Adicione pelo menos um participante"),
+  participants: z
+    .array(participantSchema)
+    .min(1, "Adicione pelo menos um participante"),
 });
 
 type FormData = z.infer<typeof schema>;
 
-export const useEditProjectDialog = (project: Project, onSuccess?: () => void) => {
+export const useEditProjectDialog = (
+  project: Project,
+  onSuccess?: () => void
+) => {
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   //const {} = useProject(projectId);
   const [filesToUpload, setFilesToUpload] = useState<{ File: File }[]>([]);
-  const [submitStatus, setSubmitStatus] = useState<StatusProject>(StatusProject.DRAFT);
+  const [submitStatus, setSubmitStatus] = useState<StatusProject>(
+    StatusProject.DRAFT
+  );
 
-  const [uploadedFiles, setUploadedFiles] = useState<ProjectFile[]>(project.files);
+  const statusOptions = [
+    { value: StatusProject.DRAFT, label: "Rascunho" },
+    { value: StatusProject.REVIEWED, label: "Revisado" },
+    { value: StatusProject.SUBMITTED, label: "Submetido" },
+    { value: StatusProject.UNDER_REVIEW, label: "Em Avaliação" },
+  ];
+
+  const [uploadedFiles, setUploadedFiles] = useState<ProjectFile[]>(
+    project.files
+  );
+
+  console.log("te", Object.values(StatusProject));
 
   const {
     handleSubmit: hookFormHandleSubmit,
@@ -82,11 +101,10 @@ export const useEditProjectDialog = (project: Project, onSuccess?: () => void) =
     },
   });
 
-  const { isPending: isLoadingUploadFiles, mutateAsync: mutateUploadFiles } = useMutation(
-    {
+  const { isPending: isLoadingUploadFiles, mutateAsync: mutateUploadFiles } =
+    useMutation({
       mutationFn: filesService.uploadProjectFile,
-    }
-  );
+    });
 
   const handleSubmit = hookFormHandleSubmit(async (data) => {
     try {

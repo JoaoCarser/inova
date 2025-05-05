@@ -84,15 +84,18 @@ export function CreateProjectDialog() {
                   />
                 </div>
 
-                <div className="flex flex-col gap-2 w-full  md:col-span-12 items-start">
-                  <Label htmlFor="description">Descrição do projeto</Label>
-                  <Textarea
-                    id="description"
-                    required
-                    placeholder="Adicione aqui uma breve descrição sobre o projeto"
-                    {...register("description")}
-                    //error={errors.description?.message}
-                  />
+                <div className="flex flex-col gap-2   md:col-span-12 items-start ">
+                  <div className="w-full">
+                    <Label htmlFor="description">Descrição do projeto</Label>
+                    <Textarea
+                      id="description"
+                      required
+                      placeholder="Adicione aqui uma breve descrição sobre o projeto"
+                      {...register("description")}
+                      className="w-full"
+                      //error={errors.description?.message}
+                    />
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-2 w-full md:col-span-12 items-start">

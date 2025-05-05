@@ -62,7 +62,7 @@ export class EvaluationsService {
     );
 
     const evaluationCommittee = await this.userService.findAll({
-      where: { role: Role.EVALUATION_COMMITTEE },
+      role: Role.EVALUATION_COMMITTEE,
     });
 
     const totalEvaluators = evaluationCommittee.length;

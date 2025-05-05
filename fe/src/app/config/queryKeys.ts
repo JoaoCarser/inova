@@ -5,6 +5,7 @@ export const queryKeys = {
   PROJECT: "project",
   PROJECTS: "projects",
   PERIODS: "periods",
+  EDITIONS: "editions",
   USER_CPF: "user-cpf",
   CURRENT_PERIOD: "current-period",
 };

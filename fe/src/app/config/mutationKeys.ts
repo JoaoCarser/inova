@@ -4,4 +4,5 @@ export const mutationKeys = {
   QUESTION: "question",
   CREATE_PROJECT: "create-project",
   CREATE_EVALUATION: "create-evaluation",
+  CREATE_EDITION: "create-edition",
 };

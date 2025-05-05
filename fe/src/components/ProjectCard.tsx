@@ -6,6 +6,7 @@ import {
   Users,
   AlertCircle,
   Star,
+  MessageCircle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -85,13 +86,16 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
     project.status === StatusProject.REVIEWED ||
     (project.status === StatusProject.UNDER_REVIEW && evaluationCount > 0);
 
+  // Count questions
+  const questionsCount = (project.questions || []).length;
+
   return (
     <>
-      <Card className="group relative  flex flex-col cursor-pointer hover:shadow-md transition-shadow border-gray-200">
+      <Card className="group relative  flex flex-col cursor-pointer hover:shadow-md transition-shadow">
         {/* Action buttons - visible on hover */}
 
         <CardHeader className="pb-2  flex-row justify-between items-center">
-          <CardTitle className="text-xl font-semibold text-gray-700 line-clamp-1">
+          <CardTitle className="text-xl font-semibold  line-clamp-1">
             {project.name}
           </CardTitle>
           {/* Score badge - if project has evaluations */}
@@ -102,7 +106,7 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
             </Badge>
           )}
           <div
-            className="flex items-center justify-center mb-2 text-gray-600 cursor-pointer"
+            className="flex items-center justify-center mb-2 cursor-pointer"
             onClick={() => setIsDialogOpen(true)}
           >
             {" "}
@@ -111,12 +115,12 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
         </CardHeader>
 
         <CardContent className="space-y-4 flex-1 flex flex-col">
-          <p className="text-gray-500 text-sm line-clamp-3">
+          <p className="text-muted-foreground text-sm line-clamp-3">
             {project.description}
           </p>
 
           <div className="mt-auto space-y-3">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Users size={16} className="text-gray-400 shrink-0" />
               <span className="line-clamp-1">{userNames}</span>
             </div>
@@ -138,6 +142,16 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
                 Há {differenceInDays(new Date(), project.createdAt)} dias
               </span>
             </div>
+
+            {questionsCount > 0 && (
+              <div className="flex items-center gap-2 text-xs text-purple-600">
+                <MessageCircle className="h-4 w-4 text-purple-500" />
+                <span>
+                  {questionsCount}{" "}
+                  {questionsCount === 1 ? "pergunta" : "perguntas"}
+                </span>
+              </div>
+            )}
 
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <AlertCircle size={16} className="text-gray-400 shrink-0" />

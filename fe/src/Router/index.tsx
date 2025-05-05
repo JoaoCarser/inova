@@ -9,6 +9,8 @@ import Register from "@/view/pages/Register";
 import AppLayout from "@/view/Layouts/AppLayout";
 const Home = lazy(() => import("@/view/pages/Home"));
 const Projects = lazy(() => import("@/view/pages/Projects"));
+const Participants = lazy(() => import("@/view/pages/Participants"));
+const Editions = lazy(() => import("@/view/pages/Editions"));
 
 export const Router = () => {
   return (
@@ -26,6 +28,8 @@ export const Router = () => {
             <Route element={<AppLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/projects" element={<Projects />} />
+              <Route path="/participants" element={<Participants />} />
+              <Route path="/editions" element={<Editions />} />
             </Route>
           </Route>
         </Routes>

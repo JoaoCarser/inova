@@ -6,9 +6,11 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useProjects = (userRole: Role, filters: ProjectFilters = {}) => {
   const { data, isFetching, refetch } = useQuery({
-    enabled: userRole === Role.EVALUATION_COMMITTEE || userRole === Role.MARKETING,
+    enabled:
+      userRole === Role.EVALUATION_COMMITTEE || userRole === Role.MARKETING,
     queryKey: [queryKeys.PROJECTS],
     queryFn: () => projectsService.getAll(filters),
+    staleTime: 0,
   });
 
   return {

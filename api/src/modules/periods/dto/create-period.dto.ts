@@ -3,9 +3,10 @@ import {
   IsEnum,
   IsNotEmpty,
   IsString,
-  MinLength,
+  Validate,
 } from 'class-validator';
 import { PeriodType } from '../entities/period.entity';
+import { IsStartBeforeEnd } from 'src/shared/validators/IsStartBeforeEnd';
 
 export class CreatePeriodDto {
   @IsString()
@@ -27,4 +28,7 @@ export class CreatePeriodDto {
   @IsNotEmpty()
   @IsEnum(PeriodType)
   type: PeriodType;
+
+  @Validate(IsStartBeforeEnd, ['startDate', 'endDate'])
+  dummyValidationField: any;
 }

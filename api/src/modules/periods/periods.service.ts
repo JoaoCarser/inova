@@ -7,7 +7,7 @@ import { PeriodsRepositories } from 'src/shared/database/repositories/periods.re
 export class PeriodsService {
   constructor(private readonly periodsRepo: PeriodsRepositories) {}
   async create(createPeriodDto: CreatePeriodDto) {
-    const { title } = createPeriodDto;
+  /*   const { title } = createPeriodDto;
 
     const titleExists = await this.periodsRepo.findFirst({
       where: { title },
@@ -21,13 +21,13 @@ export class PeriodsService {
       data: {
         ...createPeriodDto,
       },
-    });
+    }); */
   }
 
   async createMany(createManyPeriodDto: CreatePeriodDto[]) {
-    return await this.periodsRepo.createMany({
+ /*    return await this.periodsRepo.createMany({
       data: createManyPeriodDto,
-    });
+    }); */
   }
 
   async findAll() {

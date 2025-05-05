@@ -12,8 +12,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/app/hooks/useAuth";
+import { Role } from "@/app/entities/Role";
 
-function getNavMainByRole(role: string) {
+function getNavMainByRole(role: Role) {
   switch (role) {
     case "PARTICIPANT":
       return [
@@ -52,7 +53,9 @@ function getNavMainByRole(role: string) {
           isActive: true,
           items: [
             { title: "Etapas", url: "/" },
+            { title: "Participantes", url: "/participants" },
             { title: "Projetos", url: "/projects" },
+            { title: "Edições", url: "/editions" },
           ],
         },
       ];
@@ -73,28 +76,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       avatar: "/avatars/shadcn.jpg",
     },
 
-    navMain: [
-      {
-        title: "Concurso",
-        url: "#",
-        icon: SquareTerminal,
-        isActive: true,
-        items: [
-          {
-            title: "Etapas",
-            url: "/",
-          },
-          {
-            title: "Usuários",
-            url: "#",
-          },
-          {
-            title: "Projetos",
-            url: "/projects",
-          },
-        ],
-      },
-    ],
+    navMain: getNavMainByRole(user?.role!),
   };
   return (
     <Sidebar collapsible="icon" {...props}>

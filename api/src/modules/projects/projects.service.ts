@@ -168,6 +168,8 @@ export class ProjectsService {
       ...(userId && { usersProjects: { some: { userId } } }),
     };
 
+    console.log(whereClause);
+
     //@ts-ignore
     const projects: ProjectWithRelations[] = await this.projectsRepo.findMany({
       where: whereClause,

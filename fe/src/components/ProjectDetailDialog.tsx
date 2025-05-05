@@ -400,19 +400,24 @@ export const ProjectDetailDialog = ({
               )}
             </TabsContent>
 
-            {userRole === Role.PARTICIPANT &&
-              project.status === StatusProject.DRAFT && (
-                <div className="flex justify-center w-full gap-4">
-                  <Button
-                    variant="destructive"
-                    onClick={() => setIsDeleteDialogOpen(true)}
-                    className="w-full"
-                  >
-                    Excluir
-                  </Button>
-                  <EditProjectDialog className="w-full" project={project} />
-                </div>
+            <div className="flex justify-center w-full gap-4">
+              {userRole === Role.PARTICIPANT &&
+                project.status === StatusProject.DRAFT && (
+                  <>
+                    <Button
+                      variant="destructive"
+                      onClick={() => setIsDeleteDialogOpen(true)}
+                      className="w-full"
+                    >
+                      Excluir
+                    </Button>
+                    <EditProjectDialog className="w-full" project={project} />
+                  </>
+                )}
+              {userRole === Role.MARKETING && (
+                <EditProjectDialog className="w-full" project={project} />
               )}
+            </div>
           </div>
         </Tabs>
       </DialogContent>

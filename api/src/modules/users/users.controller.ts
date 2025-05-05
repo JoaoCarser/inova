@@ -9,18 +9,28 @@ import {
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
+import { IsAdmUser } from 'src/shared/decorators/IsAdmUser';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(
+    @IsAdmUser() _isAdmUser: boolean,
+    @Query('name') name: string,
+    @Query('base') base: string[] | string,
+  ) {
+    const normalizedBased = Array.isArray(base) ? base : base ? [base] : [];
+    return this.usersService.findAll({
+      base: normalizedBased,
+      name,
+    });
   }
 
   @Get('/cpf/:cpf')

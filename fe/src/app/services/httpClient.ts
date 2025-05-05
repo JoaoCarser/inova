@@ -2,10 +2,11 @@ import axios from "axios";
 import { localStorageKeys } from "../config/localStorageKeys";
 //import { timeout } from "../utils/timeout";
 
-const localhostUrl = "http://192.168.0.11:3000/";
+const localhostUrl = "http://localhost:3000/";
+const test = "https://437923df-3000.brs.devtunnels.ms/";
 
 export const httpClient = axios.create({
-  baseURL: "http://localhost:3000/",
+  baseURL: localhostUrl,
 });
 
 httpClient.interceptors.request.use(async (config) => {

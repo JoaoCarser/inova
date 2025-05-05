@@ -7,6 +7,7 @@ import { ProjectsStatboxContainer } from "@/components/ProjectsStatboxContainer"
 import { CreateProjectDialog } from "@/view/dialogs/CreateProjectDialog";
 import { ProjectFilters } from "@/components/ProjectFilters";
 import { ProjectsContext, ProjectsProvider } from "./ProjectsContext";
+/* import { ModeToggle } from "@/components/ModeToggle"; */
 //handleClearFilters, isLoading, projects, filters, setFilters, user
 
 export default function Projects() {
@@ -16,8 +17,9 @@ export default function Projects() {
         {({ handleClearFilters, isLoading, projects, setFilters, user }) => (
           <div>
             <Header title="Projetos" />
-
-            {user?.role === Role.EVALUATION_COMMITTEE && (
+            {/*  <ModeToggle /> */}
+            {(user?.role === Role.EVALUATION_COMMITTEE ||
+              user?.role === Role.MARKETING) && (
               <ProjectsStatboxContainer projects={projects} />
             )}
 

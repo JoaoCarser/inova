@@ -41,16 +41,17 @@ export class ProjectsController {
       ? status
       : status
         ? [status]
-        : [];
+        : Object.values(StatusProject).filter(
+            (status) => status !== StatusProject.DRAFT,
+          );
     const normalizedDepartment = Array.isArray(department)
       ? department
       : department
         ? [department]
         : [];
+
     return this.projectsService.findAll({
-      status: Object.values(StatusProject).filter(
-        (status) => status !== StatusProject.DRAFT,
-      ),
+      status: normalizedStatus,
       department: normalizedDepartment,
     });
   }

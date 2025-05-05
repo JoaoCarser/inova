@@ -19,7 +19,11 @@ interface ProjectsContextValue {
 
 export const ProjectsContext = createContext({} as ProjectsContextValue);
 
-export const ProjectsProvider = ({ children }: { children: React.ReactNode }) => {
+export const ProjectsProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { user } = useAuth();
   const { filters, setFilters } = useProjectFilters();
 
@@ -36,14 +40,23 @@ export const ProjectsProvider = ({ children }: { children: React.ReactNode }) =>
   } = useProjectsByUserId(user?.id!, filters);
 
   useEffect(() => {
-    refechProjects();
-    refechUserProjects();
-  }, [filters]);
+    if (
+      user?.role === Role.EVALUATION_COMMITTEE ||
+      user?.role === Role.MARKETING
+    ) {
+      refechProjects();
+    } else {
+      refechUserProjects();
+    }
+  }, [filters, user?.role]);
 
   const isLoading = isFetchingProjects || isFetchingUserProjects;
 
   const projects = useMemo(() => {
-    if (user?.role === Role.EVALUATION_COMMITTEE || user?.role === Role.MARKETING) {
+    if (
+      user?.role === Role.EVALUATION_COMMITTEE ||
+      user?.role === Role.MARKETING
+    ) {
       return allProjects;
     }
     return userProjects;
@@ -52,8 +65,6 @@ export const ProjectsProvider = ({ children }: { children: React.ReactNode }) =>
   const handleClearFilters = () => {
     setFilters({ title: "", status: [], department: [] });
   };
-
-  console.log("projects", projects);
 
   return (
     <ProjectsContext.Provider

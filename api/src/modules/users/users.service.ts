@@ -7,67 +7,86 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepositories } from 'src/shared/database/repositories/users.repositories';
 import { formatCpf } from 'src/shared/utils/formatCpf';
 import { Prisma } from '@prisma/client';
+import { Role } from './entities/Role';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepositories) {}
 
-  async findAll(options?: Prisma.UserFindManyArgs) {
-    return await this.usersRepository.findMany(options);
+  private readonly selectClause = {
+    id: true,
+    name: true,
+    email: true,
+    role: true,
+    cpf: true,
+    position: true,
+    base: true,
+    phone: true,
+    usersProjects: {
+      select: {
+        project: {
+          include: {
+            usersProjects: {
+              select: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    role: true,
+                    cpf: true,
+                    position: true,
+                    baseId: true,
+                  },
+                },
+              },
+            },
+            files: true,
+            evaluations: {
+              select: {
+                id: true,
+                comments: true,
+                criteria: {
+                  select: {
+                    id: true,
+                    name: true,
+                    score: true,
+                  },
+                },
+              },
+            },
+            questions: true,
+          },
+        },
+      },
+    },
+    //evaluations: true, talvez adicionar novamente no futuro se for necessário
+  };
+
+  async findAll({
+    name,
+    base,
+    role,
+  }: {
+    name?: string;
+    base?: string[];
+    role?: Role;
+  }) {
+    const whereClause: Prisma.UserWhereInput = {
+      ...(base?.length && { base: { name: { in: base } } }),
+      ...(role && { role }),
+      ...(name && { name: { contains: name, mode: 'insensitive' } }),
+    };
+    return await this.usersRepository.findMany({
+      where: whereClause,
+      select: this.selectClause,
+    });
   }
 
   async findByUserId(userId: string) {
     return await this.usersRepository.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        cpf: true,
-        position: true,
-        base: true,
-        phone: true,
-        usersProjects: {
-          select: {
-            project: {
-              include: {
-                usersProjects: {
-                  select: {
-                    user: {
-                      select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        role: true,
-                        cpf: true,
-                        position: true,
-                        baseId: true,
-                      },
-                    },
-                  },
-                },
-                files: true,
-                evaluations: {
-                  select: {
-                    id: true,
-                    comments: true,
-                    criteria: {
-                      select: {
-                        id: true,
-                        name: true,
-                        score: true,
-                      },
-                    },
-                  },
-                },
-                questions: true,
-              },
-            },
-          },
-        },
-        //evaluations: true, talvez adicionar novamente no futuro se for necessário
-      },
+      select: this.selectClause,
     });
   }
 
@@ -76,54 +95,7 @@ export class UsersService {
 
     const user = await this.usersRepository.findUnique({
       where: { cpf: formattedCpf },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        cpf: true,
-        position: true,
-        base: true,
-        phone: true,
-        usersProjects: {
-          select: {
-            project: {
-              include: {
-                usersProjects: {
-                  select: {
-                    user: {
-                      select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        role: true,
-                        cpf: true,
-                        position: true,
-                        baseId: true,
-                      },
-                    },
-                  },
-                },
-                files: true,
-                evaluations: {
-                  select: {
-                    id: true,
-                    comments: true,
-                    criteria: {
-                      select: {
-                        id: true,
-                        name: true,
-                        score: true,
-                      },
-                    },
-                  },
-                },
-                questions: true,
-              },
-            },
-          },
-        },
-      },
+      select: this.selectClause,
     });
 
     if (!user) {

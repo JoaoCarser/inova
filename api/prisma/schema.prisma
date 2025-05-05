@@ -27,10 +27,10 @@ model User {
   baseId   String @map("base_id") @db.Uuid
   base     Base   @relation(fields: [baseId], references: [id])
 
-  usersProjects UsersProjects[]
-  createdQuestions  Question[]   @relation("CreatedQuestions") // Perguntas criadas por este usuário
-  files             File[]
-  evaluations       Evaluation[]
+  usersProjects    UsersProjects[]
+  createdQuestions Question[]      @relation("CreatedQuestions") // Perguntas criadas por este usuário
+  files            File[]
+  evaluations      Evaluation[]
 
   @@map("users")
 }
@@ -78,6 +78,8 @@ model Project {
   files         File[]
   questions     Question[]
   evaluations   Evaluation[]
+  edition       Edition?        @relation(fields: [editionId], references: [id], onDelete: SetNull)
+  editionId     String?         @map("edition_id") @db.Uuid
 
   @@map("projects")
 }
@@ -112,25 +114,42 @@ enum StatusQuestion {
   VIEWED
   COMPLETED
   ANSWERED
-  PENDING 
+  PENDING
 
   @@map("status_questions")
 }
 
 model Question {
-  id          String         @id @default(uuid()) @db.Uuid
-  text        String
-  status      StatusQuestion @default(SUBMITED)
-  response    String? // A resposta ao questionamento (opcional)
-  projectId   String         @map("project_id") @db.Uuid
-  authorId    String         @map("author_id") @db.Uuid
- 
-  createdAt   DateTime       @default(now()) @map("created_at")
-  respondedAt DateTime?      @map("responded_at") // Data de resposta (opcional)
-  author    User    @relation("CreatedQuestions", fields: [authorId], references: [id], onDelete: Cascade)
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        String         @id @default(uuid()) @db.Uuid
+  text      String
+  status    StatusQuestion @default(SUBMITED)
+  response  String? // A resposta ao questionamento (opcional)
+  projectId String         @map("project_id") @db.Uuid
+  authorId  String         @map("author_id") @db.Uuid
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  respondedAt DateTime? @map("responded_at") // Data de resposta (opcional)
+  author      User      @relation("CreatedQuestions", fields: [authorId], references: [id], onDelete: Cascade)
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("questions")
+}
+
+model Edition {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  year        Int
+
+  projects Project[] // Projetos que pertencem a essa edição
+  periods  Period[] // Períodos que pertencem a essa edição
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("editions")
 }
 
 enum PeriodType {
@@ -151,6 +170,9 @@ model Period {
   startDate   DateTime   @map("start_date")
   endDate     DateTime   @map("end_date")
   type        PeriodType
+  editionId   String     @map("edition_id") @db.Uuid
+
+  edition Edition @relation(fields: [editionId], references: [id], onDelete: Cascade)
 
   @@map("periods")
 }

@@ -76,7 +76,20 @@ const main = async () => {
     },
   });
 
-  await prismaClient.period.createMany({
+  await prismaClient.user.create({
+    data: {
+      cpf: '42934443000',
+      name: 'Marketing 1',
+      email: 'marketing1@email.com',
+      password: hashedPassword,
+      baseId: bases[0].id,
+      phone: '+5511989898489',
+      position: 'Marketing',
+      role: 'MARKETING',
+    },
+  });
+
+  /*  await prismaClient.period.createMany({
     data: [
       {
         title: 'Inscrição',
@@ -121,7 +134,7 @@ const main = async () => {
         type: 'INACTIVE',
       },
     ],
-  });
+  }); */
   console.log('Seed completed 🚀');
 };
 
