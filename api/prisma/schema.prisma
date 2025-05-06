@@ -78,8 +78,8 @@ model Project {
   files         File[]
   questions     Question[]
   evaluations   Evaluation[]
-  edition       Edition?        @relation(fields: [editionId], references: [id], onDelete: SetNull)
-  editionId     String?         @map("edition_id") @db.Uuid
+  edition       Edition         @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  editionId     String          @map("edition_id") @db.Uuid
 
   @@map("projects")
 }

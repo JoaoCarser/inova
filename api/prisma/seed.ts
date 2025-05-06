@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { PrismaClient } from '@prisma/client';
+import { PeriodType, PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 
 const prismaClient = new PrismaClient();
@@ -86,6 +86,50 @@ const main = async () => {
       phone: '+5511989898489',
       position: 'Marketing',
       role: 'MARKETING',
+    },
+  });
+
+  await prismaClient.edition.create({
+    data: {
+      title: `Inova Conterp 2025`,
+      description: `Inova Conterp 2025`,
+      startDate: new Date('2025-05-20T00:00:00Z'),
+      endDate: new Date('2025-09-25T23:59:59Z'),
+      year: 2025,
+      periods: {
+        createMany: {
+          data: [
+            {
+              title: 'Inscrições',
+              description: 'Período de envio das inscrições',
+              startDate: new Date('2025-05-20T00:00:00Z'),
+              endDate: new Date('2025-07-07T23:59:59Z'),
+              type: 'SUBSCRIPTION',
+            },
+            {
+              title: 'Avaliação',
+              description: 'Período de avaliação e questionamentos do comitê',
+              startDate: new Date('2025-07-08T00:00:00Z'),
+              endDate: new Date('2025-07-21T23:59:59Z'),
+              type: 'AVALIATION',
+            },
+            {
+              title: 'Reavaliação',
+              description: 'Período de reenvio das inscrições',
+              startDate: new Date('2025-07-21T23:59:59Z'),
+              endDate: new Date('2025-08-29T23:59:59Z'),
+              type: 'RESUBSCRIPTION',
+            },
+            {
+              title: 'Final',
+              description: 'Apresentação do resultado final',
+              startDate: new Date('2025-08-29T23:59:59Z'),
+              endDate: new Date('2025-09-25T23:59:59Z'),
+              type: 'FINAL',
+            },
+          ],
+        },
+      },
     },
   });
 

@@ -22,10 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { translatedDepartments } from "@/app/utils/translatedDepartments";
-import { ParticipantSelector } from "../../../components/ParticipantSelector";
 import { cn } from "@/lib/utils";
 import { Project } from "@/app/entities/Project";
 import { StatusProject } from "@/app/entities/StatusProject";
+import { ParticipantSelector } from "@/components/ParticipantSelector";
 
 interface EditProjectDialogProps {
   className?: string;

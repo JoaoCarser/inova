@@ -4,10 +4,14 @@ import { UpdateEditionDto } from './dto/update-edition.dto';
 import { EditionsRepositories } from 'src/shared/database/repositories/editions.repositories';
 import { formatDate } from 'src/shared/utils/formatDate';
 import { CreatePeriodDto } from '../periods/dto/create-period.dto';
+import { PeriodsRepositories } from 'src/shared/database/repositories/periods.repositories';
 
 @Injectable()
 export class EditionsService {
-  constructor(private readonly editionsRepo: EditionsRepositories) {}
+  constructor(
+    private readonly editionsRepo: EditionsRepositories,
+    private readonly periodsRepo: PeriodsRepositories,
+  ) {}
 
   validatePeriods({
     periods,
@@ -104,6 +108,19 @@ export class EditionsService {
     return `This action returns a #${id} edition`;
   }
 
+  async findCurrent() {
+    const today = new Date();
+    return await this.editionsRepo.findFirst({
+      where: {
+        startDate: { lte: today },
+        endDate: { gte: today },
+      },
+      include: {
+        periods: true,
+      },
+    });
+  }
+
   async update(editionId: string, updateEditionDto: UpdateEditionDto) {
     const { periods, ...editionData } = updateEditionDto;
 
@@ -114,6 +131,12 @@ export class EditionsService {
     });
 
     // Se passou pelas validações
+
+    await this.periodsRepo.deleteMany({
+      where: {
+        editionId,
+      },
+    });
     const updatedEdition = await this.editionsRepo.update({
       where: { id: editionId },
       data: {
@@ -135,6 +158,8 @@ export class EditionsService {
         periods: true,
       },
     });
+
+    console.log('updatedEdition', updatedEdition);
 
     return updatedEdition;
   }

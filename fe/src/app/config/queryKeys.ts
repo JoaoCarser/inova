@@ -8,4 +8,5 @@ export const queryKeys = {
   EDITIONS: "editions",
   USER_CPF: "user-cpf",
   CURRENT_PERIOD: "current-period",
+  CURRENT_EDITION: "current-edition",
 };

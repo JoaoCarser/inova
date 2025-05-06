@@ -50,8 +50,6 @@ export default function Participants({}: ParticipantsProps) {
 
   const { users, refechUsers, isFetchingUsers } = useUsers(filters);
 
-  console.log("users", users);
-
   useEffect(() => {
     refechUsers();
   }, [filters]);

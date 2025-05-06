@@ -26,9 +26,9 @@ export class EditionsController {
     return this.editionsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.editionsService.findOne(+id);
+  @Get('/current')
+  findOne() {
+    return this.editionsService.findCurrent();
   }
 
   @Put(':editionId')

@@ -29,7 +29,6 @@ import { queryKeys } from "@/app/config/queryKeys";
 import { mutationKeys } from "@/app/config/mutationKeys";
 import { PeriodType, periodTypeLabels } from "@/app/entities/Period";
 import { editionsService } from "@/app/services/editionsService";
-import { format } from "date-fns";
 import { DatePickerInput } from "@/components/DatePickerInput";
 import { handleAxiosError } from "@/app/utils/handleAxiosError";
 
@@ -67,7 +66,6 @@ export function CreateEditionDialog({
   const {
     control,
     register,
-    watch,
     handleSubmit: hookFormHandleSubmit,
     formState: { errors },
   } = useForm<FormData>({
@@ -90,8 +88,6 @@ export function CreateEditionDialog({
       ],
     },
   });
-
-  console.log(watch("periods"));
 
   const { fields, append, remove } = useFieldArray({
     control,

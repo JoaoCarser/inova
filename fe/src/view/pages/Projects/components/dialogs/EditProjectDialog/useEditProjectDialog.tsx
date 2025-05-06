@@ -4,16 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutationKeys } from "@/app/config/mutationKeys";
 import { projectsService } from "@/app/services/projectsService";
-import { CreateProjectParams } from "@/app/services/projectsService/create";
 import { StatusProject } from "@/app/entities/StatusProject";
 import { ProjectDepartment } from "@/app/entities/ProjectDepartament";
-import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/app/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { filesService } from "@/app/services/filesService";
 import { queryKeys } from "@/app/config/queryKeys";
-import { useProject } from "@/app/hooks/projects/useProject";
 import { Project, ProjectFile } from "@/app/entities/Project";
 import { UpdateProjectParams } from "@/app/services/projectsService/update";
 import { handleAxiosError } from "@/app/utils/handleAxiosError";
@@ -42,7 +38,6 @@ export const useEditProjectDialog = (
   onSuccess?: () => void
 ) => {
   const { toast } = useToast();
-  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   //const {} = useProject(projectId);
@@ -51,18 +46,9 @@ export const useEditProjectDialog = (
     StatusProject.DRAFT
   );
 
-  const statusOptions = [
-    { value: StatusProject.DRAFT, label: "Rascunho" },
-    { value: StatusProject.REVIEWED, label: "Revisado" },
-    { value: StatusProject.SUBMITTED, label: "Submetido" },
-    { value: StatusProject.UNDER_REVIEW, label: "Em Avaliação" },
-  ];
-
   const [uploadedFiles, setUploadedFiles] = useState<ProjectFile[]>(
     project.files
   );
-
-  console.log("te", Object.values(StatusProject));
 
   const {
     handleSubmit: hookFormHandleSubmit,
@@ -110,6 +96,7 @@ export const useEditProjectDialog = (
     try {
       await mutateAsync({
         ...data,
+        editionId: project?.editionId!,
         status: submitStatus,
         id: project.id,
       }); //Retorno da mutation Function

@@ -3,6 +3,7 @@ import { httpClient } from "../httpClient";
 import { ProjectDepartment } from "@/app/entities/ProjectDepartament";
 
 export interface CreateProjectParams {
+  editionId: string;
   name: string;
   description: string;
   status: StatusProject;
@@ -21,6 +22,9 @@ export interface CreateProjectResponse {
 }
 
 export const create = async (params: CreateProjectParams) => {
-  const { data } = await httpClient.post<CreateProjectResponse>("/projects", params);
+  const { data } = await httpClient.post<CreateProjectResponse>(
+    "/projects",
+    params
+  );
   return data;
 };

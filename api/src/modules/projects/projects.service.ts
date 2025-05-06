@@ -111,8 +111,15 @@ export class ProjectsService {
   };
 
   async create(userId: string, createProjectDto: CreateProjectDto) {
-    const { name, description, status, department, videoLink, participants } =
-      createProjectDto;
+    const {
+      name,
+      description,
+      status,
+      department,
+      videoLink,
+      participants,
+      editionId,
+    } = createProjectDto;
 
     const userExists = await this.usersService.findByUserId(userId);
 
@@ -132,6 +139,7 @@ export class ProjectsService {
 
     const project = await this.projectsRepo.create({
       data: {
+        editionId,
         name,
         description,
         status,

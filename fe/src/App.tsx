@@ -8,6 +8,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useEffect } from "react";
 import { useAuth } from "./app/hooks/useAuth";
 import { ThemeProvider } from "./app/providers/ThemeProvider";
+import { CurrentEditionProvider } from "./app/contexts/CurrentEditionContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,12 +36,14 @@ export function App() {
   return (
     <ErrorBoundary fallback={<ErrorBoundaryFallback />}>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ThemeProvider>
-            <Router />
-            <Toaster />
-          </ThemeProvider>
-        </AuthProvider>
+        <CurrentEditionProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              <Router />
+              <Toaster />
+            </ThemeProvider>
+          </AuthProvider>
+        </CurrentEditionProvider>
         <ReactQueryDevtools position="bottom" />
       </QueryClientProvider>
     </ErrorBoundary>

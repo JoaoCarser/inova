@@ -22,6 +22,7 @@ export interface Project {
   department: ProjectDepartment;
   createdAt: string;
   updatedAt: string;
+  editionId: string;
   usersProjects: [
     {
       user: {
@@ -40,4 +41,3 @@ export interface Project {
   questions: Question[];
   averageScore: {};
 }
-

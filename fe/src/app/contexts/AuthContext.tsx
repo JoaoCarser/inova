@@ -6,6 +6,7 @@ import { queryKeys } from "../config/queryKeys";
 import { usersService } from "../services/usersService";
 import { useToast } from "@/hooks/use-toast";
 import LoadingScreen from "@/components/LoadingScreen";
+import { useCurrentEdition } from "../hooks/useCurrentEdition";
 
 interface AuthContextValue {
   signedIn: boolean;
@@ -19,7 +20,9 @@ export const AuthContext = createContext({} as AuthContextValue);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   //verifica primeiro se o token está salvo no localStorage
   const [signedIn, setSignedIn] = useState<boolean>(() => {
-    const storedAccessToken = localStorage.getItem(localStorageKeys.ACCESS_TOKEN);
+    const storedAccessToken = localStorage.getItem(
+      localStorageKeys.ACCESS_TOKEN
+    );
 
     return !!storedAccessToken;
   });
@@ -29,6 +32,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   //Hood para o toast
   const { toast } = useToast();
+
+  //hook to editions
+  const { isLoadingCurrentEdition } = useCurrentEdition();
 
   //Função para o signin e aplicar o token no localStorage
   const signin = useCallback((accessToken: string) => {
@@ -66,13 +72,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [isError, signout, data]);
 
+  const isLoading = isFetching || isLoadingCurrentEdition;
+
   return (
     <AuthContext.Provider
       value={{ signedIn: isSuccess && signedIn, signin, signout, user: data }}
     >
-      {isFetching && <LoadingScreen />}
+      {isLoading && <LoadingScreen />}
 
-      {!isFetching && children}
+      {!isLoading && children}
     </AuthContext.Provider>
   );
 };

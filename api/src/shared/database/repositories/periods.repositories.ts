@@ -28,4 +28,8 @@ export class PeriodsRepositories {
   async remove(deleteDto: Prisma.PeriodDeleteArgs) {
     return await this.prismaService.period.delete(deleteDto);
   }
+
+  async deleteMany(deleteManyDto: Prisma.PeriodDeleteManyArgs) {
+    return await this.prismaService.period.deleteMany(deleteManyDto);
+  }
 }

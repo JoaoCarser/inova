@@ -108,14 +108,17 @@ export default function FileUploader({
     };
   };
 
-  const { isPending: isLoadingDeleteFile, mutateAsync: mutateDelete } = useMutation({
-    mutationFn: filesService.remove,
-    onSuccess: (_data, variables) => {
-      if (setUploadedFiles) {
-        setUploadedFiles((prev) => prev.filter((file) => file.id !== variables.fileId));
-      }
-    },
-  });
+  const { isPending: isLoadingDeleteFile, mutateAsync: mutateDelete } =
+    useMutation({
+      mutationFn: filesService.remove,
+      onSuccess: (_data, variables) => {
+        if (setUploadedFiles) {
+          setUploadedFiles((prev) =>
+            prev.filter((file) => file.id !== variables.fileId)
+          );
+        }
+      },
+    });
 
   const deleteUploadedFile = async (fileId: string) => {
     if (!projectId) return;
@@ -158,7 +161,7 @@ export default function FileUploader({
         <Input
           {...getInputProps()}
           id="dropzone-file"
-          accept="image/png, image/jpeg"
+          accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf"
           type="file"
           className="hidden"
         />
@@ -183,7 +186,12 @@ export default function FileUploader({
                       target="_blank"
                     >
                       <div className="text-white">
-                        {<FolderArchive size={40} className={OtherColor.fillColor} />}
+                        {
+                          <FolderArchive
+                            size={40}
+                            className={OtherColor.fillColor}
+                          />
+                        }
                       </div>
 
                       <div className="w-full ml-2 space-y-1">

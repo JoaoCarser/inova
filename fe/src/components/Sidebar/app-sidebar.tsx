@@ -13,75 +13,114 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/app/hooks/useAuth";
 import { Role } from "@/app/entities/Role";
-
-function getNavMainByRole(role: Role) {
-  switch (role) {
-    case "PARTICIPANT":
-      return [
-        {
-          title: "Concurso",
-          url: "#",
-          icon: SquareTerminal,
-          isActive: true,
-          items: [
-            { title: "Etapas", url: "/" },
-            { title: "Projetos", url: "/projects" },
-          ],
-        },
-      ];
-
-    case "EVALUATION_COMMITTEE":
-      return [
-        {
-          title: "Concurso",
-          url: "#",
-          icon: SquareTerminal,
-          isActive: true,
-          items: [
-            { title: "Etapas", url: "/" },
-            { title: "Projetos", url: "/projects" },
-          ],
-        },
-      ];
-
-    case "MARKETING":
-      return [
-        {
-          title: "Concurso",
-          url: "#",
-          icon: SquareTerminal,
-          isActive: true,
-          items: [
-            { title: "Etapas", url: "/" },
-            { title: "Participantes", url: "/participants" },
-            { title: "Projetos", url: "/projects" },
-            { title: "Edições", url: "/editions" },
-          ],
-        },
-      ];
-
-    default:
-      return [];
-  }
-}
+import { CurrentPeriodIndicator } from "./current-period-indicator";
+import { useLocation } from "react-router-dom";
 
 // This is sample data.
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
-  const data = {
-    user: {
-      name: user?.name ?? "",
-      email: user?.email ?? "",
-      avatar: "/avatars/shadcn.jpg",
-    },
+  const location = useLocation();
 
-    navMain: getNavMainByRole(user?.role!),
-  };
+  function getNavMainByRole(role: Role) {
+    switch (role) {
+      case "PARTICIPANT":
+        return [
+          {
+            title: "Concurso",
+            url: "#",
+            icon: SquareTerminal,
+            isActive: true,
+            items: [
+              {
+                title: "Etapas",
+                url: "/",
+                isActive: location.pathname === "/",
+              },
+              {
+                title: "Projetos",
+                url: "/projects",
+                isActive: location.pathname === "/projects",
+              },
+            ],
+          },
+        ];
+
+      case "EVALUATION_COMMITTEE":
+        return [
+          {
+            title: "Concurso",
+            url: "#",
+            icon: SquareTerminal,
+            isActive: true,
+            items: [
+              {
+                title: "Etapas",
+                url: "/",
+                isActive: location.pathname === "/",
+              },
+              {
+                title: "Projetos",
+                url: "/projects",
+                isActive: location.pathname === "/projects",
+              },
+            ],
+          },
+        ];
+
+      case "MARKETING":
+        return [
+          {
+            title: "Concurso",
+            url: "#",
+            icon: SquareTerminal,
+            isActive: true,
+            items: [
+              {
+                title: "Etapas",
+                url: "/",
+                isActive: location.pathname === "/",
+              },
+              {
+                title: "Participantes",
+                url: "/participants",
+                isActive: location.pathname === "/participants",
+              },
+              {
+                title: "Projetos",
+                url: "/projects",
+                isActive: location.pathname === "/projects",
+              },
+              {
+                title: "Edições",
+                url: "/editions",
+                isActive: location.pathname === "/editions",
+              },
+            ],
+          },
+        ];
+
+      default:
+        return [];
+    }
+  }
+  const data = React.useMemo(() => {
+    return {
+      user: {
+        name: user?.name ?? "",
+        email: user?.email ?? "",
+        avatar: "/avatars/shadcn.jpg",
+      },
+
+      navMain: getNavMainByRole(user?.role!),
+    };
+  }, [location]);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher />
+        <CurrentPeriodIndicator />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

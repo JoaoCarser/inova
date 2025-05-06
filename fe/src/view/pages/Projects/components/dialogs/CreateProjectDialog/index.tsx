@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/select";
 import { translatedDepartments } from "@/app/utils/translatedDepartments";
 import { useState } from "react";
-import { ParticipantSelector } from "../../../components/ParticipantSelector";
+import { CreateProjectCard } from "@/view/pages/Projects/components/CreateProjectCard";
+import { ParticipantSelector } from "@/components/ParticipantSelector";
 
 export function CreateProjectDialog() {
   const [open, setOpen] = useState(false);
@@ -35,13 +36,14 @@ export function CreateProjectDialog() {
     isLoading,
     filesToUpload,
     setFilesToUpload,
+    currentEdition,
   } = useCreateProjectDialog(() => {
     setOpen(false); // Fecha o modal após submit
   });
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open && !!currentEdition} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => setOpen(true)}>Create Project</Button>
+        <CreateProjectCard onClick={() => setOpen(true)} />
       </DialogTrigger>
       <DialogContent className="lg:max-w-screen-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -126,7 +128,7 @@ export function CreateProjectDialog() {
                 </div>
 
                 <div className="flex flex-col gap-2 w-full  md:col-span-6 items-start ">
-                  <Label htmlFor="file">Arquivos em PDF ou Word</Label>
+                  <Label htmlFor="file">Arquivos do Projeto</Label>
                   <FileUploader
                     filesToUpload={filesToUpload}
                     setFilesToUpload={setFilesToUpload}

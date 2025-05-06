@@ -25,7 +25,7 @@ import { StatusProject } from "@/app/entities/StatusProject";
 import { differenceInDays } from "date-fns";
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { EditProjectDialog } from "@/view/dialogs/EditProjectDialog";
+
 import { Role } from "@/app/entities/Role";
 import { EvaluationCriterionName } from "@/app/entities/EvaluationCriterionName";
 import { calculateAverageScore } from "@/app/utils/evaluationUtils";
@@ -36,6 +36,7 @@ import { EvaluatorQuestionForm } from "./EvaluatorQuestionForm";
 import { EvaluatorQuestionsList } from "./EvaluatorQuestionsList";
 import { ParticipantQuestions } from "./ParticipantQuestions";
 import { StatusQuestion } from "@/app/entities/Question";
+import { EditProjectDialog } from "@/view/pages/Projects/components/dialogs/EditProjectDialog";
 
 interface ProjectDialogDetailsProps {
   project: Project;

@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext } from "react";
 import { useEffect, useMemo } from "react";
 import { Role } from "@/app/entities/Role";
 import { useAuth } from "@/app/hooks/useAuth";

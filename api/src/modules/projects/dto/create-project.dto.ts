@@ -3,6 +3,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { StatusProject } from '../entities/status.project.entity';
@@ -16,6 +17,10 @@ class Participant {
 }
 
 export class CreateProjectDto {
+  @IsUUID()
+  @IsNotEmpty()
+  editionId: string;
+
   @IsString()
   @IsNotEmpty()
   name: string;

@@ -14,6 +14,7 @@ import { useState } from "react";
 import { filesService } from "@/app/services/filesService";
 import { queryKeys } from "@/app/config/queryKeys";
 import { handleAxiosError } from "@/app/utils/handleAxiosError";
+import { useCurrentEdition } from "@/app/hooks/useCurrentEdition";
 
 const participantSchema = z.object({
   id: z.string(),
@@ -26,7 +27,9 @@ const schema = z.object({
   department: z.nativeEnum(ProjectDepartment),
   description: z.string().min(1, "Descrição do projeto é obrigatório."),
   videoLink: z.string().optional(),
-  participants: z.array(participantSchema).min(1, "Adicione pelo menos um participante"),
+  participants: z
+    .array(participantSchema)
+    .min(1, "Adicione pelo menos um participante"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -36,6 +39,7 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [filesToUpload, setFilesToUpload] = useState<{ File: File }[]>([]);
+  const { currentEdition } = useCurrentEdition();
 
   const {
     handleSubmit: hookFormHandleSubmit,
@@ -66,18 +70,18 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
     },
   });
 
-  const { isPending: isLoadingUploadFiles, mutateAsync: mutateUploadFiles } = useMutation(
-    {
+  const { isPending: isLoadingUploadFiles, mutateAsync: mutateUploadFiles } =
+    useMutation({
       mutationFn: filesService.uploadProjectFile,
-    }
-  );
+    });
 
   const handleSubmit = hookFormHandleSubmit(async (data) => {
     try {
       const project = await mutateAsync({
         ...data,
+        editionId: currentEdition?.id!,
         status: StatusProject.DRAFT,
-      }); //Retorno da mutation Function
+      });
 
       for (const file of filesToUpload) {
         await mutateUploadFiles({ file: file.File, projectId: project.id });
@@ -106,7 +110,7 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
     errors,
     control,
     isLoading: isLoading || isLoadingUploadFiles,
-
+    currentEdition,
     filesToUpload,
     setFilesToUpload,
   };
