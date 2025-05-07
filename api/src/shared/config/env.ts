@@ -12,6 +12,16 @@ class Env {
   @IsNotEmpty()
   //@NotEquals() Talvez adicione para não utilizar a mesma string do ambiaente de desenvolvimento.
   dbURL: string;
+
+  @IsString()
+  @IsNotEmpty()
+  //@NotEquals() Talvez adicione para não utilizar a mesma string do ambiaente de desenvolvimento.
+  emailPasswordPass: string;
+
+  @IsString()
+  @IsNotEmpty()
+  //@NotEquals() Talvez adicione para não utilizar a mesma string do ambiaente de desenvolvimento.
+  emailAccount: string;
 }
 
 //Criando um objeto que possui um atributo com a string que está no .env, porém
@@ -20,7 +30,11 @@ class Env {
 export const env: Env = plainToInstance(Env, {
   dbURL: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
+  emailPasswordPass: process.env.EMAIL_PASSWORD_PASS,
+  emailAccount: process.env.EMAIL_ACCOUNT,
 });
+
+console.log(env);
 
 //Médotod para validar o objeto
 const errors = validateSync(env);
