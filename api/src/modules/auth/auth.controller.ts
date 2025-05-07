@@ -10,7 +10,6 @@ import { MailService } from '../mail/mail.service';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly mailService: MailService,
   ) {}
 
   @Post('/signup')
@@ -23,11 +22,5 @@ export class AuthController {
     return this.authService.signin(createUserDto);
   }
 
-  @Post('/send-email')
-  sendEmailTest(
-    @Body()
-    { email, subject, html }: { email: string; subject: string; html: string },
-  ) {
-    return this.mailService.sendEmail([email], subject, html);
-  }
+
 }

@@ -21,7 +21,7 @@ import { env } from 'src/shared/config/env';
         from: `"Inova Conterp" <${env.emailAccount}>`,
       },
       template: {
-        dir: __dirname + '/templates',
+        dir: join(process.cwd(), 'src', 'mail', 'templates'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,

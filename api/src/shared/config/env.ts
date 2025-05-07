@@ -22,6 +22,11 @@ class Env {
   @IsNotEmpty()
   //@NotEquals() Talvez adicione para não utilizar a mesma string do ambiaente de desenvolvimento.
   emailAccount: string;
+
+  @IsString()
+  @IsNotEmpty()
+  //@NotEquals() Talvez adicione para não utilizar a mesma string do ambiaente de desenvolvimento.
+  frontendUrl: string;
 }
 
 //Criando um objeto que possui um atributo com a string que está no .env, porém
@@ -32,6 +37,7 @@ export const env: Env = plainToInstance(Env, {
   jwtSecret: process.env.JWT_SECRET,
   emailPasswordPass: process.env.EMAIL_PASSWORD_PASS,
   emailAccount: process.env.EMAIL_ACCOUNT,
+  frontendUrl: process.env.FRONTEND_URL,
 });
 
 console.log(env);

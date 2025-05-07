@@ -16,23 +16,42 @@ enum Role {
 }
 
 model User {
-  id       String @id @default(uuid()) @db.Uuid
-  name     String
-  email    String @unique
-  phone    String @unique
-  password String
-  role     Role
-  cpf      String @unique
-  position String
-  baseId   String @map("base_id") @db.Uuid
-  base     Base   @relation(fields: [baseId], references: [id])
+  id               String  @id @default(uuid()) @db.Uuid
+  name             String
+  email            String  @unique
+  phone            String  @unique
+  isEmailConfirmed Boolean @default(false)
+  password         String
+  role             Role
+  cpf              String  @unique
+  position         String
+  baseId           String  @map("base_id") @db.Uuid
+  base             Base    @relation(fields: [baseId], references: [id])
 
   usersProjects    UsersProjects[]
   createdQuestions Question[]      @relation("CreatedQuestions") // Perguntas criadas por este usuário
   files            File[]
   evaluations      Evaluation[]
+  tokens           Token[]
 
   @@map("users")
+}
+
+enum TokenType {
+  CONFIRM_EMAIL
+  RESET_PASSWORD
+
+  @@map("token_types")
+}
+
+model Token {
+  id        String   @id @default(uuid()) @db.Uuid
+  token     String   @unique
+  type      String // 'CONFIRM_EMAIL' | 'RESET_PASSWORD'
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model Base {
