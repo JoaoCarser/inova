@@ -74,6 +74,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isLoading = isFetching || isLoadingCurrentEdition;
 
+  console.log("isFetching user", isFetching);
+  console.log("isLoadingCurrentEdition ", isLoadingCurrentEdition);
+
   return (
     <AuthContext.Provider
       value={{ signedIn: isSuccess && signedIn, signin, signout, user: data }}

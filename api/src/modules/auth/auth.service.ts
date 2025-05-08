@@ -87,7 +87,13 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Credenciais inválidas!');
+      throw new UnauthorizedException('Usuário não encontrado!');
+    }
+
+    if (!user.isEmailConfirmed) {
+      throw new UnauthorizedException(
+        'Email ainda não foi confirmado, por favor, verifique seu e-mail!',
+      );
     }
 
     const isPasswordValid = await compare(password, user.password);
@@ -121,7 +127,17 @@ export class AuthService {
 
     await this.tokensRepository.delete({ where: { token } });
 
-    return { message: 'E-mail confirmado com sucesso!' };
+    const user = await this.usersRepository.findUnique({
+      where: { id: record.userId },
+    });
+
+    // Generate JWT
+    const accessToken = await this.generateAccessToken(
+      user.id,
+      user.role as Role,
+    );
+
+    return { accessToken };
   }
 
   private async generateAccessToken(userId: string, userRole: Role) {

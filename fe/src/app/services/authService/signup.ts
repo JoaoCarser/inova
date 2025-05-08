@@ -12,12 +12,15 @@ export interface SignupParams {
 }
 
 interface SignupResponse {
-  accessToken: string;
+  message: string;
 }
 
 export const signup = async (params: SignupParams) => {
   //await timeout(1500);
-  const { data } = await httpClient.post<SignupResponse>("/auth/signup", params);
+  const { data } = await httpClient.post<SignupResponse>(
+    "/auth/signup",
+    params
+  );
 
   return data;
 };

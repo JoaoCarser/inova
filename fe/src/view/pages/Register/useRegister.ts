@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 
-import { useToast } from "@/hooks/use-toast";
+import {  useToast } from "@/hooks/use-toast";
 import { mutationKeys } from "@/app/config/mutationKeys";
 import { SigninParams } from "@/app/services/authService/signin";
 import { authService } from "@/app/services/authService";
@@ -13,6 +13,8 @@ import { SignupParams } from "@/app/services/authService/signup";
 import { AxiosError } from "axios";
 import { useBases } from "@/app/hooks/bases/useBases";
 import { handleAxiosError } from "@/app/utils/handleAxiosError";
+import { useState } from "react";
+
 const schema = z.object({
   name: z.string().min(1, "Nome é obrigatório."),
   email: z
@@ -32,8 +34,8 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export const useRegister = () => {
-  const { toast } = useToast();
   const { signin } = useAuth();
+  const {toast} = useToast()
   const {
     handleSubmit: hookFormHandleSubmit,
     register,
@@ -44,6 +46,8 @@ export const useRegister = () => {
   });
 
   const { bases, isFetchingBases } = useBases();
+
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
 
   const { isPending: isLoading, mutateAsync } = useMutation({
     mutationKey: [mutationKeys.SIGNUP],
@@ -56,11 +60,18 @@ export const useRegister = () => {
     console.log(data);
 
     try {
-      const { accessToken } = await mutateAsync({
+      const { message } = await mutateAsync({
         ...data,
         role: Role.PARTICIPANT,
       }); //Retorno da mutation Function
-      signin(accessToken);
+      toast({
+        variant: "default",
+        title: "Cadastrado com sucesso!",
+        description: message,
+        duration: 5000,
+      });
+
+      setPendingEmail(data.email);
     } catch (error) {
       handleAxiosError(error);
     }
@@ -74,5 +85,6 @@ export const useRegister = () => {
     control,
     bases,
     isFetchingBases,
+    pendingEmail,
   };
 };

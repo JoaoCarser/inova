@@ -25,7 +25,6 @@ type FormData = {
 //type FormData = z.infer<typeof schema>;
 
 export const useLogin = () => {
-  const { toast } = useToast();
   const { signin } = useAuth();
   const {
     handleSubmit: hookFormHandleSubmit,

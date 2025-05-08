@@ -40,6 +40,7 @@ export class UsersController {
 
   @Get('/me')
   me(@ActiveUserId() userId: string) {
+    console.log("userId", userId);
     return this.usersService.findByUserId(userId);
   }
 
