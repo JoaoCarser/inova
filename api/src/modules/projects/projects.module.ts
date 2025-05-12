@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { UsersProjectsService } from '../users-projects/users-projects.service';
 import { FilesModule } from '../files/files.module'; // <-- importar com forwardRef
 import { FilesService } from '../files/files.service';
+import { PeriodsService } from '../periods/periods.service';
 
 @Module({
   imports: [forwardRef(() => FilesModule)], // ✅
@@ -14,6 +15,7 @@ import { FilesService } from '../files/files.service';
     UsersService,
     UsersProjectsService,
     FilesService,
+    PeriodsService
   ],
   exports: [ProjectsService],
 })

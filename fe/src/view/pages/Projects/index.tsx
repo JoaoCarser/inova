@@ -14,7 +14,14 @@ export default function Projects() {
   return (
     <ProjectsProvider>
       <ProjectsContext.Consumer>
-        {({ handleClearFilters, isLoading, projects, setFilters, user }) => (
+        {({
+          handleClearFilters,
+          isLoading,
+          projects,
+          setFilters,
+          user,
+          currentPeriod,
+        }) => (
           <div>
             <Header title="Projetos" />
             {/*  <ModeToggle /> */}
@@ -52,26 +59,29 @@ export default function Projects() {
 
             {!isLoading &&
               projects.length === 0 &&
-              user?.role === Role.PARTICIPANT && (
+              user?.role === Role.PARTICIPANT &&
+              currentPeriod?.type === "SUBSCRIPTION" && (
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <CreateProjectDialog />
                 </div>
               )}
 
-            {!isLoading && projects.length > 0 && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {user?.role !== Role.EVALUATION_COMMITTEE && (
-                  <CreateProjectDialog />
-                )}
-                {projects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    userRole={user?.role!}
-                  />
-                ))}
-              </div>
-            )}
+            {!isLoading &&
+              projects.length > 0 &&
+              currentPeriod?.type === "SUBSCRIPTION" && (
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {user?.role !== Role.EVALUATION_COMMITTEE && (
+                    <CreateProjectDialog />
+                  )}
+                  {projects.map((project) => (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      userRole={user?.role!}
+                    />
+                  ))}
+                </div>
+              )}
           </div>
         )}
       </ProjectsContext.Consumer>

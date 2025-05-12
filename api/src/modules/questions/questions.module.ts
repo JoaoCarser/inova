@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { ProjectsService } from '../projects/projects.service';
 import { UsersProjectsService } from '../users-projects/users-projects.service';
 import { FilesService } from '../files/files.service';
+import { PeriodsService } from '../periods/periods.service';
 
 @Module({
   controllers: [QuestionsController],
@@ -14,6 +15,7 @@ import { FilesService } from '../files/files.service';
     ProjectsService,
     UsersProjectsService,
     FilesService,
+    PeriodsService
   ],
 })
 export class QuestionsModule {}

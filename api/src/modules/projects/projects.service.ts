@@ -17,6 +17,7 @@ import { Prisma } from '@prisma/client';
 import { FilesService } from '../files/files.service';
 import { ProjectDepartment } from './entities/project.department.entity';
 import { Role } from '../users/entities/Role';
+import { PeriodsService } from '../periods/periods.service';
 
 type ProjectWithRelations = Prisma.ProjectGetPayload<{
   include: {
@@ -60,9 +61,9 @@ export class ProjectsService {
     private readonly usersProjectsService: UsersProjectsService,
     private readonly usersService: UsersService,
     private readonly projectsRepo: ProjectsRepositories,
-    private readonly evaluationsCriteriaRepo: EvaluationsCriteriaRepositories,
     @Inject(forwardRef(() => FilesService))
     private readonly filesService: FilesService,
+    private readonly periodsService: PeriodsService,
   ) {}
 
   private readonly includeClause = {
@@ -121,6 +122,18 @@ export class ProjectsService {
       editionId,
     } = createProjectDto;
 
+    const currentPeriod = await this.periodsService.getCurrentPeriod();
+
+    if (!currentPeriod) {
+      throw new ConflictException('Nenhum período atual encontrado');
+    }
+
+    if (currentPeriod.type !== 'SUBSCRIPTION') {
+      throw new ConflictException(
+        'Não é possível criar projetos no período atual',
+      );
+    }
+    
     const userExists = await this.usersService.findByUserId(userId);
 
     if (!userExists) {

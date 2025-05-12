@@ -7,6 +7,8 @@ import { useProjectsByUserId } from "@/app/hooks/projects/useProjectsByUserId";
 import { FilterState, useProjectFilters } from "@/app/hooks/useProjectFilters";
 import { Project } from "@/app/entities/Project";
 import { User } from "@/app/entities/User";
+import { useCurrentEdition } from "@/app/hooks/useCurrentEdition";
+import { Period } from "@/app/entities/Period";
 
 interface ProjectsContextValue {
   isLoading: boolean;
@@ -15,6 +17,7 @@ interface ProjectsContextValue {
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
   filters: FilterState;
   user: User | undefined;
+  currentPeriod: Period | undefined;
 }
 
 export const ProjectsContext = createContext({} as ProjectsContextValue);
@@ -32,6 +35,10 @@ export const ProjectsProvider = ({
     isFetchingProjects,
     refechProjects,
   } = useProjects(user?.role!, filters);
+
+  const { currentEdition, currentPeriod } = useCurrentEdition();
+  console.log("currentEdition", currentEdition);
+  console.log("currentPeriod", currentPeriod);
 
   const {
     projects: userProjects,
@@ -75,6 +82,7 @@ export const ProjectsProvider = ({
         filters,
         setFilters,
         user,
+        currentPeriod,
       }}
     >
       {children}
