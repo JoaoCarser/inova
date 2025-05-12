@@ -48,7 +48,7 @@ export default function Login() {
                 Lembre-se
               </label>
             </div>
-            <Link to="/recover">
+            <Link to="/forgot-password">
               <span className="text-sm font-medium leading-none text-primary">
                 Esqueceu a senha?
               </span>

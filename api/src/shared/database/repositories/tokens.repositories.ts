@@ -17,4 +17,8 @@ export class TokensRepositories {
   async delete(deleteDto: Prisma.TokenDeleteArgs) {
     return await this.prismaService.token.delete(deleteDto);
   }
+
+  async deleteMany(deleteManyDto: Prisma.TokenDeleteManyArgs) {
+    return await this.prismaService.token.deleteMany(deleteManyDto);
+  }
 }

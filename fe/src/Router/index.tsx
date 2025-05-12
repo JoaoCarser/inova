@@ -8,6 +8,9 @@ import { LoginLayout } from "@/view/Layouts/LoginLayout";
 import Register from "@/view/pages/Register";
 import AppLayout from "@/view/Layouts/AppLayout";
 import ConfirmEmail from "@/view/pages/ConfirmEmail";
+import { ForgotPassword } from "@/view/pages/ForgotPassword";
+import { ResetPassword } from "@/view/pages/ResetPassword";
+
 const Home = lazy(() => import("@/view/pages/Home"));
 const Projects = lazy(() => import("@/view/pages/Projects"));
 const Participants = lazy(() => import("@/view/pages/Participants"));
@@ -24,6 +27,8 @@ export const Router = () => {
             </Route>
             <Route path="/register" element={<Register />} />
             <Route path="/confirm-email" element={<ConfirmEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
           </Route>
 
           <Route element={<AuthGuard isPrivate={true} />}>

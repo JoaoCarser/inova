@@ -8,6 +8,7 @@ import { UsersRepositories } from 'src/shared/database/repositories/users.reposi
 import { formatCpf } from 'src/shared/utils/formatCpf';
 import { Prisma } from '@prisma/client';
 import { Role } from './entities/Role';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -140,13 +141,15 @@ export class UsersService {
       },
     });
 
+    const hashedPassword = await hash(updateUserDto.password, 12);
+
     if (cpfExists) {
       throw new ConflictException('O CPF já está sendo usado');
     }
 
     return await this.usersRepository.update({
       where: { id: userid },
-      data: updateUserDto,
+      data: { ...updateUserDto, password: hashedPassword },
     });
   }
 

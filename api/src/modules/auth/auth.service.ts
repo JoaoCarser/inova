@@ -20,6 +20,8 @@ import { ConfirmEmailDto } from './dto/confirmEmail.dto';
 import { randomUUID } from 'crypto';
 import { addHours } from 'date-fns';
 import { MailService } from '../mail/mail.service';
+import { ForgotPasswordDto } from './dto/forgotPasswordDto';
+import { ResetPasswordDto } from './dto/resetPassword.dto';
 
 @Injectable()
 export class AuthService {
@@ -138,6 +140,75 @@ export class AuthService {
     );
 
     return { accessToken };
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const { email } = forgotPasswordDto;
+
+    const user = await this.usersRepository.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado!');
+    }
+
+    await this.tokensRepository.deleteMany({
+      where: {
+        AND: [{ userId: user.id }, { type: 'RESET_PASSWORD' }],
+      },
+    });
+    const token = randomUUID();
+    await this.tokensRepository.create({
+      data: {
+        token,
+        type: 'RESET_PASSWORD',
+        userId: user.id,
+        expiresAt: addHours(new Date(), 24),
+      },
+    });
+
+    await this.mailService.sendEmailForgotPassword(user.email, token);
+
+    return {
+      message:
+        'Um email foi enviado com um link para recuperar a senha. Por favor, verifique sua caixa de entrada!',
+    };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const { token, password } = resetPasswordDto;
+
+    const record = await this.tokensRepository.findUnique({ where: { token } });
+
+    if (!record || record.expiresAt < new Date()) {
+      throw new BadRequestException('Token inválido ou expirado');
+    }
+
+    const user = await this.usersRepository.findUnique({
+      where: { id: record.userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado!');
+    }
+
+    const hashedPassword = await hash(password, 12);
+
+    await this.usersRepository.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    });
+
+    await this.tokensRepository.deleteMany({
+      where: {
+        AND: [{ userId: user.id }, { type: 'RESET_PASSWORD' }],
+      },
+    });
+
+    return {
+      message: 'Senha atualizada com sucesso!',
+    };
   }
 
   private async generateAccessToken(userId: string, userRole: Role) {

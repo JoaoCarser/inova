@@ -6,4 +6,6 @@ export const mutationKeys = {
   CREATE_EVALUATION: "create-evaluation",
   CREATE_EDITION: "create-edition",
   UPDATE_EVALUATION: "update-evaluation",
+  FORGOT_PASSWORD: "forgot-password",
+  RESET_PASSWORD: "reset-password",
 };
