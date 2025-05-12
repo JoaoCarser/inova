@@ -7,6 +7,8 @@ import {
   AlertCircle,
   Star,
   MessageCircle,
+  Youtube,
+  ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { differenceInDays } from "date-fns";
@@ -33,6 +35,7 @@ import { Button } from "./ui/button";
 import { CreateEvaluationDialog } from "@/view/dialogs/CreateEvaluationDialog";
 import { calculateAverageScore } from "@/app/utils/evaluationUtils";
 import { useAuth } from "@/app/hooks/useAuth";
+import { useCurrentEdition } from "@/app/hooks/useCurrentEdition";
 
 interface ProjectCardProps {
   project: Project;
@@ -44,6 +47,7 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const queryClient = useQueryClient();
+  const { currentPeriod } = useCurrentEdition();
   const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
 
   // Extract user names for display
@@ -74,15 +78,12 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
   };
 
   // Calculate average score
-  const { averageScore, evaluationCount } = calculateAverageScore(
-    project.evaluations
-  );
+  const { averageScore } = calculateAverageScore(project.evaluations);
 
   // Determine if we should show the score (only for reviewed or under review projects)
   const showScore =
-    project.status === StatusProject.SUBMITTED ||
-    project.status === StatusProject.REVIEWED ||
-    (project.status === StatusProject.UNDER_REVIEW && evaluationCount > 0);
+    project.status === StatusProject.REVIEWED &&
+    currentPeriod?.type === "RESUBSCRIPTION";
 
   // Count questions
   const questionsCount = (project.questions || []).length;
@@ -133,6 +134,26 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
                 }
               </span>
             </div>
+
+            {project.videoLink && (
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Youtube size={16} className="text-gray-400 shrink-0" />
+                <span className="">
+                  <a
+                    href={project.videoLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline flex gap-2 items-center w-full"
+                  >
+                    Vídeo do projeto
+                    <ExternalLink
+                      size={16}
+                      className="text-gray-400 shrink-0"
+                    />
+                  </a>
+                </span>
+              </div>
+            )}
 
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Clock size={16} className="text-gray-400 shrink-0" />
