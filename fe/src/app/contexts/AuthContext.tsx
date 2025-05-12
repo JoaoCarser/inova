@@ -33,8 +33,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   //Hood para o toast
   const { toast } = useToast();
 
-  //hook to editions
-  const { isLoadingCurrentEdition } = useCurrentEdition();
+  //h
 
   //Função para o signin e aplicar o token no localStorage
   const signin = useCallback((accessToken: string) => {
@@ -72,18 +71,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [isError, signout, data]);
 
-  const isLoading = isFetching || isLoadingCurrentEdition;
-
-  console.log("isFetching user", isFetching);
-  console.log("isLoadingCurrentEdition ", isLoadingCurrentEdition);
 
   return (
     <AuthContext.Provider
       value={{ signedIn: isSuccess && signedIn, signin, signout, user: data }}
     >
-      {isLoading && <LoadingScreen />}
+      {isFetching && <LoadingScreen />}
 
-      {!isLoading && children}
+      {!isFetching && children}
     </AuthContext.Provider>
   );
 };

@@ -2,15 +2,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-
-import {  useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { mutationKeys } from "@/app/config/mutationKeys";
-import { SigninParams } from "@/app/services/authService/signin";
 import { authService } from "@/app/services/authService";
-import { useAuth } from "@/app/hooks/useAuth";
 import { Role } from "@/app/entities/Role";
 import { SignupParams } from "@/app/services/authService/signup";
-import { AxiosError } from "axios";
 import { useBases } from "@/app/hooks/bases/useBases";
 import { handleAxiosError } from "@/app/utils/handleAxiosError";
 import { useState } from "react";
@@ -34,8 +30,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export const useRegister = () => {
-  const { signin } = useAuth();
-  const {toast} = useToast()
+  const { toast } = useToast();
   const {
     handleSubmit: hookFormHandleSubmit,
     register,

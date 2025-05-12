@@ -43,7 +43,10 @@ export function CreateProjectDialog() {
   return (
     <Dialog open={open && !!currentEdition} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <CreateProjectCard onClick={() => setOpen(true)} />
+        <CreateProjectCard onClick={() => {
+       
+        setOpen(true)
+        }} />
       </DialogTrigger>
       <DialogContent className="lg:max-w-screen-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>

@@ -28,8 +28,10 @@ export default function Register() {
     pendingEmail,
   } = useRegister();
   return (
-    <div className={cn(" w-full h-full", !pendingEmail && "flex")}>
+
+     <>
       {!pendingEmail && (
+        <div className={cn(" w-full h-full flex")}>
         <>
           {" "}
           <div className="h-1/2 bg-primary absolute w-full flex flex-col items-center justify-start p-10">
@@ -184,8 +186,10 @@ export default function Register() {
             </form>
           </div>
         </>
+         </div>
       )}
       {pendingEmail && <EmailVerificationPending email={pendingEmail} />}
-    </div>
+     </>
+   
   );
 }

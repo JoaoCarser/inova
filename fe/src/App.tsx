@@ -36,14 +36,15 @@ export function App() {
   return (
     <ErrorBoundary fallback={<ErrorBoundaryFallback />}>
       <QueryClientProvider client={queryClient}>
-        <CurrentEditionProvider>
-          <AuthProvider>
-            <ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <CurrentEditionProvider>
               <Router />
-              <Toaster />
-            </ThemeProvider>
-          </AuthProvider>
-        </CurrentEditionProvider>
+            </CurrentEditionProvider>
+            <Toaster />
+          </ThemeProvider>
+        </AuthProvider>
+
         <ReactQueryDevtools position="bottom" />
       </QueryClientProvider>
     </ErrorBoundary>

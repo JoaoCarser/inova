@@ -37,6 +37,8 @@ import { EvaluatorQuestionsList } from "./EvaluatorQuestionsList";
 import { ParticipantQuestions } from "./ParticipantQuestions";
 import { StatusQuestion } from "@/app/entities/Question";
 import { EditProjectDialog } from "@/view/pages/Projects/components/dialogs/EditProjectDialog";
+import { EditEvaluationDialog } from "@/view/dialogs/EditEvaluationDialog";
+import { Evaluation } from "@/app/entities/Evaluation";
 
 interface ProjectDialogDetailsProps {
   project: Project;
@@ -84,16 +86,30 @@ export const ProjectDetailDialog = ({
   const { averageScore, evaluationCount, criteriaAverages } =
     calculateAverageScore(project.evaluations);
   const [_activeTab, setActiveTab] = useState("details");
+  const [isEditEvaluationModalOpen, setIsEditEvaluationModalOpen] =
+    useState(false);
+  const [evaluationBeingEdited, setEvaluationBeingEdited] =
+    useState<Evaluation | null>(null);
 
   const evaluations = useMemo(() => {
-    if (userRole === Role.EVALUATION_COMMITTEE) {
+    /* if (userRole === Role.EVALUATION_COMMITTEE) {
       return project.evaluations.filter(
         (evaluation) => evaluation.evaluatorId === userId
       );
-    }
+    } */
 
     return project.evaluations;
   }, []);
+
+  const handleOpenEditEvaluationDialog = (evaluation: Evaluation) => {
+    setEvaluationBeingEdited(evaluation);
+    setIsEditEvaluationModalOpen(true);
+  };
+
+  const handleCloseEditEvaluationDialog = () => {
+    setEvaluationBeingEdited(null);
+    setIsEditEvaluationModalOpen(false);
+  };
 
   // Determine if we should show evaluations tab
   const showEvaluations = project.evaluations.length > 0;
@@ -327,7 +343,13 @@ export const ProjectDetailDialog = ({
                       </div>
                       <div>
                         {userId === evaluation.evaluatorId && (
-                          <Button variant="default" size="sm">
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() =>
+                              handleOpenEditEvaluationDialog(evaluation)
+                            }
+                          >
                             Editar Avaliação
                           </Button>
                         )}
@@ -418,6 +440,18 @@ export const ProjectDetailDialog = ({
               {userRole === Role.MARKETING && (
                 <EditProjectDialog className="w-full" project={project} />
               )}
+
+              {userRole === Role.EVALUATION_COMMITTEE &&
+                evaluationBeingEdited && (
+                  <div>
+                    <EditEvaluationDialog
+                      project={project}
+                      evaluationBeingEdited={evaluationBeingEdited}
+                      isOpen={isEditEvaluationModalOpen}
+                      onClose={handleCloseEditEvaluationDialog}
+                    />
+                  </div>
+                )}
             </div>
           </div>
         </Tabs>

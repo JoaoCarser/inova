@@ -110,7 +110,8 @@ export class EditionsService {
 
   async findCurrent() {
     const today = new Date();
-    return await this.editionsRepo.findFirst({
+   
+    const currentEdition = await this.editionsRepo.findFirst({
       where: {
         startDate: { lte: today },
         endDate: { gte: today },
@@ -119,6 +120,8 @@ export class EditionsService {
         periods: true,
       },
     });
+    console.log('currentEdition', currentEdition);
+    return currentEdition;
   }
 
   async update(editionId: string, updateEditionDto: UpdateEditionDto) {
@@ -158,8 +161,6 @@ export class EditionsService {
         periods: true,
       },
     });
-
-    console.log('updatedEdition', updatedEdition);
 
     return updatedEdition;
   }

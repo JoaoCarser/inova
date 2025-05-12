@@ -21,26 +21,33 @@ export const CurrentEditionProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  /*  const { data: currentPeriod, isFetching: isFechingCurrentPeriod } = useQuery({
+
+  
+  const { data: currentEdition, isFetching } = useQuery({
+    queryKey: [queryKeys.CURRENT_EDITION],
+    queryFn: () => editionsService.getCurrent(),
+    enabled: true,
+    staleTime: Infinity,
+  });
+    const { data: currentPeriod, isFetching: isFechingCurrentPeriod } = useQuery({
     enabled: true,
     queryKey: [queryKeys.CURRENT_PERIOD],
     queryFn: () => periodsService.getCurrent(),
     staleTime: Infinity,
   });
 
-  const { data, isFetching } = useQuery({
-    queryKey: [queryKeys.CURRENT_EDITION],
-    queryFn: () => editionsService.getCurrent(),
-    enabled: true,
-    staleTime: Infinity,
-  }); */
+  console.log("currentEdition", currentEdition);
+  console.log("currentPeriod", currentPeriod);
+
+
+  const loading = isFechingCurrentPeriod || isFetching;
 
   return (
     <CurrentEditionContext.Provider
       value={{
-        currentEdition: undefined,
-        isLoadingCurrentEdition: false,
-        currentPeriod: undefined,
+        currentEdition: currentEdition,
+        isLoadingCurrentEdition: loading,
+        currentPeriod: currentPeriod,
       }}
     >
       {children}

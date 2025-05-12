@@ -9,7 +9,6 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import { differenceInDays } from "date-fns";
 import { Project } from "@/app/entities/Project";
 import { StatusProject } from "@/app/entities/StatusProject";
@@ -29,10 +28,9 @@ import { projectsService } from "@/app/services/projectsService";
 import { queryKeys } from "@/app/config/queryKeys";
 import { Badge } from "./ui/badge";
 import { ProjectDetailDialog, statusConfig } from "./ProjectDetailDialog";
-import { is } from "date-fns/locale";
 import { Role } from "@/app/entities/Role";
 import { Button } from "./ui/button";
-import { EvaluationDialog } from "@/view/dialogs/EvaluationDialog";
+import { CreateEvaluationDialog } from "@/view/dialogs/CreateEvaluationDialog";
 import { calculateAverageScore } from "@/app/utils/evaluationUtils";
 import { useAuth } from "@/app/hooks/useAuth";
 
@@ -169,7 +167,7 @@ export function ProjectCard({ project, userRole }: ProjectCardProps) {
           </div>
           {userRole === Role.EVALUATION_COMMITTEE && (
             <div>
-              <EvaluationDialog
+              <CreateEvaluationDialog
                 project={project}
                 isOpen={isEvaluationModalOpen}
                 onClose={() => setIsEvaluationModalOpen(false)}

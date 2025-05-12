@@ -7,7 +7,6 @@ import { projectsService } from "@/app/services/projectsService";
 import { CreateProjectParams } from "@/app/services/projectsService/create";
 import { StatusProject } from "@/app/entities/StatusProject";
 import { ProjectDepartment } from "@/app/entities/ProjectDepartament";
-import { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/app/hooks/useAuth";
 import { useState } from "react";
@@ -39,7 +38,7 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [filesToUpload, setFilesToUpload] = useState<{ File: File }[]>([]);
-  const { currentEdition } = useCurrentEdition();
+  const { currentEdition, isLoadingCurrentEdition } = useCurrentEdition();
 
   const {
     handleSubmit: hookFormHandleSubmit,
@@ -109,7 +108,7 @@ export const useCreateProjectDialog = (onSuccess?: () => void) => {
     register,
     errors,
     control,
-    isLoading: isLoading || isLoadingUploadFiles,
+    isLoading: isLoading || isLoadingUploadFiles || isLoadingCurrentEdition,
     currentEdition,
     filesToUpload,
     setFilesToUpload,
