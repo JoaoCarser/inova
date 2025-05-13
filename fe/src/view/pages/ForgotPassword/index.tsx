@@ -1,5 +1,3 @@
-"use client";
-import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
 
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { mutationKeys } from "@/app/config/mutationKeys";
@@ -29,7 +27,7 @@ const forgotPasswordSchema = z.object({
 
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
-export function ForgotPassword() {
+export default function ForgotPassword() {
   const { toast } = useToast();
   const {
     handleSubmit: hookFormHandleSubmit,

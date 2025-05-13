@@ -49,7 +49,6 @@ export class AuthService {
           },
         },
       );
-      console.log('feedz data', data);
       return !!data.success;
     } catch (error) {
       throw new BadRequestException(

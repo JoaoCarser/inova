@@ -7,21 +7,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Project } from "@/app/entities/Project";
 import { StarRating } from "../../../components/StarRating";
-import { cn } from "@/lib/utils";
 import { EvaluationCriterion } from "@/app/entities/EvaluationCriterion";
 import { EvaluationCriterionName } from "@/app/entities/EvaluationCriterionName";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { mutationKeys } from "@/app/config/mutationKeys";
 import { evaluationService } from "@/app/services/evaluationService";
-import { queryKeys } from "@/app/config/queryKeys";
 import { useToast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
 import { handleAxiosError } from "@/app/utils/handleAxiosError";
 import { Evaluation } from "@/app/entities/Evaluation";
 
@@ -76,7 +72,6 @@ export function EditEvaluationDialog({
   evaluationBeingEdited,
 }: EditEvaluationDialogProps) {
   const [comments, setComments] = useState(evaluationBeingEdited.comments);
-  const queryClient = useQueryClient();
   const { toast } = useToast();
   const [criteria, setCriteria] = useState<EvaluationCriterion[]>(
     evaluationBeingEdited.criteria.map(({ name, score }) => ({
@@ -137,7 +132,7 @@ export function EditEvaluationDialog({
         }))
       );
       //queryClient.invalidateQueries({ queryKey: [queryKeys.PROJECTS] });
-       window.location.reload();
+      window.location.reload();
     } catch (error) {
       handleAxiosError(error);
     }
@@ -217,7 +212,13 @@ export function EditEvaluationDialog({
                 <Button variant="outline" onClick={onClose}>
                   Cancelar
                 </Button>
-                <Button onClick={handleSubmit}>Enviar Avaliação</Button>
+                <Button
+                  onClick={handleSubmit}
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                >
+                  Enviar Avaliação
+                </Button>
               </div>
             </div>
           </div>

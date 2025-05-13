@@ -12,7 +12,6 @@ import {
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useRegister } from "./useRegister";
 import { Controller } from "react-hook-form";
-import { Spinner } from "@/components/Spinner";
 import { EmailVerificationPending } from "../EmailVerificationPending";
 import { cn } from "@/lib/utils";
 

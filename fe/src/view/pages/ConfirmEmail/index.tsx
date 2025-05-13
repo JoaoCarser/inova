@@ -1,10 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, XCircle, Loader2 } from "lucide-react";
-import { useLocation, useParams } from "react-router-dom";
+import { XCircle } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/app/services/authService";
 import { mutationKeys } from "@/app/config/mutationKeys";
@@ -68,7 +65,7 @@ export default function ConfirmEmail() {
                 </p>
               </div>
               <div className="space-y-4 w-full">
-                <Button className="w-full" onClick={handleSubmit}>
+                <Button className="w-full" onClick={handleSubmit} disabled={isLoading} isLoading={isLoading}>
                   Cofirmar E-mail
                 </Button>
                 <Button variant="outline" className="w-full">

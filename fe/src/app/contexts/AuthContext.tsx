@@ -6,7 +6,6 @@ import { queryKeys } from "../config/queryKeys";
 import { usersService } from "../services/usersService";
 import { useToast } from "@/hooks/use-toast";
 import LoadingScreen from "@/components/LoadingScreen";
-import { useCurrentEdition } from "../hooks/useCurrentEdition";
 
 interface AuthContextValue {
   signedIn: boolean;
@@ -70,7 +69,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signout();
     }
   }, [isError, signout, data]);
-
 
   return (
     <AuthContext.Provider

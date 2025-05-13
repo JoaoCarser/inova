@@ -163,8 +163,8 @@ export function PeriodTimeline({
                 <div className="mt-3 text-sm text-gray-600">
                   <p className="mt-2">
                     <span className="font-medium">Período:</span>{" "}
-                    {formatDate(period.startDate)} até{" "}
-                    {formatDate(period.endDate)}
+                    {formatDate(new Date(period.startDate))} até{" "}
+                    {formatDate(new Date(period.endDate))}
                   </p>
                 </div>
 

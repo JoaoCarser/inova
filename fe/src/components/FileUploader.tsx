@@ -1,20 +1,16 @@
 "use client";
-
-import axios, { AxiosProgressEvent, CancelTokenSource } from "axios";
 import {
   AudioWaveform,
   File,
   FileImage,
   FolderArchive,
-  UploadCloud,
   Video,
   X,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { ScrollArea } from "./ui/scroll-area";
 import { Input } from "./ui/input";
-import { Progress } from "./ui/progress";
 import { ProjectFile } from "@/app/entities/Project";
 import { useMutation } from "@tanstack/react-query";
 import { filesService } from "@/app/services/filesService";

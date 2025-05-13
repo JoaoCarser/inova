@@ -5,12 +5,11 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthGuard } from "./AuthGuard";
 import { LoginLayout } from "@/view/Layouts/LoginLayout";
-import Register from "@/view/pages/Register";
 import AppLayout from "@/view/Layouts/AppLayout";
-import ConfirmEmail from "@/view/pages/ConfirmEmail";
-import { ForgotPassword } from "@/view/pages/ForgotPassword";
-import { ResetPassword } from "@/view/pages/ResetPassword";
-
+const Register = lazy(() => import("@/view/pages/Register"));
+const ConfirmEmail = lazy(() => import("@/view/pages/ConfirmEmail"));
+const ForgotPassword = lazy(() => import("@/view/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/view/pages/ResetPassword"));
 const Home = lazy(() => import("@/view/pages/Home"));
 const Projects = lazy(() => import("@/view/pages/Projects"));
 const Participants = lazy(() => import("@/view/pages/Participants"));
