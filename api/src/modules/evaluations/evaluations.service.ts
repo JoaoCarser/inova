@@ -1,9 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
 import { UpdateEvaluationDto } from './dto/update-evaluation.dto';
 import { EvaluationsRepositories } from 'src/shared/database/repositories/evaluations.repositories';
 import { ProjectsService } from '../projects/projects.service';
 import { EvaluationsCriteriaRepositories } from 'src/shared/database/repositories/evaluations-criteria.repositories';
+import { UsersService } from '../users/users.service';
+import { Role } from '../users/entities/Role';
+import { StatusProject } from '../projects/entities/status.project.entity';
 
 @Injectable()
 export class EvaluationsService {
@@ -11,28 +18,74 @@ export class EvaluationsService {
     private readonly evaluationsRepository: EvaluationsRepositories,
     private readonly projectsService: ProjectsService,
     private readonly evaluationsCriteriaRepository: EvaluationsCriteriaRepositories,
+    private readonly userService: UsersService,
   ) {}
 
   async create(userId: string, createEvaluationDto: CreateEvaluationDto) {
-    //Verifica se o projeto existe
-    const project = await this.projectsService.findByProjectId(
-      createEvaluationDto.projectId,
-    );
+    const { projectId, criteria, comments } = createEvaluationDto;
 
+    const project = await this.projectsService.findByProjectId(
+      userId,
+      projectId,
+    );
     if (!project) {
       throw new NotFoundException('Projeto não encontrado!');
     }
 
-    return await this.evaluationsRepository.create({
-      data: {
-        projectId: createEvaluationDto.projectId,
+    const hasAlreadyEvaluated = await this.evaluationsRepository.findFirst({
+      where: {
+        projectId,
         evaluatorId: userId,
-        criteria: {
-          create: createEvaluationDto.criteria,
-        },
-        comments: createEvaluationDto.comments,
       },
     });
+
+    if (hasAlreadyEvaluated) {
+      throw new ConflictException('Você já avaliou este projeto.');
+    }
+
+    // Cria a nova avaliação
+    await this.evaluationsRepository.create({
+      data: {
+        projectId,
+        evaluatorId: userId,
+        criteria: {
+          create: criteria,
+        },
+        comments,
+      },
+    });
+
+    // Recarrega as avaliações do projeto após inserção
+    const updatedProject = await this.projectsService.findByProjectId(
+      userId,
+      projectId,
+    );
+
+    const evaluationCommittee = await this.userService.findAll({
+      role: Role.EVALUATION_COMMITTEE,
+    });
+
+    const totalEvaluators = evaluationCommittee.length;
+    const totalEvaluations = updatedProject.evaluations.length;
+
+    // Atualiza status do projeto conforme progresso das avaliações
+    if (
+      project.status !== StatusProject.REVIEWED &&
+      totalEvaluations > 0 &&
+      totalEvaluations < totalEvaluators
+    ) {
+      await this.projectsService.updateStatus(projectId, {
+        status: StatusProject.UNDER_REVIEW,
+      });
+    }
+
+    if (totalEvaluations === totalEvaluators) {
+      await this.projectsService.updateStatus(projectId, {
+        status: StatusProject.REVIEWED,
+      });
+    }
+
+    return { message: 'Avaliação registrada com sucesso.' };
   }
 
   async findAll() {
@@ -47,10 +100,15 @@ export class EvaluationsService {
     });
   }
 
-  async update(evaluationId: string, updateEvaluationDto: UpdateEvaluationDto) {
+  async update(
+    userId: string,
+    evaluationId: string,
+    updateEvaluationDto: UpdateEvaluationDto,
+  ) {
     //Verifica se a avaliação existe
 
     const project = await this.projectsService.findByProjectId(
+      userId,
       updateEvaluationDto.projectId,
     );
 

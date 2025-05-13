@@ -9,7 +9,6 @@ export const IsAdmUser = createParamDecorator<undefined>(
     const request = context.switchToHttp().getRequest();
 
     const role = request.role;
-
     if (role === 'MARKETING' || role === 'EVALUATION_COMMITTEE') {
       return true;
     }

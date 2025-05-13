@@ -20,14 +20,24 @@ import { ActiveUserId } from 'src/shared/decorators/ActiveUserId';
 export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 
-  @Post()
+  /*  @Post()
   async create(@Body() createPeriodDto: CreatePeriodDto) {
     return await this.periodsService.create(createPeriodDto);
+  } */
+
+  @Post()
+  async createMany(@Body() createManyPeriodDto: CreatePeriodDto[]) {
+    return await this.periodsService.createMany(createManyPeriodDto);
   }
 
   @Get()
   findAll() {
     return this.periodsService.findAll();
+  }
+
+  @Get('/current')
+  getCurrentPeriod() {
+    return this.periodsService.getCurrentPeriod();
   }
 
   @Get(':periodId')

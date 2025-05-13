@@ -1,5 +1,8 @@
 import {
   ConflictException,
+  ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,6 +14,10 @@ import { UsersProjectsService } from '../users-projects/users-projects.service';
 import { StatusProject } from './entities/status.project.entity';
 import { EvaluationsCriteriaRepositories } from 'src/shared/database/repositories/evaluations-criteria.repositories';
 import { Prisma } from '@prisma/client';
+import { FilesService } from '../files/files.service';
+import { ProjectDepartment } from './entities/project.department.entity';
+import { Role } from '../users/entities/Role';
+import { PeriodsService } from '../periods/periods.service';
 
 type ProjectWithRelations = Prisma.ProjectGetPayload<{
   include: {
@@ -34,6 +41,7 @@ type ProjectWithRelations = Prisma.ProjectGetPayload<{
       select: {
         id: true;
         comments: true;
+        evaluatorId: true;
         criteria: {
           select: {
             id: true;
@@ -53,13 +61,80 @@ export class ProjectsService {
     private readonly usersProjectsService: UsersProjectsService,
     private readonly usersService: UsersService,
     private readonly projectsRepo: ProjectsRepositories,
-    private readonly evaluationsCriteriaRepo: EvaluationsCriteriaRepositories,
+    @Inject(forwardRef(() => FilesService))
+    private readonly filesService: FilesService,
+    private readonly periodsService: PeriodsService,
   ) {}
 
-  async create(userId: string, createProjectDto: CreateProjectDto) {
-    const { name, description, status } = createProjectDto;
+  private readonly includeClause = {
+    usersProjects: {
+      select: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            cpf: true,
+            position: true,
+            baseId: true,
+          },
+        },
+      },
+    },
+    files: true,
+    evaluations: {
+      select: {
+        id: true,
+        comments: true,
+        createdAt: true,
+        evaluatorId: true,
+        criteria: {
+          select: {
+            id: true,
+            name: true,
+            score: true,
+          },
+        },
+      },
+    },
+    questions: {
+      include: {
+        author: {
+          select: {
+            name: true,
+            email: true,
+            id: true,
+          },
+        },
+      },
+    },
+  };
 
-    const userExists = await this.usersService.findOne(userId);
+  async create(userId: string, createProjectDto: CreateProjectDto) {
+    const {
+      name,
+      description,
+      status,
+      department,
+      videoLink,
+      participants,
+      editionId,
+    } = createProjectDto;
+
+    const currentPeriod = await this.periodsService.getCurrentPeriod();
+
+    if (!currentPeriod) {
+      throw new ConflictException('Nenhum período atual encontrado');
+    }
+
+    if (currentPeriod.type !== 'SUBSCRIPTION') {
+      throw new ConflictException(
+        'Não é possível criar projetos no período atual',
+      );
+    }
+    
+    const userExists = await this.usersService.findByUserId(userId);
 
     if (!userExists) {
       throw new ConflictException('Usuário não encontrado');
@@ -77,67 +152,50 @@ export class ProjectsService {
 
     const project = await this.projectsRepo.create({
       data: {
+        editionId,
         name,
         description,
         status,
+        department,
+        videoLink,
       },
     });
 
-    await this.usersProjectsService.create({
-      projectId: project.id,
-      userId: userId,
-    });
+    await this.usersProjectsService.createMany(
+      participants.map((participant) => ({
+        projectId: project.id,
+        userId: participant.id,
+      })),
+    );
 
     return project;
   }
 
-  async findAll({ status }: { status: StatusProject }) {
-    let whereClause = {};
-
-    if (status) {
-      whereClause = {
-        ...whereClause,
-        status: status,
-      };
-    }
+  async findAll({
+    status,
+    department,
+    userId,
+    title,
+  }: {
+    status?: StatusProject[];
+    department?: ProjectDepartment[];
+    userId?: string;
+    title?: string;
+  }) {
+    const whereClause: Prisma.ProjectWhereInput = {
+      ...(status?.length && { status: { in: status } }),
+      ...(department?.length && { department: { in: department } }),
+      ...(title && { name: { contains: title, mode: 'insensitive' } }),
+      ...(userId && { usersProjects: { some: { userId } } }),
+    };
 
     //@ts-ignore
     const projects: ProjectWithRelations[] = await this.projectsRepo.findMany({
       where: whereClause,
-      include: {
-        usersProjects: {
-          select: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                cpf: true,
-                position: true,
-                baseId: true,
-              },
-            },
-          },
-        },
-        files: true,
-        evaluations: {
-          select: {
-            id: true,
-            comments: true,
-            criteria: {
-              select: {
-                id: true,
-                name: true,
-                score: true,
-              },
-            },
-          },
-        },
-        questions: true,
-      },
+      include: this.includeClause,
     });
 
+    // cálculo de médias (como já está)
     const projectsWithAverages = projects.map((project) => {
       const criteriaScores: Record<string, number[]> = {};
 
@@ -170,25 +228,47 @@ export class ProjectsService {
       const averageScoreFound = projectsWithAverages.find(
         (avg) => avg.id === project.id,
       );
-
-      if (!averageScoreFound) {
-        return project;
-      }
-
+      if (!averageScoreFound) return project;
       return { ...project, averageScore: averageScoreFound.averageScores };
     });
   }
 
-  async findByProjectId(projectId: string) {
-    return await this.projectsRepo.findUnique({
+  async findByProjectId(userId: string, projectId: string) {
+    const user = await this.usersService.findByUserId(userId);
+
+    const userProject = await this.usersProjectsService.findByUserId(
+      userId,
+      projectId,
+    );
+
+    if (
+      !userProject &&
+      user.role !== Role.EVALUATION_COMMITTEE &&
+      user.role !== Role.MARKETING
+    ) {
+      throw new ForbiddenException(
+        'Você não tem permissão para visualizar esse projeto!',
+      );
+    }
+
+    //@ts-ignore
+    const projects: ProjectWithRelations = await this.projectsRepo.findUnique({
       where: {
         id: projectId,
       },
+      include: this.includeClause,
     });
+
+    return projects;
   }
 
-  async update(projectId: string, updateProjectDto: UpdateProjectDto) {
-    const { name, description, status } = updateProjectDto;
+  async update(
+    userId: string,
+    projectId: string,
+    updateProjectDto: UpdateProjectDto,
+  ) {
+    const { name, description, status, department, videoLink } =
+      updateProjectDto;
 
     const projectIdExists = await this.projectsRepo.findUnique({
       where: {
@@ -200,6 +280,19 @@ export class ProjectsService {
       throw new NotFoundException('Esse projeto não existe!');
     }
 
+    if (projectIdExists.status !== StatusProject.DRAFT) {
+      throw new ConflictException('Esse projeto não pode ser editado!');
+    }
+
+    const userProject = await this.usersProjectsService.findByUserId(
+      userId,
+      projectId,
+    );
+
+    if (!userProject) {
+      throw new NotFoundException('Você não tem acesso a esse projeto!');
+    }
+
     return await this.projectsRepo.update({
       where: {
         id: projectId,
@@ -208,14 +301,47 @@ export class ProjectsService {
         name,
         description,
         status,
+        department,
+        videoLink,
       },
     });
   }
 
-  async remove(projectId: string) {
-    return await this.projectsRepo.remove({
+  async updateStatus(
+    projectId: string,
+    updateStatusDto: { status: StatusProject },
+  ) {
+    await this.projectsRepo.update({
       where: {
         id: projectId,
+      },
+      data: updateStatusDto,
+    });
+  }
+
+  async remove(projectId: string, userId: string) {
+    const userProject = await this.usersProjectsService.findByUserId(
+      userId,
+      projectId,
+    );
+
+    if (!userProject) {
+      throw new NotFoundException('Projeto não encontrado ao usuário');
+    }
+
+    //@ts-ignore
+    const projectFound: ProjectWithRelations = await this.findByProjectId(
+      userId,
+      projectId,
+    );
+
+    for (const file of projectFound.files) {
+      await this.filesService.deleteFileByKey(file.key);
+    }
+
+    return await this.projectsRepo.remove({
+      where: {
+        id: projectFound.id,
       },
     });
   }

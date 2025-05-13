@@ -29,6 +29,10 @@ export class SignUpDto {
   @IsEnum(Role)
   role: Role;
 
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
+
   @IsCPF({ message: 'CPF inválido' })
   cpf: string;
 

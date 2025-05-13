@@ -14,6 +14,7 @@ import {
 import { BasesService } from './bases.service';
 import { CreateBaseDto } from './dto/create-base.dto';
 import { UpdateBaseDto } from './dto/update-base.dto';
+import { IsPublic } from 'src/shared/decorators/IsPublic';
 
 @Controller('bases')
 export class BasesController {
@@ -25,6 +26,7 @@ export class BasesController {
   }
 
   @Get()
+  @IsPublic()
   async findAll() {
     return await this.basesService.findMany();
   }

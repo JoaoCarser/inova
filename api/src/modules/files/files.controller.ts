@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   UploadedFile,
   BadRequestException,
+  Delete,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -27,5 +28,14 @@ export class FilesController {
     }
 
     await this.filesService.uploadProjectFile(file, userId, projectId);
+  }
+
+  @Delete('/project/:projectId/:fileId')
+  async deleteProjectFile(
+    @ActiveUserId() userId: string,
+    @Param('projectId', ParseUUIDPipe) projectId: string,
+    @Param('fileId', ParseUUIDPipe) fileId: string,
+  ) {
+    await this.filesService.deleteProjectFile(fileId, userId, projectId);
   }
 }

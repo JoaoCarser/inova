@@ -27,7 +27,7 @@ export class QuestionsController {
   }
 
   // Rota para listar as peguntas feitas pelo usuário logado (ou que o usuário criou)
-  @Get('/me')
+  /* @Get('/me')
   findAllByUserId(@ActiveUserId() userId: string) {
     return this.questionsService.findAllByUserId(userId);
   }
@@ -36,7 +36,7 @@ export class QuestionsController {
   findFirstById(@ActiveUserId() userId: string, questionId: string) {
     return this.questionsService.findFirstById(userId, questionId);
   }
-
+ */
   @Get()
   findAll() {
     return this.questionsService.findAll();

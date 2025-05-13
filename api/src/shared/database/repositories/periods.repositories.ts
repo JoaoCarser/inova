@@ -17,11 +17,19 @@ export class PeriodsRepositories {
     return await this.prismaService.period.create(createDto);
   }
 
+  async createMany(createDto: Prisma.PeriodCreateManyArgs) {
+    return await this.prismaService.period.createMany(createDto);
+  }
+
   async update(updateDto: Prisma.PeriodUpdateArgs) {
     return await this.prismaService.period.update(updateDto);
   }
 
   async remove(deleteDto: Prisma.PeriodDeleteArgs) {
     return await this.prismaService.period.delete(deleteDto);
+  }
+
+  async deleteMany(deleteManyDto: Prisma.PeriodDeleteManyArgs) {
+    return await this.prismaService.period.deleteMany(deleteManyDto);
   }
 }
