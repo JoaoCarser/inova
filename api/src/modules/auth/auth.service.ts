@@ -22,6 +22,9 @@ import { addHours } from 'date-fns';
 import { MailService } from '../mail/mail.service';
 import { ForgotPasswordDto } from './dto/forgotPasswordDto';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
+import { env } from 'src/shared/config/env';
 
 @Injectable()
 export class AuthService {
@@ -31,12 +34,43 @@ export class AuthService {
     private readonly jtwService: JwtService,
     private readonly tokensRepository: TokensRepositories,
     private readonly mailService: MailService,
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) {}
+
+  private async verifyCpfInFeedzApi(cpf: string) {
+    const token = env.feedzApiToken;
+    try {
+      const { data } = await this.httpService.axiosRef.get(
+        `https://app.feedz.com.br/v2/integracao/employees?cpf=${cpf}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      console.log('feedz data', data);
+      return !!data.success;
+    } catch (error) {
+      throw new BadRequestException(
+        'Ocorreu um erro ao tentar verificar o CPF no feedz!',
+      );
+    }
+  }
 
   async signup(signUpDto: SignUpDto) {
     const { email, cpf, baseId } = signUpDto;
 
     const formattedCpf = formatCpf(cpf);
+    console.log(formattedCpf);
+
+    const cpfExistsInHRDatabase = await this.verifyCpfInFeedzApi(formattedCpf);
+
+    if (!cpfExistsInHRDatabase) {
+      throw new BadRequestException(
+        'O Você precisa ser colaborador da empresa para realizar o cadastro!',
+      );
+    }
 
     const phoneExists = await this.usersRepository.findFirst({
       where: { phone: signUpDto.phone },

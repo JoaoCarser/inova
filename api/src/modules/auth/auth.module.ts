@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { env } from 'src/shared/config/env';
 import { MailService } from '../mail/mail.service';
 import { MailModule } from '../mail/mail.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MailModule } from '../mail/mail.module';
       signOptions: { expiresIn: '7d' },
     }),
     MailModule,
+    HttpModule
   ],
   controllers: [AuthController],
   providers: [AuthService, MailService],
