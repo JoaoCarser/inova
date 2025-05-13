@@ -39,6 +39,7 @@ import { StatusQuestion } from "@/app/entities/Question";
 import { EditProjectDialog } from "@/view/pages/Projects/components/dialogs/EditProjectDialog";
 import { EditEvaluationDialog } from "@/view/dialogs/EditEvaluationDialog";
 import { Evaluation } from "@/app/entities/Evaluation";
+import { useCurrentEdition } from "@/app/hooks/useCurrentEdition";
 
 interface ProjectDialogDetailsProps {
   project: Project;
@@ -90,6 +91,7 @@ export const ProjectDetailDialog = ({
     useState(false);
   const [evaluationBeingEdited, setEvaluationBeingEdited] =
     useState<Evaluation | null>(null);
+  const { currentPeriod } = useCurrentEdition();
 
   const evaluations = useMemo(() => {
     /* if (userRole === Role.EVALUATION_COMMITTEE) {
@@ -112,7 +114,12 @@ export const ProjectDetailDialog = ({
   };
 
   // Determine if we should show evaluations tab
-  const showEvaluations = project.evaluations.length > 0;
+  const showEvaluations =
+    project.evaluations.length > 0 ||
+    userRole === Role.EVALUATION_COMMITTEE ||
+    currentPeriod?.type === "RESUBSCRIPTION" ||
+    currentPeriod?.type === "FINAL" ||
+    userRole === Role.MARKETING;
 
   // Count unanswered questions for the current user
   const unansweredQuestionsCount = project.questions.filter(
