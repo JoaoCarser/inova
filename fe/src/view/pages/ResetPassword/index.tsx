@@ -38,7 +38,7 @@ const resetPasswordSchema = z
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
-export const ResetPassword = () => {
+const ResetPassword = () => {
   const token = new URLSearchParams(location.search).get("token");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -47,7 +47,6 @@ export const ResetPassword = () => {
     handleSubmit: hookFormHandleSubmit,
     register,
     formState: { errors },
-    watch,
   } = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
   });
@@ -158,3 +157,5 @@ export const ResetPassword = () => {
     </div>
   );
 };
+
+export default ResetPassword;

@@ -54,9 +54,6 @@ export function EvaluatorQuestionsList({
   const pendingQuestions = evaluatorQuestions.filter(
     (q) => q.status !== StatusQuestion.ANSWERED
   );
-  const answeredQuestions = evaluatorQuestions.filter(
-    (q) => q.status === StatusQuestion.ANSWERED
-  );
 
   // All questions (including those from other evaluators)
   const allQuestions = questions.filter((q) => q.authorId !== currentUserId);

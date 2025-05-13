@@ -7,13 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Project } from "@/app/entities/Project";
 import { StarRating } from "../../../components/StarRating";
-import { cn } from "@/lib/utils";
 import { EvaluationCriterion } from "@/app/entities/EvaluationCriterion";
 import { EvaluationCriterionName } from "@/app/entities/EvaluationCriterionName";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +19,6 @@ import { mutationKeys } from "@/app/config/mutationKeys";
 import { evaluationService } from "@/app/services/evaluationService";
 import { queryKeys } from "@/app/config/queryKeys";
 import { useToast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
 import { handleAxiosError } from "@/app/utils/handleAxiosError";
 
 // Evaluation criteria types
@@ -68,7 +65,11 @@ interface CreateEvaluationDialogProps {
   className?: string;
 }
 
-export function CreateEvaluationDialog({ project, isOpen, onClose }: CreateEvaluationDialogProps) {
+export function CreateEvaluationDialog({
+  project,
+  isOpen,
+  onClose,
+}: CreateEvaluationDialogProps) {
   const [comments, setComments] = useState("");
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -79,7 +80,10 @@ export function CreateEvaluationDialog({ project, isOpen, onClose }: CreateEvalu
     }))
   );
 
-  const handleRatingChange = (criterionName: EvaluationCriterionName, score: number) => {
+  const handleRatingChange = (
+    criterionName: EvaluationCriterionName,
+    score: number
+  ) => {
     setCriteria((prev) =>
       prev.map((criterion) =>
         criterion.name === criterionName ? { ...criterion, score } : criterion
@@ -96,7 +100,9 @@ export function CreateEvaluationDialog({ project, isOpen, onClose }: CreateEvalu
   });
   const handleSubmit = async () => {
     // Validate that all criteria have been rated
-    const unratedCriteria = criteria.filter((criterion) => criterion.score === 0);
+    const unratedCriteria = criteria.filter(
+      (criterion) => criterion.score === 0
+    );
     if (unratedCriteria.length > 0) {
       alert("Por favor, avalie todos os critérios antes de enviar.");
       return;
@@ -122,7 +128,10 @@ export function CreateEvaluationDialog({ project, isOpen, onClose }: CreateEvalu
       onClose();
       setComments("");
       setCriteria(
-        criteriaDefinitions.map((criterion) => ({ name: criterion.name, score: 0 }))
+        criteriaDefinitions.map((criterion) => ({
+          name: criterion.name,
+          score: 0,
+        }))
       );
     } catch (error) {
       handleAxiosError(error);
@@ -130,7 +139,8 @@ export function CreateEvaluationDialog({ project, isOpen, onClose }: CreateEvalu
   };
 
   const averageScore =
-    criteria.reduce((sum, criterion) => sum + criterion.score, 0) / criteria.length || 0;
+    criteria.reduce((sum, criterion) => sum + criterion.score, 0) /
+      criteria.length || 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -140,8 +150,8 @@ export function CreateEvaluationDialog({ project, isOpen, onClose }: CreateEvalu
             Avaliação do Projeto: {project.name}
           </DialogTitle>
           <DialogDescription>
-            Avalie o projeto de acordo com os critérios abaixo. Cada critério deve receber
-            uma nota de 1 a 5 estrelas.
+            Avalie o projeto de acordo com os critérios abaixo. Cada critério
+            deve receber uma nota de 1 a 5 estrelas.
           </DialogDescription>
         </DialogHeader>
 
@@ -155,12 +165,19 @@ export function CreateEvaluationDialog({ project, isOpen, onClose }: CreateEvalu
                     <h3 className="font-medium text-base text-primary">
                       {criterion.label}
                     </h3>
-                    <p className="text-sm text-gray-600">{criterion.description}</p>
+                    <p className="text-sm text-gray-600">
+                      {criterion.description}
+                    </p>
                   </div>
                   <div className="flex items-center">
                     <StarRating
-                      value={criteria.find((c) => c.name === criterion.name)?.score || 0}
-                      onChange={(value) => handleRatingChange(criterion.name, value)}
+                      value={
+                        criteria.find((c) => c.name === criterion.name)
+                          ?.score || 0
+                      }
+                      onChange={(value) =>
+                        handleRatingChange(criterion.name, value)
+                      }
                     />
                   </div>
                 </div>
@@ -183,7 +200,9 @@ export function CreateEvaluationDialog({ project, isOpen, onClose }: CreateEvalu
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <div>
-                <h3 className="font-medium">Nota média: {averageScore.toFixed(1)}/5</h3>
+                <h3 className="font-medium">
+                  Nota média: {averageScore.toFixed(1)}/5
+                </h3>
                 <p className="text-sm text-gray-600">
                   Baseada em {criteria.filter((c) => c.score > 0).length} de{" "}
                   {criteria.length} critérios avaliados
@@ -193,7 +212,13 @@ export function CreateEvaluationDialog({ project, isOpen, onClose }: CreateEvalu
                 <Button variant="outline" onClick={onClose}>
                   Cancelar
                 </Button>
-                <Button onClick={handleSubmit}>Enviar Avaliação</Button>
+                <Button
+                  onClick={handleSubmit}
+                  isLoading={isLoading}
+                  disabled={isLoading}
+                >
+                  Enviar Avaliação
+                </Button>
               </div>
             </div>
           </div>
