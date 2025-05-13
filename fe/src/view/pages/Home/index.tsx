@@ -6,10 +6,10 @@ import { PeriodTimeline } from "@/components/period-timeline";
 import { Spinner } from "@/components/Spinner";
 
 export default function Home() {
-  const { currentPeriod, isFetchingCurrenPeriod, refechCurrenPeriod } =
+  const { currentPeriod, isFetchingCurrenPeriod } =
     useCurrentPeriod();
 
-  const { isFetchingPeriods, periods, refechPeriods } = usePeriods();
+  const { isFetchingPeriods, periods } = usePeriods();
 
   const { user } = useAuth();
 

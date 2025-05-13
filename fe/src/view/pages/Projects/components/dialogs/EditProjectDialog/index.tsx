@@ -48,7 +48,6 @@ export function EditProjectDialog({
     setOpen,
     uploadedFiles,
     setSubmitStatus,
-    submitStatus,
     setUploadedFiles,
   } = useEditProjectDialog(project, () => {
     setOpen(false); // Fecha o modal após submit

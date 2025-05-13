@@ -1,12 +1,9 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Bell, Plus, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Edition } from "@/app/entities/Edition";
 import { useEditions } from "@/app/hooks/editions/useEditions";
@@ -44,11 +41,7 @@ export default function Editions() {
   const [selectedEdition, setSelectedEdition] = useState<Edition | null>(null);
   const [editions, setEditions] = useState<Edition[]>([]);
 
-  const {
-    editions: editionRes,
-    isFetchingEditions,
-    refechEditions,
-  } = useEditions();
+  const { editions: editionRes } = useEditions();
   useEffect(() => {
     setEditions(editionRes);
   }, [editionRes]);
@@ -58,7 +51,7 @@ export default function Editions() {
     setIsEditEditionDialogOpen(true);
   };
 
-  const handleOpenCreateEditionDialog = (edition?: Edition) => {
+  const handleOpenCreateEditionDialog = () => {
     setIsCreateEditionDialogOpen(true);
   };
 

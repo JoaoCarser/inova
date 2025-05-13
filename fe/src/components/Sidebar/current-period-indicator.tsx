@@ -1,33 +1,14 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarClock } from "lucide-react";
-import {
-  PeriodType,
-  periodTypeColors,
-  periodTypeLabels,
-} from "@/app/entities/Period";
+import { periodTypeLabels } from "@/app/entities/Period";
 import { useSidebar } from "../ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useCurrentEdition } from "@/app/hooks/useCurrentEdition";
-import { useCurrentPeriod } from "@/app/hooks/periods/useCurrentPeriod";
-
-interface CurrentPeriod {
-  id: string;
-  title: string;
-  type: PeriodType;
-  startDate: Date;
-  endDate: Date;
-  editionTitle: string;
-  editionYear: number;
-}
 
 export function CurrentPeriodIndicator() {
   const { currentEdition, currentPeriod } = useCurrentEdition();
-  console.log("currentEdition", currentEdition);
 
   if (!currentPeriod) {
     return (

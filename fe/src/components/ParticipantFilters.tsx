@@ -1,22 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-import { translatedDepartments } from "@/app/utils/translatedDepartments";
 import { Search, Filter, X } from "lucide-react";
-import { StatusProject } from "@/app/entities/StatusProject";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useBases } from "@/app/hooks/bases/useBases";
 
-// Translate status values for display
-const statusOptions = [
-  { value: StatusProject.DRAFT, label: "Rascunho" },
-  { value: StatusProject.SUBMITTED, label: "Submetido" },
-  { value: StatusProject.UNDER_REVIEW, label: "Em Avaliação" },
-  { value: StatusProject.REVIEWED, label: "Avaliado" },
-];
+
 
 interface ParticipantFiltersProps {
   onFilterChange: (filters: ParticipantFilterState) => void;
