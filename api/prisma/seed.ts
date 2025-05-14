@@ -7,7 +7,7 @@ import { hash } from 'bcrypt';
 const prismaClient = new PrismaClient();
 
 const main = async () => {
-  await prismaClient.base.createMany({
+ /*  await prismaClient.base.createMany({
     data: [
       {
         name: 'Catu',
@@ -18,7 +18,7 @@ const main = async () => {
         state: 'BA',
       },
     ],
-  });
+  }); */
 
   const bases = await prismaClient.base.findMany();
 

@@ -2,6 +2,9 @@
 CREATE TYPE "role" AS ENUM ('PARTICIPANT', 'EVALUATION_COMMITTEE', 'MARKETING');
 
 -- CreateEnum
+CREATE TYPE "token_types" AS ENUM ('CONFIRM_EMAIL', 'RESET_PASSWORD');
+
+-- CreateEnum
 CREATE TYPE "status_projects" AS ENUM ('DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'REVIEWED');
 
 -- CreateEnum
@@ -22,20 +25,41 @@ CREATE TABLE "users" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
+    "isEmailConfirmed" BOOLEAN NOT NULL DEFAULT false,
     "password" TEXT NOT NULL,
     "role" "role" NOT NULL,
     "cpf" TEXT NOT NULL,
     "position" TEXT NOT NULL,
-    "base_id" UUID NOT NULL,
+    "base_id" UUID,
+    "department_id" UUID,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Token" (
+    "id" UUID NOT NULL,
+    "token" TEXT NOT NULL,
+    "type" "token_types" NOT NULL,
+    "userId" UUID NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Token_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Department" (
+    "id" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Department_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "bases" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
-    "state" TEXT NOT NULL,
 
     CONSTRAINT "bases_pkey" PRIMARY KEY ("id")
 );
@@ -147,10 +171,25 @@ CREATE UNIQUE INDEX "users_phone_key" ON "users"("phone");
 CREATE UNIQUE INDEX "users_cpf_key" ON "users"("cpf");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Token_token_key" ON "Token"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Department_name_key" ON "Department"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "bases_name_key" ON "bases"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "evaluations_project_id_evaluator_id_key" ON "evaluations"("project_id", "evaluator_id");
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_base_id_fkey" FOREIGN KEY ("base_id") REFERENCES "bases"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "users" ADD CONSTRAINT "users_base_id_fkey" FOREIGN KEY ("base_id") REFERENCES "bases"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_department_id_fkey" FOREIGN KEY ("department_id") REFERENCES "Department"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Token" ADD CONSTRAINT "Token_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "projects" ADD CONSTRAINT "projects_edition_id_fkey" FOREIGN KEY ("edition_id") REFERENCES "editions"("id") ON DELETE CASCADE ON UPDATE CASCADE;

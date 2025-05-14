@@ -22,8 +22,7 @@ const schema = z.object({
     .nonempty("Senha é obrigatório")
     .min(8, "Senha deve conter pelo menos 8 dígitos."),
   cpf: z.string().min(1, "CPF é obrigatório."),
-  position: z.string().min(1, "Posição é obrigatório."),
-  baseId: z.string().min(1, "Base é obrigatório."),
+  
   phone: z.string().optional(),
 });
 

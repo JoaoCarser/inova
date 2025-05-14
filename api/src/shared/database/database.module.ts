@@ -11,6 +11,7 @@ import { EvaluationsRepositories } from './repositories/evaluations.repositories
 import { EvaluationsCriteriaRepositories } from './repositories/evaluations-criteria.repositories';
 import { EditionsRepositories } from './repositories/editions.repositories';
 import { TokensRepositories } from './repositories/tokens.repositories';
+import { DepartmentsRepositories } from './repositories/departments.repositories';
 
 @Global()
 @Module({
@@ -26,7 +27,7 @@ import { TokensRepositories } from './repositories/tokens.repositories';
     EvaluationsRepositories,
     EvaluationsCriteriaRepositories,
     EditionsRepositories,
-    TokensRepositories,
+    TokensRepositories,DepartmentsRepositories
   ],
   exports: [
     UsersRepositories,
@@ -39,7 +40,7 @@ import { TokensRepositories } from './repositories/tokens.repositories';
     EvaluationsRepositories,
     EvaluationsCriteriaRepositories,
     EditionsRepositories,
-    TokensRepositories,
+    TokensRepositories,DepartmentsRepositories
   ],
 })
 export class DatabaseModule {}
