@@ -14,7 +14,7 @@ export class BasesService {
     const { name, state } = createBaseDto;
 
     const baseExist = await this.basesRepo.findFirst({
-      where: { name, state },
+      where: { name },
     });
 
     if (baseExist) {
@@ -22,7 +22,7 @@ export class BasesService {
     }
 
     return await this.basesRepo.create({
-      data: { name, state },
+      data: { name },
     });
   }
 
@@ -48,7 +48,7 @@ export class BasesService {
     }
 
     const baseExist = await this.basesRepo.findFirst({
-      where: { name, state },
+      where: { name },
     });
 
     if (baseExist) {

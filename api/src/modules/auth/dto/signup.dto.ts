@@ -35,13 +35,4 @@ export class SignUpDto {
 
   @IsCPF({ message: 'CPF inválido' })
   cpf: string;
-
-  @IsString()
-  @IsNotEmpty()
-  position: string;
-
-  @IsUUID()
-  @IsString()
-  @IsNotEmpty()
-  baseId: string;
 }

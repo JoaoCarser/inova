@@ -7,8 +7,7 @@ export interface SignupParams {
   password: string;
   role: Role;
   cpf: string;
-  position: string;
-  baseId: string;
+ 
 }
 
 interface SignupResponse {
