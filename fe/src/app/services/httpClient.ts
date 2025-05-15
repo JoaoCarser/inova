@@ -3,9 +3,10 @@ import { localStorageKeys } from "../config/localStorageKeys";
 //import { timeout } from "../utils/timeout";
 
 //const localhostUrl = "http://localhost:3000/";
+const prodUrl = "https://inova-x6hb.onrender.com";
 
 export const httpClient = axios.create({
-  baseURL: 'https://inova-x6hb.onrender.com',
+  baseURL: prodUrl,
 });
 
 httpClient.interceptors.request.use(async (config) => {

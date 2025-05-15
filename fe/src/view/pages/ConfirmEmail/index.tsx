@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { XCircle } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "@/app/services/authService";
@@ -54,14 +53,11 @@ export default function ConfirmEmail() {
         <CardContent className="p-6">
           <div className="flex flex-col items-center justify-center space-y-6 text-center">
             <>
-              <div className="rounded-full bg-red-100 p-3">
-                <XCircle className="h-10 w-10 text-red-600" />
-              </div>
+             
               <div className="space-y-2">
-                <h1 className="text-2xl font-bold">Erro na verificação</h1>
+                <h1 className="text-2xl font-bold">Verificação de E-mail</h1>
                 <p className="text-muted-foreground">
-                  Não foi possível verificar seu email. O link pode ter expirado
-                  ou ser inválido.
+                  Clique no botão abaixo para confirmar seu e-mail
                 </p>
               </div>
               <div className="space-y-4 w-full">

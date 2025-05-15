@@ -20,80 +20,13 @@ const main = async () => {
     ],
   }); */
 
-  const bases = await prismaClient.base.findMany();
-
-  const hashedPassword = await hash('12345678', 12);
-
-  await prismaClient.user.create({
-    data: {
-      cpf: '18888186034',
-      name: 'Participante 1',
-      email: 'participante1@email.com',
-      password: hashedPassword,
-      baseId: bases[0].id,
-      phone: '+5511989898989',
-      position: 'Estagiário',
-      role: 'PARTICIPANT',
-    },
-  });
-
-  await prismaClient.user.create({
-    data: {
-      cpf: '54050211050',
-      name: 'Participante 2',
-      email: 'participante2@email.com',
-      password: hashedPassword,
-      baseId: bases[0].id,
-      phone: '+5511989898981',
-      position: 'Desenvolvedor',
-      role: 'PARTICIPANT',
-    },
-  });
-
-  await prismaClient.user.create({
-    data: {
-      cpf: '85000570090',
-      name: 'Avaliador 1',
-      email: 'avaliador1@email.com',
-      password: hashedPassword,
-      baseId: bases[0].id,
-      phone: '+5511989898982',
-      position: 'Diretor',
-      role: 'EVALUATION_COMMITTEE',
-    },
-  });
-
-  await prismaClient.user.create({
-    data: {
-      cpf: '34474669010',
-      name: 'Avaliador 2',
-      email: 'avaliador2@email.com',
-      password: hashedPassword,
-      baseId: bases[0].id,
-      phone: '+5511989898955',
-      position: 'Diretor',
-      role: 'EVALUATION_COMMITTEE',
-    },
-  });
-
-  await prismaClient.user.create({
-    data: {
-      cpf: '42934443000',
-      name: 'Marketing 1',
-      email: 'marketing1@email.com',
-      password: hashedPassword,
-      baseId: bases[0].id,
-      phone: '+5511989898489',
-      position: 'Marketing',
-      role: 'MARKETING',
-    },
-  });
+  
 
   await prismaClient.edition.create({
     data: {
       title: `Inova Conterp 2025`,
       description: `Inova Conterp 2025`,
-      startDate: new Date('2025-05-20T00:00:00Z'),
+      startDate: new Date('2025-05-01T00:00:00Z'),
       endDate: new Date('2025-09-25T23:59:59Z'),
       year: 2025,
       periods: {
@@ -102,7 +35,7 @@ const main = async () => {
             {
               title: 'Inscrições',
               description: 'Período de envio das inscrições',
-              startDate: new Date('2025-05-20T00:00:00Z'),
+              startDate: new Date('2025-05-01T00:00:00Z'),
               endDate: new Date('2025-07-07T23:59:59Z'),
               type: 'SUBSCRIPTION',
             },
