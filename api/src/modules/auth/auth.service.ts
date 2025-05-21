@@ -42,7 +42,7 @@ export class AuthService {
 
   private async getEmployeeByCpf(cpf: string) {
     const token = env.feedzApiToken;
-    
+
     try {
       const { data } = await this.httpService.axiosRef.get(
         `https://app.feedz.com.br/v2/integracao/employees?cpf=${cpf}`,
@@ -52,7 +52,11 @@ export class AuthService {
           },
         },
       );
-      console.log('data', data);
+      if (!data) {
+        throw new BadRequestException(
+          'Ocorreu um erro ao tentar verificar o CPF no feedz!',
+        );
+      }
       return data.data;
     } catch (error) {
       console.log(error);
@@ -64,10 +68,7 @@ export class AuthService {
 
   async signup(signUpDto: SignUpDto) {
     const { email, cpf } = signUpDto;
-
     const formattedCpf = formatCpf(cpf);
-    console.log(formattedCpf);
-
     const [employee] = await this.getEmployeeByCpf(formattedCpf);
 
     if (!employee) {
