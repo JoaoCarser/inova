@@ -7,10 +7,20 @@ import { useRegister } from "./useRegister";
 import { Controller } from "react-hook-form";
 import { EmailVerificationPending } from "../EmailVerificationPending";
 import { cn } from "@/lib/utils";
+import TermsDialog from "./components/TermsDialog";
 
 export default function Register() {
-  const { errors, handleSubmit, register, isLoading, control, pendingEmail } =
-    useRegister();
+  const {
+    errors,
+    handleSubmit,
+    register,
+    isLoading,
+    control,
+    pendingEmail,
+    isDialogTermsOpen,
+    handleChangeDialogTerms,
+    handleChangeTerms,
+  } = useRegister();
   return (
     <>
       {!pendingEmail && (
@@ -25,7 +35,7 @@ export default function Register() {
                 </h1>
                 <p className="text-white tracking-tighter">
                   Preencha corretamente o formulário e participe do Inova
-                  Conterp 2024!
+                  Conterp {new Date().getFullYear()}
                 </p>
               </div>
             </div>
@@ -66,7 +76,7 @@ export default function Register() {
                   </div>
                   <div className="flex flex-col gap-2 w-full  md:col-span-3 ">
                     <Label htmlFor="phone">Telefone (DDD + Número)</Label>
-                    {/*  <Input id="phone" type="phone" required /> */}
+
                     <Controller
                       name="phone"
                       control={control}
@@ -95,10 +105,6 @@ export default function Register() {
                     />
                   </div>
 
-                  {/*   <div className="flex flex-col gap-2 w-full md:col-span-6">
-              <Label htmlFor="email">E-mail pessoal (Opcional) </Label>
-              <Input id="email" type="email" required />
-            </div> */}
                   <div className="flex flex-col gap-2 w-full md:col-span-6">
                     <Label htmlFor="password">Senha</Label>
                     <Input
@@ -109,60 +115,24 @@ export default function Register() {
                       error={errors.password?.message}
                     />
                   </div>
-                  {/*    <div className="flex flex-col gap-2 w-full md:col-span-3">
-                  <Label htmlFor="baseId">Local de Trabalho</Label>
 
-                  <Controller
-                    name="baseId"
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                      <Select onValueChange={onChange} value={value}>
-                        <SelectTrigger
-                          className="w-full h-9"
-                          error={errors.baseId?.message}
-                          isLoading={isFetchingBases}
-                          disabled={isFetchingBases}
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {bases.map(({ id, name }) => (
-                            <SelectItem value={id}>{name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
+                  <TermsDialog
+                    onOpenChange={handleChangeDialogTerms}
+                    open={isDialogTermsOpen}
+                    initialAgreed={false}
+                    onAgreementChange={handleChangeTerms}
+                    isLoading={isLoading}
+                    onSubmit={handleSubmit}
                   />
-                </div>
-                <div className="flex flex-col gap-2 w-full md:col-span-3">
-                  <Label htmlFor="baseId">Disponível para viagem?</Label>
-                  <Select>
-                    <SelectTrigger className="w-full h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yes">Sim</SelectItem>
-                      <SelectItem value="no">Não</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex flex-col gap-2 w-full md:col-span-6">
-                  <Label htmlFor="position">Função na Conterp</Label>
-                  <Input
-                    id="position"
-                    type="text"
-                    required
-                    {...register("position")}
-                  />
-                </div>
- */}
+
                   <div className="flex flex-col gap-4 w-full md:col-start-10 md:col-span-3 ">
                     <Button
-                      type="submit"
+                      type="button"
                       isLoading={isLoading}
                       disabled={isLoading}
+                      onClick={() => handleChangeDialogTerms(true)}
                     >
-                      Acessar
+                      Proximo
                     </Button>
                   </div>
                 </div>

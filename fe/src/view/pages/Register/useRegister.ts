@@ -22,7 +22,7 @@ const schema = z.object({
     .nonempty("Senha é obrigatório")
     .min(8, "Senha deve conter pelo menos 8 dígitos."),
   cpf: z.string().min(1, "CPF é obrigatório."),
-  
+
   phone: z.string().optional(),
 });
 
@@ -39,9 +39,14 @@ export const useRegister = () => {
     resolver: zodResolver(schema),
   });
 
+  console.log(errors);
+
   const { bases, isFetchingBases } = useBases();
 
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [isDialogTermsOpen, setIsDialogTermsOpen] = useState<boolean>(false);
+  useState<boolean>(false);
+  const [isTermsConfirmed, setIsTermsConfirmed] = useState<boolean>(false);
 
   const { isPending: isLoading, mutateAsync } = useMutation({
     mutationKey: [mutationKeys.SIGNUP],
@@ -50,8 +55,28 @@ export const useRegister = () => {
     },
   });
 
+  const handleChangeTerms = (value: boolean) => {
+    setIsTermsConfirmed(value);
+  };
+
+  console.log("isTermsConfirmed", isTermsConfirmed);
+
+  const handleChangeDialogTerms = (value: boolean) => {
+    setIsDialogTermsOpen(value);
+  };
+
   const handleSubmit = hookFormHandleSubmit(async (data) => {
     console.log(data);
+
+    if (!isTermsConfirmed) {
+      toast({
+        title: "Você precisa concordar com os termos e condições",
+        description:
+          "Antes de prosseguir, você deve concordar com os termos e condições",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       const { message } = await mutateAsync({
@@ -80,5 +105,9 @@ export const useRegister = () => {
     bases,
     isFetchingBases,
     pendingEmail,
+    isDialogTermsOpen,
+    handleChangeDialogTerms,
+    handleChangeTerms,
+    isTermsConfirmed,
   };
 };
