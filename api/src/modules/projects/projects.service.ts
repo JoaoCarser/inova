@@ -133,11 +133,20 @@ export class ProjectsService {
         'Não é possível criar projetos no período atual',
       );
     }
-    
+
     const userExists = await this.usersService.findByUserId(userId);
 
     if (!userExists) {
       throw new ConflictException('Usuário não encontrado');
+    }
+
+    const participantsAlreadyHasProjects =
+      await this.usersProjectsService.findMany(participants);
+
+    if (participantsAlreadyHasProjects.length > 0) {
+      throw new ConflictException(
+        'Um ou mais participantes já possuem projetos cadastrados!',
+      );
     }
 
     const nameExists = await this.projectsRepo.findFirst({

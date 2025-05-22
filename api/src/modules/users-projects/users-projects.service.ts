@@ -3,6 +3,7 @@ import { CreateUsersProjectDto } from './dto/create-users-project.dto';
 import { UsersProjectsRepositories } from 'src/shared/database/repositories/users-projects.repositories';
 import { UsersRepositories } from 'src/shared/database/repositories/users.repositories';
 import { ProjectsRepositories } from 'src/shared/database/repositories/projects.repositories';
+import { Participant } from '../projects/entities/Participant';
 
 @Injectable()
 export class UsersProjectsService {
@@ -60,6 +61,13 @@ export class UsersProjectsService {
   async findByUserId(userId: string, projectId: string) {
     return await this.usersProjectsRepository.findFirst({
       where: { userId, projectId },
+    });
+  }
+
+  async findMany(participants: Participant[]) {
+    return await this.usersProjectsRepository.findMany({
+      where: { userId: { in: participants.map((p) => p.id) } },
+      include: { user: true },
     });
   }
 }

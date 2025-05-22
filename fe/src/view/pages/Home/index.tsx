@@ -6,8 +6,7 @@ import { PeriodTimeline } from "@/components/period-timeline";
 import { Spinner } from "@/components/Spinner";
 
 export default function Home() {
-  const { currentPeriod, isFetchingCurrenPeriod } =
-    useCurrentPeriod();
+  const { currentPeriod, isFetchingCurrenPeriod } = useCurrentPeriod();
 
   const { isFetchingPeriods, periods } = usePeriods();
 
@@ -31,7 +30,7 @@ export default function Home() {
 
           <div className="mt-12 border border-primary-200 rounded-lg p-8">
             <h2 className="text-2xl font-bold text-green-600 mb-4">
-              Concurso 2024
+              Concurso {new Date().getFullYear()}
             </h2>
             <div className="flex justify-between items-center mb-2">
               <p className="text-gray-700">Progresso do seu projeto</p>
