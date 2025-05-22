@@ -42,7 +42,7 @@ export class AuthService {
 
   private async getEmployeeByCpf(cpf: string) {
     const token = env.feedzApiToken;
-    
+
     try {
       const { data } = await this.httpService.axiosRef.get(
         `https://app.feedz.com.br/v2/integracao/employees?cpf=${cpf}`,
@@ -131,6 +131,7 @@ export class AuthService {
     const user = await this.usersRepository.create({
       data: {
         ...signUpDto,
+        cpf: formattedCpf,
         password: hashedPassword,
         baseId: baseExists?.id,
         position: employee.job_description.title,
