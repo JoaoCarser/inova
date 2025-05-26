@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -43,5 +44,6 @@ export class CreateProjectDto {
 
   @ValidateNested({ each: true })
   @Type(() => Participant)
+  @ArrayMaxSize(3)
   participants: Participant[];
 }

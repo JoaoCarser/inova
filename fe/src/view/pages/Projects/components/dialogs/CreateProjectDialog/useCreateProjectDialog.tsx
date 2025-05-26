@@ -28,7 +28,8 @@ const schema = z.object({
   videoLink: z.string().optional(),
   participants: z
     .array(participantSchema)
-    .min(1, "Adicione pelo menos um participante"),
+    .min(1, "Adicione pelo menos um participante")
+    .max(3, "Não é possível adicionar mais de 3 participantes"),
 });
 
 type FormData = z.infer<typeof schema>;

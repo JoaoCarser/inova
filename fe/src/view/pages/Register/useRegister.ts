@@ -10,6 +10,7 @@ import { SignupParams } from "@/app/services/authService/signup";
 import { useBases } from "@/app/hooks/bases/useBases";
 import { handleAxiosError } from "@/app/utils/handleAxiosError";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
   name: z.string().min(1, "Nome é obrigatório."),
@@ -42,7 +43,7 @@ export const useRegister = () => {
   console.log(errors);
 
   const { bases, isFetchingBases } = useBases();
-
+  const navigate = useNavigate();
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [isDialogTermsOpen, setIsDialogTermsOpen] = useState<boolean>(false);
   useState<boolean>(false);
@@ -109,5 +110,6 @@ export const useRegister = () => {
     handleChangeDialogTerms,
     handleChangeTerms,
     isTermsConfirmed,
+    navigate,
   };
 };

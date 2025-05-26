@@ -70,9 +70,6 @@ export default function Projects() {
               projects.length > 0 &&
               currentPeriod?.type === "SUBSCRIPTION" && (
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {user?.role !== Role.EVALUATION_COMMITTEE && (
-                    <CreateProjectDialog />
-                  )}
                   {projects.map((project) => (
                     <ProjectCard
                       key={project.id}
