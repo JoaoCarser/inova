@@ -97,32 +97,34 @@ export function ParticipantSelector({
                 )}
               </div>
             ))}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-2 p-2">
-              <div className="md:col-span-5">
-                <Input
-                  placeholder="CPF do participante"
-                  type="cpf"
-                  value={cpf}
-                  onChange={(e) => setCpf(e.target.value)}
-                  error={error ?? ""}
-                />
-              </div>
+            {value.length < 3 && (
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-2 p-2">
+                <div className="md:col-span-5">
+                  <Input
+                    placeholder="CPF do participante"
+                    type="cpf"
+                    value={cpf}
+                    onChange={(e) => setCpf(e.target.value)}
+                    error={error ?? ""}
+                  />
+                </div>
 
-              <div className="md:col-span-3">
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={addParticipant}
-                  disabled={!cpf.trim() || isFetchingUserByCpf}
-                  isLoading={isFetchingUserByCpf}
-                  className="w-full"
-                >
-                  <span className=" flex  items-center justify-around">
-                    Adicionar participante
-                  </span>
-                </Button>
+                <div className="md:col-span-3">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={addParticipant}
+                    disabled={!cpf.trim() || isFetchingUserByCpf}
+                    isLoading={isFetchingUserByCpf}
+                    className="w-full"
+                  >
+                    <span className=" flex  items-center justify-around">
+                      Adicionar participante
+                    </span>
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
