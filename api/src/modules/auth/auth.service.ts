@@ -161,16 +161,15 @@ export class AuthService {
   }
 
   async adminSignup(signUpDto: AdminSignupDto) {
-    const { email, cpf, name, password, phone } = signUpDto;
-    const formattedCpf = formatCpf(cpf);
+    const formattedCpf = formatCpf(signUpDto.cpf);
 
     const emailExists = await this.usersRepository.findUnique({
-      where: { email },
+      where: { email: signUpDto.email },
     });
     if (emailExists) throw new ConflictException('O E-mail já está em uso!');
 
     const phoneExists = await this.usersRepository.findFirst({
-      where: { phone: phone },
+      where: { phone: signUpDto.phone },
     });
     if (phoneExists)
       throw new ConflictException('O Telefone já está sendo usado');
@@ -183,7 +182,9 @@ export class AuthService {
     const hashedPassword = await hash(signUpDto.password, 12);
     const user = await this.usersRepository.create({
       data: {
-        ...signUpDto,
+        email: signUpDto.email,
+        name: signUpDto.name,
+        phone: signUpDto.phone,
         password: hashedPassword,
         position: 'Comitê Avaliativo',
         role: 'EVALUATION_COMMITTEE',
