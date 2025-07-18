@@ -26,6 +26,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { env } from 'src/shared/config/env';
 import { DepartmentsRepositories } from 'src/shared/database/repositories/departments.repositories';
+import { AdminSignupDto } from './dto/adminSignup.dto';
 
 @Injectable()
 export class AuthService {
@@ -137,6 +138,56 @@ export class AuthService {
         baseId: baseExists?.id,
         position: employee.job_description.title,
         departmentId: departmenExists?.id,
+        cpf: formattedCpf,
+      },
+    });
+
+    const token = randomUUID();
+    await this.tokensRepository.create({
+      data: {
+        token,
+        type: 'CONFIRM_EMAIL',
+        userId: user.id,
+        expiresAt: addHours(new Date(), 24),
+      },
+    });
+
+    await this.mailService.sendEmailConfirmation(user.email, token);
+
+    return {
+      message:
+        'Cadastro realizado com sucesso. Verifique seu e-mail para ativar sua conta.',
+    };
+  }
+
+  async adminSignup(signUpDto: AdminSignupDto) {
+    const { email, cpf, name, password, phone } = signUpDto;
+    const formattedCpf = formatCpf(cpf);
+
+    const emailExists = await this.usersRepository.findUnique({
+      where: { email },
+    });
+    if (emailExists) throw new ConflictException('O E-mail já está em uso!');
+
+    const phoneExists = await this.usersRepository.findFirst({
+      where: { phone: phone },
+    });
+    if (phoneExists)
+      throw new ConflictException('O Telefone já está sendo usado');
+
+    const cpfExists = await this.usersRepository.findUnique({
+      where: { cpf: formattedCpf },
+    });
+    if (cpfExists) throw new ConflictException('O CPF já está cadastrado!');
+
+    const hashedPassword = await hash(signUpDto.password, 12);
+    const user = await this.usersRepository.create({
+      data: {
+        ...signUpDto,
+        password: hashedPassword,
+        position: 'Comitê Avaliativo',
+        role: 'EVALUATION_COMMITTEE',
+        cpf: formattedCpf,
       },
     });
 
