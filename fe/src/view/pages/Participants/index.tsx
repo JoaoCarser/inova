@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Mail, Phone, Briefcase, Award } from "lucide-react";
+import { cpf } from "cpf-cnpj-validator";
+import { Mail, Phone, Briefcase, Award, MapPin, IdCard } from "lucide-react";
 import { ParticipantDetailDialog } from "@/components/ParticipantDetailDialog";
 import {
   ParticipantFilters,
@@ -26,6 +27,8 @@ export default function Participants({}: ParticipantsProps) {
   });
 
   const { users, refechUsers, isFetchingUsers } = useUsers(filters);
+
+  console.log(users);
 
   useEffect(() => {
     refechUsers();
@@ -128,6 +131,20 @@ export default function Participants({}: ParticipantsProps) {
                         ? "projeto"
                         : "projetos"}
                     </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <IdCard className="h-4 w-4 text-gray-400" />
+                    <span>{cpf.format(participant.cpf)}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin className="h-4 w-4 text-gray-400" />
+                    {participant.base?.name ? (
+                      <span>{participant.base.name}</span>
+                    ) : (
+                      <span className="text-red-500">Sem base cadastrada</span>
+                    )}
                   </div>
 
                   {/*  {participant.questionCount > 0 && (

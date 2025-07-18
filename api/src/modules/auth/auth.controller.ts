@@ -7,6 +7,7 @@ import { MailService } from '../mail/mail.service';
 import { ConfirmEmailDto } from './dto/confirmEmail.dto';
 import { ForgotPasswordDto } from './dto/forgotPasswordDto';
 import { ResetPasswordDto } from './dto/resetPassword.dto';
+import { AdminSignupDto } from './dto/adminSignup.dto';
 
 @IsPublic()
 @Controller('auth')
@@ -16,6 +17,11 @@ export class AuthController {
   @Post('/signup')
   signup(@Body() createUserDto: SignUpDto) {
     return this.authService.signup(createUserDto);
+  }
+
+  @Post('/admin/signup')
+  adminSignup(@Body() createUserAdminDto: AdminSignupDto) {
+    return this.authService.adminSignup(createUserAdminDto);
   }
 
   @Post('/signin')
