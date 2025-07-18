@@ -138,7 +138,6 @@ export class AuthService {
         baseId: baseExists?.id,
         position: employee.job_description.title,
         departmentId: departmenExists?.id,
-        cpf: formattedCpf,
       },
     });
 
